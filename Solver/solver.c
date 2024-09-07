@@ -1,11 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "solver.h"
 
-int print_grid(char grid[][10],int Start[], int End[])
+//variable global
+char filename[] = "data.txt";
+char grid[256][256];//trouver un truc plus opti
+int grid_len_x = 10;
+int grid_len_y = 10;
+
+int print_grid(int Start[], int End[])
 {
-	for(int i = 0; i<10; i++)
+	for(int i = 0; i<grid_len_x; i++)
 	{
-		for(int j = 0; j<10; j++)
+		for(int j = 0; j<grid_len_y; j++)
 		{
 			if((i==Start[1] && j==Start[0]) || (i==End[1] && j==End[0]))
 			{
@@ -17,7 +22,7 @@ int print_grid(char grid[][10],int Start[], int End[])
 				printf("%c",grid[i][j]);
 			}
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	return 0;
 }
@@ -32,14 +37,14 @@ int len(char word[])
     return l;
 }
 
-int find_word(char grid[][10], char word[], int End[2], int i, int j, int vx, int vy)
+int find_word(char word[], int End[2], int i, int j, int vx, int vy)
 {
-	printf("i,j = %i,%i   vx,vy = %i,%i\n",i,j,vx,vy);
+	//printf("i,j = %i,%i   vx,vy = %i,%i\n",i,j,vx,vy);
 	i+=vx;
 	j+=vy;
-	for(size_t k = 2; k<len(word); k++)
+	for(int k = 2; k<len(word); k++)
 	{
-		if((i>=0 && i<10) && (j>=0 && j<10) && grid[i][j]==word[k])
+		if((i>=0 && i<grid_len_x) && (j>=0 && j<grid_len_y) && grid[i][j]==word[k])
 		{
 			i += vx;
 			j += vy;
@@ -49,24 +54,23 @@ int find_word(char grid[][10], char word[], int End[2], int i, int j, int vx, in
 			return 1;
 		}
 	}
-	printf("DB %i,%i\n",vy,vx);
 	End[0] = j-vy;
 	End[1] = i-vx;
 	return 0;
 }
 
-int find_second_letter(char grid[][10], char word[], int End[2], int x, int y)
+int find_second_letter(char word[], int End[2], int x, int y)
 {
 	for(int i = x-1; i<=x+1; i++)
 	{
 		for(int j = y-1; j<=y+1; j++)
 		{
-			if((i>=0 && i<10) && (j>=0 && j<10))
+			if((i>=0 && i<grid_len_x) && (j>=0 && j<grid_len_y))
 			{
-				printf("l(%i,%i):%c\n",i,j,grid[i][j]);
+				//printf("l(%i,%i):%c\n",i,j,grid[i][j]);
 				if(grid[i][j]==word[1])
 				{
-					if(find_word(grid,word,End,i,j,i-x,j-y)==0)
+					if(find_word(word,End,i,j,i-x,j-y)==0)
 					{
 						return 0;
 					}
@@ -79,17 +83,17 @@ int find_second_letter(char grid[][10], char word[], int End[2], int x, int y)
 }
 
 
-int solve_grid(char grid[][10], char word[], int Start[2],int End[2])
+int solve_grid(char word[], int Start[2],int End[2])
 {
-	for(size_t x = 0; x<10; x++)
+	for(size_t x = 0; x<grid_len_x; x++)
 	{
-		for(size_t y = 0; y<10; y++)
+		for(size_t y = 0; y<grid_len_y; y++)
 		{
 			if(grid[x][y]==word[0])
 			{
 				Start[0] = y;
 				Start[1] = x;
-				if(find_second_letter(grid,word,End,x,y)==0)
+				if(find_second_letter(word,End,x,y)==0)
 					return 0;
 			}
 		}
@@ -98,7 +102,7 @@ int solve_grid(char grid[][10], char word[], int Start[2],int End[2])
 }
 
 
-int read_grid(char filename[],char grid[][10])
+int read_grid(char filename[])
 {
 	FILE *fichier = fopen(filename,"r");
 
@@ -119,42 +123,43 @@ int read_grid(char filename[],char grid[][10])
 			grid[x][y] = ligne[y];
 			y++;
 		}
+		grid_len_y = y;
 		x++;
 	}
+	grid_len_x = x;
 
 	return 0;
 }
 
 int solver(char word[])
 {
-	char filename[] = "data.txt";
-	char grid[10][10];
-	int word_len = len(word);
-	int grid_len = 10;
 	
-	read_grid(filename,grid);
+	read_grid(filename);
 
 	int Start[2] = {};
 	int End[2] = {};
 
-	int e = solve_grid(grid,word,Start,End);
+	int e = solve_grid(word,Start,End);
 	if(e==1)
 	{
 		printf("ERROR: le mot n'existe pas\n");
 	}
 	else
 	{
+		print_grid(Start,End);
+		printf("Word: %s\n",word);
 		printf("Start = (%i,%i)\n",Start[0],Start[1]);
 		printf("End = (%i,%i)\n",End[0],End[1]);
 		printf("(%i,%i)(%i,%i)\n",Start[0],Start[1],End[0],End[1]);
 	}
 
-	print_grid(grid,Start,End);
 	return 0;
 }
 
 int main(int argc, char *argv[])
 {
-	printf("%s\n",argv[1]);
-	return solver(argv[1]);
+	if(argc<2)
+		printf("ERROR: argument missing\n");
+	else
+		return solver(argv[1]);
 }
