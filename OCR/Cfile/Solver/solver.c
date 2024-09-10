@@ -1,4 +1,4 @@
-#include "solver.h"
+#include "../../Hfile/Solver/solver.h"
 
 //variable global
 char filename[] = "data.txt";
