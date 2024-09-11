@@ -1,0 +1,3 @@
+render: render.c neural.c DataPoint.c
+	gcc render.c neural.c DataPoint.c -o render -lSDL2 -lm
+
