@@ -9,7 +9,7 @@ void NewDataPoint(DataPoint *p, double x, double y)
 
 int Safe(DataPoint *p)
 {
-	double X = p->x;
+	double X = p->x/100.0;
 	double Y = p->y;
 
 	double X1 = pow(X,4);
@@ -17,7 +17,7 @@ int Safe(DataPoint *p)
 	double X3 = pow(X,2);
 
 	double f = -0.1*X1 - 0.1*X2 + X3 + 2;
-	if(Y<f)
+	if(Y<f*100.0)
 		return 1;
 	else
 		return 0;

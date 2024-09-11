@@ -2,6 +2,22 @@
 #include <stdio.h>
 #include "neural.h"
 
+void drawFilledRectangle(SDL_Renderer *renderer, int x, int y, int width, int height, SDL_Color color) {
+    // Définir la couleur de dessin
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    
+    // Créer un rectangle
+    SDL_Rect rect;
+    rect.x = x;
+    rect.y = y;
+    rect.w = width;
+    rect.h = height;
+    
+    // Dessiner le rectangle plein
+    SDL_RenderFillRect(renderer, &rect);
+}
+
+
 void drawPoint(SDL_Renderer *renderer, int x, int y, int size, int Safe) {
     SDL_Rect rect;
     rect.x = x - size / 2; // Centrer le carré sur le point
@@ -41,19 +57,30 @@ int main() {
         SDL_Quit();
         return 1;
     }
-
     // Couleur de fond
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
     // Dessiner des points
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Couleur des points (bleu)
-	init();	
+	init();
+	
+	for(int i = 0; i<1000; i++)
+	{
+		for(int j = 0; j<1000; j++)
+		{
+			SDL_Color color = {200,0,0,100};
+			if(Classify((double)i,(double)j)==0)
+				color = (SDL_Color){125, 216, 230,100};
+			drawFilledRectangle(renderer,i,j,1,1,color);
+		}
+	}
+	
 	int pointSize = 10;
 	for(int i = 0; i<SampleSize; i++)
 	{
 		DataPoint p = Sample[i];
-		drawPoint(renderer,p.x*100.0,p.y*100.0,pointSize,p.Safe);
+		drawPoint(renderer,p.x,p.y,pointSize,p.Safe);
 	}
 	
 

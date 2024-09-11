@@ -1,11 +1,13 @@
 #include "../../Hfile/Solver/solver.h"
 
 //variable global
-char filename[] = "data.txt";
+char filename[] = "grid";
 char grid[256][256];//trouver un truc plus opti
 int grid_len_x = 10;
 int grid_len_y = 10;
 
+// display the grid in the terminal with 
+// the first and last letter of the word in yellow
 int print_grid(int Start[], int End[])
 {
 	for(int i = 0; i<grid_len_x; i++)
@@ -26,7 +28,7 @@ int print_grid(int Start[], int End[])
 	}
 	return 0;
 }
-
+//len function (need to be move in lib file)
 int len(char word[])
 {
     int l = 0;
@@ -36,7 +38,8 @@ int len(char word[])
     }
     return l;
 }
-
+// find the rest of the word after finding the first two letters 
+// and the direction of the word
 int find_word(char word[], int End[2], int i, int j, int vx, int vy)
 {
 	//printf("i,j = %i,%i   vx,vy = %i,%i\n",i,j,vx,vy);
@@ -58,7 +61,8 @@ int find_word(char word[], int End[2], int i, int j, int vx, int vy)
 	End[1] = i-vx;
 	return 0;
 }
-
+// find the second letter and the direction of the word after 
+// finding the first letter of the word
 int find_second_letter(char word[], int End[2], int x, int y)
 {
 	for(int i = x-1; i<=x+1; i++)
@@ -82,7 +86,8 @@ int find_second_letter(char word[], int End[2], int x, int y)
 	return 1;
 }
 
-
+// solve the grid by finding the first letter of the word and 
+// calling the other functions to find the rest of the word
 int solve_grid(char word[], int Start[2],int End[2])
 {
 	for(size_t x = 0; x<grid_len_x; x++)
@@ -101,7 +106,7 @@ int solve_grid(char word[], int Start[2],int End[2])
 	return 1;
 }
 
-
+// read the grid in the file and transform it into a matrix
 int read_grid(char filename[])
 {
 	FILE *fichier = fopen(filename,"r");
@@ -130,7 +135,7 @@ int read_grid(char filename[])
 
 	return 0;
 }
-
+// main function, read the grid file and resolve the grid with the input word
 int solver(char word[])
 {
 	
@@ -155,7 +160,7 @@ int solver(char word[])
 
 	return 0;
 }
-
+//main function only for debug (remove it!)
 int main(int argc, char *argv[])
 {
 	if(argc<2)
