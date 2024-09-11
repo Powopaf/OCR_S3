@@ -8,9 +8,11 @@ typedef struct
 {
     double x;
     double y;
-	int Safe;
+	double pos[2];
+	double Safe[2];
 } DataPoint;
 
 void NewDataPoint(DataPoint *p, double x, double y);
-int Safe(DataPoint *p);
+void Safe(DataPoint *p);
+
 #endif

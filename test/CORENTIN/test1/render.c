@@ -62,7 +62,8 @@ int main() {
     SDL_RenderClear(renderer);
 
     // Dessiner des points
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Couleur des points (bleu)
+	int in[3] = {2,3,2};
+	initNeuralNetwork(in,3);
 	init();
 	
 	for(int i = 0; i<1000; i++)
@@ -70,7 +71,8 @@ int main() {
 		for(int j = 0; j<1000; j++)
 		{
 			SDL_Color color = {200,0,0,100};
-			if(Classify((double)i,(double)j)==0)
+			double input = {(double)i,(double)j};
+			if(Classify(&input)==0)
 				color = (SDL_Color){125, 216, 230,100};
 			drawFilledRectangle(renderer,i,j,1,1,color);
 		}
@@ -81,6 +83,9 @@ int main() {
 	{
 		DataPoint p = Sample[i];
 		drawPoint(renderer,p.x,p.y,pointSize,p.Safe);
+		double input = {(double)p.x,(double)p.y};
+		printf("Clasify: %i, Safe: %i\n",Classify(&input),p.Safe);
+
 	}
 	
 

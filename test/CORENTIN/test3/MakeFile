@@ -1,0 +1,2 @@
+NeuralNetwork: NeuralNetwork.c DataPoint.c
+	gcc NeuralNetwork.c DataPoint.c -o NeuralNetwork -lm
