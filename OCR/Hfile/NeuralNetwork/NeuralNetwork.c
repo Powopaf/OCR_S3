@@ -1,7 +1,7 @@
 #include "NeuralNetwork.h"
 
 #define nbInputs 2
-#define nbHiddenNodes 10
+#define nbHiddenNodes 3
 #define nbOutputs 2
 #define nbTrainingSets 100
 #define nbOfEpochs 10000
@@ -42,6 +42,8 @@ int main()
 
     double hiddenWeights[nbInputs][nbHiddenNodes];
     double outputWeights[nbHiddenNodes][nbInputs];
+	
+	double totalError = 0.0;
 
 	//generate training sets
 	DataPoint TrainingSets[nbTrainingSets];
@@ -73,6 +75,8 @@ int main()
 	//training
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
+		totalError = 0.0;
+
 		for (int x = 0; x<nbTrainingSets; x++)
 		{
 			DataPoint p = TrainingSets[x];
@@ -117,6 +121,7 @@ int main()
 			for(int j = 0; j<nbOutputs; j++)
 			{
 				double error = (p.Safe[j] - outputLayer[j]);
+				totalError += error*error;
 				deltaOutput[j] = error * dsigmoid(outputLayer[j]);
 			}
 			
@@ -192,7 +197,9 @@ int main()
         printf("%f ", outputLayerBias[i]);
 	printf("\n");
 
-	
+	double meanSquaredError = totalError / (nbTrainingSets * nbOutputs);
+    printf("Final MSE: %f\n", meanSquaredError);
+
 	return 0;
 }
 
