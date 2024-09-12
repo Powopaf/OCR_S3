@@ -1,14 +1,15 @@
 #include "NeuralNetwork.h"
 
 #define nbInputs 2
-#define nbHiddenNodes 3
+#define nbHiddenNodes 10
 #define nbOutputs 2
 #define nbTrainingSets 100
+#define nbOfEpochs 10000
 
 //lib
 double init_weights()
 {
-    return ((double)rand()) / ((double)RAND_MAX);
+    return ((double)rand() / RAND_MAX) * sqrt(1.0 / nbInputs);
 }
 
 double sigmoid(double x)
@@ -34,7 +35,7 @@ int main()
 	const double LearningRate = 0.1f;
 
     double hiddenLayer[nbHiddenNodes];
-    double outputLayer[nbOutputs] = {0};
+    double outputLayer[nbOutputs];
 
     double hiddenLayerBias[nbHiddenNodes];
     double outputLayerBias[nbOutputs];
@@ -47,8 +48,8 @@ int main()
 	for(int i = 0; i<nbTrainingSets; i++)
 	{
 		DataPoint p;
-		double x = generateRandomDouble(0.0,100.0);
-		double y = generateRandomDouble(0.0,100.0);
+		double x = generateRandomDouble(0.0,1.0);
+		double y = generateRandomDouble(0.0,1.0);
 		NewDataPoint(&p,x,y);
 		TrainingSets[i] = p;
 
@@ -70,7 +71,6 @@ int main()
     }
 
 	//training
-	int nbOfEpochs = 10000;
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
 		for (int x = 0; x<nbTrainingSets; x++)
@@ -89,8 +89,8 @@ int main()
 				}
 
 				hiddenLayer[j] = sigmoid(activation);
-
 			}
+			//printf("HiddelLayer: %f,%f,%f,%f\n",hiddenLayer[0],hiddenLayer[1],hiddenLayer[2],0.0);//hiddenLayer[3]);
 
 			//comute output layer activation
             for(int j = 0; j<nbOutputs; j++)
@@ -106,6 +106,7 @@ int main()
             }
 
 			printf("Input: %f,%f  Output: %f,%f  Expected: %f,%f\n",p.x,p.y,outputLayer[0],outputLayer[1],p.Safe[0],p.Safe[1]);
+			//printf("4HiddenNodes  HiddenLayer: %f, HiddenWeight: %f, HiddenLayerBias: %f\n",hiddenLayer[3],hiddenWeights[0][3],hiddenLayerBias[3]);
 
 			// Backprop
 

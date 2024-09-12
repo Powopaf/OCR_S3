@@ -11,12 +11,12 @@ void NewDataPoint(DataPoint *p, double x, double y)
 
 void Safe(DataPoint *p)
 {
-	double X = p->x/10.0;
+	double X = p->x;
 	double Y = p->y;
 
-	double f = -0.1*pow(X,4) - 0.1*pow(X,3) + pow(X,2) + 2;
+	double f = -pow(X,2) + 0.8;
 
-	if(Y<f*10.0)
+	if(Y<f)
 	{
 		p->Safe[0] = 1.0;
 		p->Safe[1] = 0.0;

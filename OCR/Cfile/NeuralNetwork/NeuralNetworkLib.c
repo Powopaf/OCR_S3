@@ -11,4 +11,3 @@ double dsigmoid(double x)
 {
     return x * (1 - x);
 }
-
