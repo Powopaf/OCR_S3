@@ -1,4 +1,4 @@
-#include "../../Hfile/NeuralNetwork.h"
+#include "NeuralNetwork.h"
 
 //sigmoid function
 double sigmoid(double x)
@@ -11,3 +11,9 @@ double dsigmoid(double x)
 {
     return x * (1 - x);
 }
+
+double init_weights()
+{
+    return ((double)rand() / RAND_MAX);
+}
+

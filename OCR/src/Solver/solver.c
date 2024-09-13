@@ -1,4 +1,4 @@
-#include "../../Hfile/Solver/solver.h"
+#include "solver.h"
 
 //variable global
 char filename[] = "grid";

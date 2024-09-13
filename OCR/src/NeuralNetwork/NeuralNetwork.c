@@ -6,29 +6,6 @@
 #define nbTrainingSets 100
 #define nbOfEpochs 10000
 
-//lib
-double init_weights()
-{
-    return ((double)rand() / RAND_MAX) * sqrt(1.0 / nbInputs);
-}
-
-double sigmoid(double x)
-{
-    return 1.0 / (1.0 + exp(-x));
-}
-
-double dsigmoid(double x)
-{
-    return x * (1.0 - x);
-}
-
-double generateRandomDouble(double min, double max)
-{
-    double random = (double)rand() / RAND_MAX;
-    return min + random * (max - min);
-}
-//---
-
 int main()
 {
 	//variable
@@ -50,8 +27,8 @@ int main()
 	for(int i = 0; i<nbTrainingSets; i++)
 	{
 		DataPoint p;
-		double x = generateRandomDouble(0.0,1.0);
-		double y = generateRandomDouble(0.0,1.0);
+		double x = init_weights();
+		double y = init_weights();
 		NewDataPoint(&p,x,y);
 		TrainingSets[i] = p;
 
