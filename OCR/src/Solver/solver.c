@@ -74,9 +74,14 @@ int find_second_letter(char word[], int End[2], int x, int y)
 				//printf("l(%i,%i):%c\n",i,j,grid[i][j]);
 				if(grid[i][j]==word[1])
 				{
-					if(find_word(word,End,i,j,i-x,j-y)==0)
+					int nx = i+(i-x)*(len(word)-2);
+					int ny = j+(j-y)*(len(word)-2);
+					if((nx>=0 && nx<grid_len_x) && (ny>=0 && ny<grid_len_y))
 					{
-						return 0;
+						if(find_word(word,End,i,j,i-x,j-y)==0)
+						{
+							return 0;
+						}
 					}
 				}
 			}
