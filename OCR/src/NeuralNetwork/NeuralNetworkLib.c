@@ -79,7 +79,7 @@ double ReadDouble(char str[])
         } 
 		else 
 		{
-            err(1,"the value is not a double: %c\n",str[i]);
+            err(1,"the value is not a double: %c, dans la chaine: %s\n",str[i],str);
         }
         i++;
     }
@@ -115,7 +115,107 @@ void MallocMatrix(double ***arr, int sizex, int sizey)
 	}
 }
 
+char** Split(char *str, int* size) 
+{
+	// Count how many tokens (substrings) will be created
+	const char delimiter = '|';
+    char* strCopy = strdup(str);  // Duplicate the string as strtok modifies it
+    char* token = strtok(strCopy, &delimiter);
+    int count = 0;
 
+    // Count the number of tokens
+    while (token != NULL) {
+        count++;
+        token = strtok(NULL, &delimiter);
+    }
+
+    // Allocate memory for the array of strings
+    char** result = (char**)malloc(count * sizeof(char*));
+
+    // Reset the strCopy for the actual token extraction
+    strcpy(strCopy, str);
+    token = strtok(strCopy, &delimiter);
+    int index = 0;
+
+    // Extract the tokens and store them in result
+    while (token != NULL) {
+        result[index++] = strdup(token);
+        token = strtok(NULL, &delimiter);
+    }
+
+	*size = count;
+
+    free(strCopy);  // Free the temporary copy of the string
+
+    return result;
+}
+
+void LoadData(char filename[],double **hiddenLayerBias, double **outputLayerBias, double ***hiddenWeights, double ***outputWeights, int *nbInputs, int *nbHiddenNodes, int *nbOutputs, double *LearningRate)
+{
+	FILE *file = fopen(filename,"r");
+
+	if(file == NULL)
+	{
+		err(1,"Error opening file %s\n",filename);
+	}
+
+	char line[256]; //buffer for stock each line
+
+	fgets(line, sizeof(line), file);
+	int size = 0;
+	char **arr = Split(line,&size);
+	*nbInputs = ReadInt(arr[0]);
+	*nbHiddenNodes = ReadInt(arr[1]);
+	*nbOutputs = ReadInt(arr[2]);
+	*LearningRate = ReadDouble(arr[3]);
+
+	fgets(line, sizeof(line), file);// skip the first comment
+	fgets(line, sizeof(line), file);// Hidden Bias;
+	arr = Split(line,&size);
+	MallocArray(hiddenLayerBias,*nbHiddenNodes);
+	for(int i = 0; i<*nbHiddenNodes; i++)
+	{
+		(*hiddenLayerBias)[i] = ReadDouble(arr[i]);
+	}
+	MallocMatrix(hiddenWeights,*nbInputs,*nbHiddenNodes);
+	for(int i = 0; i<*nbInputs; i++)
+	{
+		if(fgets(line, sizeof(line), file) == NULL)
+        {
+            err(1,"Error data is not in the correct format");
+		}
+		arr = Split(line,&size);
+		for(int j = 0; j<*nbHiddenNodes; j++)
+		{
+			(*hiddenWeights)[i][j] = ReadDouble(arr[j]);
+		}
+	}
+
+
+	fgets(line, sizeof(line), file);// skip the second comment
+    fgets(line, sizeof(line), file);// Output Bias;
+    arr = Split(line,&size);
+    MallocArray(outputLayerBias,*nbOutputs);
+    for(int i = 0; i<*nbOutputs; i++)
+    {
+        (*outputLayerBias)[i] = ReadDouble(arr[i]);
+    }
+    MallocMatrix(outputWeights,*nbHiddenNodes,*nbOutputs);
+    for(int i = 0; i<*nbHiddenNodes; i++)
+    {
+        if(fgets(line, sizeof(line), file) == NULL)
+        {
+            err(1,"Error data is not in the correct format");
+        }
+        arr = Split(line,&size);
+        for(int j = 0; j<*nbOutputs; j++)
+        {
+            (*outputWeights)[i][j] = ReadDouble(arr[j]);
+        }
+    }
+
+	fclose(file);
+}
 
 void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate)
 {
@@ -128,7 +228,7 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
 		err(1,"Error opening file %s\n",filename);
 	}
 
-	fprintf(file,"%i|%i|%i|%f\n",nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+	fprintf(file,"%i|%i|%i|%f|\n",nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
 	fprintf(file,"%s",com1);
 
 	for(int i = 0; i<nbHiddenNodes; i++)
