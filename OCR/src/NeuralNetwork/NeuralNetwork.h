@@ -12,6 +12,10 @@ double sigmoid(double x);
 double dsigmoid(double x);
 double init_weights();
 
-int ReadInt(const char *chaine);
-double ReadDouble(const char *chaine); 
+int ReadInt(char str[]);
+double ReadDouble(char str[]); 
+
+void MallocArray(double **arr,int size);
+void MallocMatrix(double ***arr, int sizex, int sizey);
+
 #endif

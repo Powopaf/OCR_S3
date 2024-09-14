@@ -1,7 +1,7 @@
 #include "NeuralNetwork.h"
 
 #define nbInputs 2
-#define nbHiddenNodes 3
+#define nbHiddenNodes 2
 #define nbOutputs 2
 #define nbTrainingSets 100
 #define nbOfEpochs 10000
@@ -14,11 +14,15 @@ int main()
     double hiddenLayer[nbHiddenNodes];
     double outputLayer[nbOutputs];
 
-    double hiddenLayerBias[nbHiddenNodes];
-    double outputLayerBias[nbOutputs];
+    double *hiddenLayerBias;
+	MallocArray(&hiddenLayerBias,nbHiddenNodes);
+    double *outputLayerBias;
+	MallocArray(&outputLayerBias,nbOutputs);
 
-    double hiddenWeights[nbInputs][nbHiddenNodes];
-    double outputWeights[nbHiddenNodes][nbInputs];
+    double **hiddenWeights;
+	MallocMatrix(&hiddenWeights,nbInputs,nbHiddenNodes);
+    double **outputWeights;
+	MallocMatrix(&outputWeights,nbHiddenNodes,nbInputs);
 	
 	double totalError = 0.0;
 
@@ -36,6 +40,18 @@ int main()
 	}
 	
 	//set all weights and bias to random value
+/*	for(int i = 0; i<nbInputs; i++)
+    {
+        for(int j = 0; j<nbHiddenNodes; j++)
+        {
+            hiddenWeights[i][j] = init_weights();
+        }
+    }
+*/
+    for(int i = 0; i<nbOutputs; i++)
+    {
+        outputLayerBias[i] = init_weights();
+    }
 	for(int i = 0; i<nbInputs; i++)
     {
         for(int j = 0; j<nbHiddenNodes; j++)
@@ -44,10 +60,6 @@ int main()
         }
     }
 
-    for(int i = 0; i<nbOutputs; i++)
-    {
-        outputLayerBias[i] = init_weights();
-    }
 
 	//training
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
