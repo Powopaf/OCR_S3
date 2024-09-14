@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+#include "../NeuralNetwork.h"
 
 #define nbInputs 2
 #define nbHiddenNodes 3
@@ -6,8 +6,7 @@
 #define nbTrainingSets 100
 #define nbOfEpochs 10000
 
-
-int main()
+void train()
 {
 	//variable
 	const double LearningRate = 0.1f;
@@ -15,11 +14,15 @@ int main()
     double hiddenLayer[nbHiddenNodes];
     double outputLayer[nbOutputs];
 
-    double hiddenLayerBias[nbHiddenNodes];
-    double outputLayerBias[nbOutputs];
+    double *hiddenLayerBias;
+	MallocArray(&hiddenLayerBias,nbHiddenNodes);
+    double *outputLayerBias;
+	MallocArray(&outputLayerBias,nbOutputs);
 
-    double hiddenWeights[nbInputs][nbHiddenNodes];
-    double outputWeights[nbHiddenNodes][nbInputs];
+    double **hiddenWeights;
+	MallocMatrix(&hiddenWeights,nbInputs,nbHiddenNodes);
+    double **outputWeights;
+	MallocMatrix(&outputWeights,nbHiddenNodes,nbOutputs);
 	
 	double totalError = 0.0;
 
@@ -72,7 +75,6 @@ int main()
 
 				hiddenLayer[j] = sigmoid(activation);
 			}
-			//printf("HiddelLayer: %f,%f,%f,%f\n",hiddenLayer[0],hiddenLayer[1],hiddenLayer[2],0.0);//hiddenLayer[3]);
 
 			//comute output layer activation
             for(int j = 0; j<nbOutputs; j++)
@@ -88,7 +90,6 @@ int main()
             }
 
 			printf("Input: %f,%f  Output: %f,%f  Expected: %f,%f\n",p.x,p.y,outputLayer[0],outputLayer[1],p.Safe[0],p.Safe[1]);
-			//printf("4HiddenNodes  HiddenLayer: %f, HiddenWeight: %f, HiddenLayerBias: %f\n",hiddenLayer[3],hiddenWeights[0][3],hiddenLayerBias[3]);
 
 			// Backprop
 
@@ -141,6 +142,9 @@ int main()
 
     }
 	
+
+	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+
 	//final 
 	printf("\n");
 
@@ -178,9 +182,14 @@ int main()
 	double meanSquaredError = totalError / (nbTrainingSets * nbOutputs);
     printf("Final MSE: %f\n", meanSquaredError);
 
-	return 0;
 }
 
+
+int main()
+{
+	train();
+	return 0;
+}
 
 
 
