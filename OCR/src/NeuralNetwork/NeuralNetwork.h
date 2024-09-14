@@ -18,4 +18,6 @@ double ReadDouble(char str[]);
 void MallocArray(double **arr,int size);
 void MallocMatrix(double ***arr, int sizex, int sizey);
 
+void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate);
+
 #endif

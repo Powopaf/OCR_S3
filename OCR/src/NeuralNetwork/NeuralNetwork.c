@@ -1,7 +1,7 @@
 #include "NeuralNetwork.h"
 
 #define nbInputs 2
-#define nbHiddenNodes 2
+#define nbHiddenNodes 3
 #define nbOutputs 2
 #define nbTrainingSets 100
 #define nbOfEpochs 10000
@@ -22,7 +22,7 @@ int main()
     double **hiddenWeights;
 	MallocMatrix(&hiddenWeights,nbInputs,nbHiddenNodes);
     double **outputWeights;
-	MallocMatrix(&outputWeights,nbHiddenNodes,nbInputs);
+	MallocMatrix(&outputWeights,nbHiddenNodes,nbOutputs);
 	
 	double totalError = 0.0;
 
@@ -152,6 +152,9 @@ int main()
 
     }
 	
+
+	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+
 	//final 
 	printf("\n");
 

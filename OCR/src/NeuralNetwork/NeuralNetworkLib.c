@@ -114,3 +114,55 @@ void MallocMatrix(double ***arr, int sizex, int sizey)
 		}
 	}
 }
+
+
+
+void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate)
+{
+	FILE *file = fopen(filename,"w");
+	const char com1[] = "// Hidden layer data, first line for bias, others for weights\n";
+	const char com2[] = "// Output layer data, first line for bias, others for weights\n";
+
+	if(file == NULL)
+	{
+		err(1,"Error opening file %s\n",filename);
+	}
+
+	fprintf(file,"%i|%i|%i|%f\n",nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+	fprintf(file,"%s",com1);
+
+	for(int i = 0; i<nbHiddenNodes; i++)
+	{
+		fprintf(file,"%f|",hiddenLayerBias[i]);
+	}
+	fprintf(file,"\n");
+
+	for(int i = 0; i<nbInputs; i++)
+	{
+		for(int j = 0; j<nbHiddenNodes; j++)
+		{
+			fprintf(file,"%f|",hiddenWeights[i][j]);
+		}
+		fprintf(file,"\n");
+	}
+	
+	fprintf(file,"%s",com2);
+
+	for(int i = 0; i<nbOutputs; i++)
+    {
+        fprintf(file,"%f|",outputLayerBias[i]);
+    }
+    fprintf(file,"\n");
+
+    for(int i = 0; i<nbHiddenNodes; i++)
+    {
+        for(int j = 0; j<nbOutputs; j++)
+        {
+            fprintf(file,"%f|",outputWeights[i][j]);
+        }
+        fprintf(file,"\n");
+    }
+
+	fclose(file);
+}
+
