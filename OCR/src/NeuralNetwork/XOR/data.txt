@@ -1,0 +1,10 @@
+2|3|1|0.100000|
+// Hidden layer data, first line for bias, others for weights
+-2.663199|-4.328027|-3.505142|
+6.115339|2.657797|2.365352|
+6.048980|2.895729|2.103886|
+// Output layer data, first line for bias, others for weights
+-3.109705|
+8.503615|
+-5.970409|
+-5.095730|

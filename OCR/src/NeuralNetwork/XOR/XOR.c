@@ -1,9 +1,5 @@
 #include "../NeuralNetwork.h"
 
-#define nbTrainingSets 100
-#define nbOfEpochs 10000
-
-
 void compute(double InputsLayer[], double outputLayer[])
 {
 
@@ -87,15 +83,10 @@ void compute(double InputsLayer[], double outputLayer[])
 
 int main()
 {
-
-	DataPoint p;
-	double x = init_weights();
-	double y = init_weights();
-	NewDataPoint(&p,x,y);
-	double output[2];
-	compute(p.pos,output);
-	printf("Output: %f,%f\n",output[0],output[1]);
-	printf("Expected: %f,%f\n",p.Safe[0],p.Safe[1]);
+	double input[2] = {1.0,0.0};
+	double output[1];
+	compute(input,output);
+	printf("Output: %f\n",output[0]);
 	return 0;
 }
 
