@@ -8,6 +8,7 @@
 - \*.c = \*.h
 - 80 caractères **__max__** par ligne
 - eviter les fichier c de +200 lignes
+- mettre .out sur les exécutable
 
 ### GITHUB
 
