@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 #include <SDL2/SDL.h>
 #include <err.h>
-=======
-#include "../PretreatmentLib.h"
->>>>>>> a86d68505a0dd05609d92934362b8f3d0fbd56c2
 
 void sdl_setup() {
     // we can add arguements if needed
