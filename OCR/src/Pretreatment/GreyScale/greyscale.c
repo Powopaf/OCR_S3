@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     sdl_setup();
     SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
     greyscale(surface);
+    SDL_SaveBMP(surface, "img.bmp");
     SDL_FreeSurface(surface);
     sdl_close();
 }
