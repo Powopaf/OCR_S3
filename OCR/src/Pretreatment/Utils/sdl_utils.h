@@ -1,3 +1,5 @@
+#pragma once
+
 void sdl_setup();
 
 void sdl_close();
