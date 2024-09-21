@@ -4,8 +4,7 @@
 // to run greyscale only //
 //////////////////////////
 
-#include "../Utils/sdl_utils.h"
-#include "../Utils/convert.h"
+#include "../PretreatmentLib.h"
 ////////////////////////////////
 
 

@@ -1,7 +1,4 @@
-#include "convert.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include "../PretreatmentLib.h"
 
 void convert(const char* path){	//path MUST end with the impg.png file
 	char prefix[] = "convert ";	//part before the path in command
