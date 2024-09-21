@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+
 void sdl_setup() {
     // we can add arguements if needed
     if(SDL_Init(SDL_INIT_VIDEO)) {
@@ -19,5 +20,5 @@ void drawline(SDL_Renderer *renderer,
      * r,g,b -> the color of the line
      */
     SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-    SDL_RenderDrawline(renderer, x1, y1, x2, y2);
+    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }
