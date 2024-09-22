@@ -28,7 +28,7 @@ void greyscale(SDL_Surface *surface) {
     }
     SDL_UnlockSurface(surface);
 }
-//remove to run project un comment to test greyscale
+//comment to run project uncomment to test greyscale
 int main(int argc, char* argv[]) {
     convert(argv[1]);
     sdl_setup();
