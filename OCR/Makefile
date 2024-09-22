@@ -22,5 +22,5 @@ greyscale: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -c $<
 
 clean:
-	rm $(OBJ) $(BIN)
+	rm $(OBJ) $(BIN) *.bmp
 
