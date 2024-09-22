@@ -9,6 +9,7 @@
 - 80 caractères **__max__** par ligne
 - eviter les fichier c de +200 lignes
 - mettre .out sur les exécutable
+- put .png file un /photo directory
 
 ### GITHUB
 

@@ -53,5 +53,3 @@ dkms.conf
 
 # image file
 *.bmp
-*.png
-/photo
