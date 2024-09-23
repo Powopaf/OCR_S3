@@ -1,13 +1,79 @@
 #include <SDL2/SDL.h>
 #include <err.h>
-///////////////////////////
+#include <math.h>
+///////////////////////
 // to run noise only //
-//////////////////////////
+///////////////////////
 #include "../Utils/sdl_utils.h"
 ////////////////////////////////
+#define kernel_size 5
+#define sigma 1.0
 
 
-Uint8 Median(Uint8* pixel_list, int size)
+void generate_gaussian_kernel(double kernel[kernel_size][kernel_size])
+{
+    int half_size = kernel_size/2;
+    double sum = 0;
+
+    for(int i = -half_size; i<=half_size; i++)
+    {
+        for(int j = -half_size; j<=half_size; j++)
+        {
+            kernel[i+half_size][j+half_size] = exp(-(i*i+j*j)/(2*sigma*sigma))/(2*M_PI*sigma*sigma);
+            sum+=kernel[i+half_size][j+half_size];
+        }
+    }
+
+    // Normalize the kernel value
+    for(int i = 0; i<kernal_size; i++)
+    {
+        for(int j = 0; j<kernel_size; j++)
+        {
+            kernel[i][j] /= somme;
+        }
+    }
+}
+
+void gauss_filter(SDL_Surface *surface)
+{
+    SDL_PixelFormat* format = surface->format;
+    int width = surface->w;
+    int height = surface->h;
+    int p = surface->pitch;
+    int bpp = format->BytesPerPixel;
+    Uint8* pix = (Uint8*)surface->pixels;
+    SDL_LockSurface(surface);
+    
+    double kernel[kernel_size][kernel_size];
+    generate_gaussian_kernel(kernel);
+    int half_size = kernel_size/2;
+
+    //start at 1 and go to size - 1 for skip the border
+    for(int j = half_size; j < height - half_size; j++) 
+    {
+        for(int i = half_size; i < width - half_size; i++) 
+        {
+            // Fill the pixel_list with the 8 pixels around the pixel
+            double newValue = 0.0;
+            for(int dj = -half_size; dj<=hlaf_size; dj++)
+            {
+                for(int di = -half_size; di<=half_size; di++)
+                {
+                    Uint8* pixel = pix + j * p + i * bpp;
+                    newValue +=kernel[i+half_size][j+half_size]*pixel[0];
+                }
+            }
+
+            Uint8* pixel = pix + j * p + i * bpp;
+            Uint8 newGrey = newValue;
+            pixel[0] = newGrey;
+        }
+    }
+    SDL_UnlockSurface(surface);
+}
+
+
+Uint8 Median(Uint8* pixel_list, int size) 
 {
     //scans the 8 pixels around the pixel and return the median pixel
     for(int i = 0; i<size; i++)
