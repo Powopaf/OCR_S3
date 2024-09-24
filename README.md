@@ -21,4 +21,6 @@
 ### TUTO GIT
 
 * Créer sa branche
-    * test
+    * git branch <nom>
+    * git checkout <nom>
+    * git push --set-upstream origin <nom>
