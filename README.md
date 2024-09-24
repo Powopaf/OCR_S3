@@ -18,4 +18,7 @@
 - suprimer la branche une fois merge
 - lors du premier push sur une branche faire une pull request
 
+### TUTO GIT
 
+* Créer sa branche
+ * test   
