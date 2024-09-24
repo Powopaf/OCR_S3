@@ -32,7 +32,7 @@
         1. 
             ![](photoREADME/newpull.png "")
         
-        2. 
+        2. metre dans base: le main et dans compare la branche créé
             ![](photoREADME/select.png "")
         
         3. 
@@ -51,8 +51,13 @@
       dessous
         
         1.
+        
             ![](photoREADME/squash.png "")
 
         2.
+        
             ![](photoREADME/delete.png "")
+
+        3. `git checkout main`
+        4. `git branch -d <nom>
 * Faire d'autre choses
