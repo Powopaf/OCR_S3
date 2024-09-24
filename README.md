@@ -11,8 +11,11 @@
 - mettre .out sur les exécutable
 - put .png file un /photo directory
 
-### GITHUB
+### GITHUB REGLES
 
-- 1 feature = 1 branches (git branch nom_de_la_branche)
+- 1 feature = 1 branches
 - merge via le site
 - suprimer la branche une fois merge
+- lors du premier push sur une branche faire une pull request
+
+
