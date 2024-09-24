@@ -28,7 +28,7 @@
     * créer une pull request comme ça on garde un suivie de la branche sur git
       et ont peut faire des commentaires si besoin
     * se fait directement sur le site
-        * ![Étape 0](photoREADME/newpull.png "")
+        * ![](photoREADME/newpull.png "Étape 0")
         * ![Étape 1](photoREADME/select.png "")
         * ![Étape 2](photoREADME/create.png "")
         * ![Étape 3](photoREADME/createoff.png "")
