@@ -28,12 +28,31 @@
     * créer une pull request comme ça on garde un suivie de la branche sur git
       et ont peut faire des commentaires si besoin
     * se fait directement sur le site
-    \\
-        1. ![](photoREADME/newpull.png "")
-        \\
-        2. ![](photoREADME/select.png "")
-        \\
-        3. ![](photoREADME/create.png "")
-        \\
-        4. ![](photoREADME/createoff.png "")
-        \\
+    
+        1. 
+            ![](photoREADME/newpull.png "")
+        
+        2. 
+            ![](photoREADME/select.png "")
+        
+        3. 
+            ![](photoREADME/create.png "")
+        
+        4. 
+            ![](photoREADME/createoff.png "")
+* Dev :
+    * `git status` (on ne sait jamais)
+    * `git add <nom de fichier>` ou `git add .` pour tout d'un coup
+    * `git commit -m "mon message"`
+        * mettre se que l'ont a fait dans le message du commit
+    * `git push`
+* Fin du Dev
+    * Squash and merge la branche et la delete comme montré avec les photos si
+      dessous
+        
+        1.
+            ![](photoREADME/squash.png "")
+
+        2.
+            ![](photoREADME/delete.png "")
+* Faire d'autre choses
