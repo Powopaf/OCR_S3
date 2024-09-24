@@ -21,6 +21,6 @@
 ### TUTO GIT
 
 * Créer sa branche
-    * git branch <nom>
+    * `git branch <nom>`
     * git checkout <nom>
     * git push --set-upstream origin <nom>
