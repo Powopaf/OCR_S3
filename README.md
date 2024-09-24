@@ -51,11 +51,9 @@
       dessous
         
         1.
-        
             ![](photoREADME/squash.png "")
 
         2.
-        
             ![](photoREADME/delete.png "")
 
         3. `git checkout main`
