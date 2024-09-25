@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="window">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">CLAPS Word Search OCR</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="icon-name">edit-select-all</property>
+    <child>
+      <object class="GtkFixed" id="fixed">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkLabel" id="label_title">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="label" translatable="yes">CLAPS Word Search OCR</property>
+            <property name="justify">center</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Bold 10"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">130</property>
+            <property name="y">30</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_import">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <attributes>
+              <attribute name="foreground" value="#5e5e5c5c6464"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">85</property>
+            <property name="y">218</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="image">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="double-buffered">False</property>
+            <property name="stock">gtk-harddisk</property>
+            <property name="icon_size">6</property>
+          </object>
+          <packing>
+            <property name="x">170</property>
+            <property name="y">70</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFileChooserButton" id="button_import">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="tooltip-text" translatable="yes">Import a word search picture to solve it</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="create-folders">False</property>
+            <property name="local-only">False</property>
+            <property name="title" translatable="yes">Import</property>
+            <signal name="selection-changed" handler="on_button_import_clicked" swapped="no"/>
+            <signal name="update-preview" handler="on_button_import_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">191</property>
+            <property name="y">182</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
