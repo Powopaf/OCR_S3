@@ -57,5 +57,5 @@
             ![](photoREADME/delete.png "")
 
         3. `git checkout main`
-        4. `git branch -d <nom>
+        4. `git branch -d <nom>`
 * Faire d'autre choses
