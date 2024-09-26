@@ -5,14 +5,14 @@ DEBUG=-g
 LIB=-lSDL2
 
 SRC=\
-	flou.c
+	blur.c
 
 OBJ= $(SRC:.c=.o)
 
 BIN=\
-	flou.out
+	blur.out
 
-flou: $(OBJ)
+blur: $(OBJ)
 	$(CC) -o $(BIN) $+ $(LIB)
 
 %.o: %.c

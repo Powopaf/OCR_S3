@@ -9,13 +9,19 @@
 
 
 void greyscale(SDL_Surface *surface) {
+    
+    //init variable to check each pixels
     SDL_PixelFormat* format = surface->format;
     int width = surface->w;
     int height = surface->h;
     int p = surface->pitch;
     int bpp = format->BytesPerPixel;
     Uint8* pix = (Uint8*)surface->pixels;
+    
+    //lock to protect memory
     SDL_LockSurface(surface);
+    
+    //inside the imgae (.bmp)
     for(int j = 0; j < height; j++) {
         for(int i = 0; i < width; i++) {
             Uint8* pixel = pix + j * p + i * bpp; // magic line
@@ -25,7 +31,10 @@ void greyscale(SDL_Surface *surface) {
             pixel[2] = grey;
         }
     }
+    
+    //unlock when finish
     SDL_UnlockSurface(surface);
+    printf("Greyscale : success\n");
 }
 //comment to run project uncomment to test greyscale
 /*int main(int argc, char* argv[]) {
