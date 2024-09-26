@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     sdl_setup();
     SDL_Surface* surface = SDL_LoadBMP("img.bmp");
     NoiseReduction(surface);
-    NoiseReductionGaussian(surface);
+    //NoiseReductionGaussian(surface);
     SDL_SaveBMP(surface, "imgNoise.bmp");
     SDL_FreeSurface(surface);
     sdl_close();
