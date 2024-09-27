@@ -7,20 +7,44 @@
 
 
 void blurring(SDL_Surface* surface) {
+    /*
+     * this function should be use AFTER greyscale()
+    */
     SDL_PixelFormat* format = surface->format;
     int p = surface->pitch;
     int bpp = format->BytesPerPixel;
     Uint8* pix = (Uint8*)surface->pixels;
+    int width = surface->w;
+    int height = surface->h;
     SDL_LockSurface(surface);
-    for (int i = 1; i < surface->h - 1; i++) {
-        for (int j = 1; j < surface->w - 1; j++) {
-            Uint8* pixel = pix + i * p + j * bpp; //get current pixel
-            //do thing
+    for (int i = 1; i < height - 1; i++) {
+        for (int j = 1; j < width - 1; j++) {
+            int x = i * p;
+            int y = j * bpp;
+            Uint8* pixel = pix + x + y;
+            Uint8* side_pixels[16] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+            //to access the pixel aroud the current
+            side_pixels[0] = pixel - width * bpp - 1;   // 0 1 2
+            side_pixels[1] = pixel - width * bpp;       // 3 c 4
+            side_pixels[2] = pixel - width * bpp + 3;   // 5 8 7
+            side_pixels[3] = pixel - 1;
+            side_pixels[4] = pixel + 3;
+            side_pixels[5] = pixel + width * bpp - 3;
+            side_pixels[6] = pixel + width * bpp;
+            side_pixels[7] = pixel + width * bpp + 1;
+            Uint8* moy = 0;
+            for (size_t i = 0; i < 8; i++) {
+                moy = moy + side_pixels[i];
+            }
+            moy = moy / 8;
+            pixel[0] = moy;
+            pixel[1] = moy;
+            pixel[2] = moy;
         }
     }
     SDL_UnlockSurface(surface);
-    printf("blurring image sucess");
 }
+    
 
 
 //comment to run project uncomment to run blurring()
