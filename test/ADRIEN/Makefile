@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Werror -Wvla -pedantic -std=c99
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99
 
 LD=gcc
 LDFLAGS=-g

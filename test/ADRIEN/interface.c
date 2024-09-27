@@ -2,7 +2,6 @@
 
 //#include <stdlib.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkx.h>
 
 // Make objects global variables
 GtkBuilder *builder;
@@ -31,11 +30,11 @@ int main(int argc, char *argv[])
     gtk_builder_connect_signals(builder, NULL);
     
     //Pointers for GTK objects
-    fixed = GTK_WIDGET(gtk_builder_get_object(builder, "fixed"));
-    button_import = GTK_WIDGET(gtk_builder_get_object(builder, "button_import"));
-    label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
-    label_title = GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
-	image = GTK_WIDGET(gtk_builder_get_object(builder,"image"));
+    fixed= GTK_WIDGET(gtk_builder_get_object(builder,"fixed"));
+    button_import= GTK_WIDGET(gtk_builder_get_object(builder,"button_import"));
+    label_import= GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
+    label_title= GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
+    image= GTK_WIDGET(gtk_builder_get_object(builder,"image"));
 
     gtk_widget_show(window);
     gtk_main();
@@ -44,7 +43,8 @@ int main(int argc, char *argv[])
 
 void on_button_import_clicked(GtkButton *b)
 {
-    gtk_label_set_text(GTK_LABEL(label_import), (const gchar* ) "Import image from device files");
+    gtk_label_set_text(GTK_LABEL(label_import),(const gchar*)
+    "Import image from device files");
     
     //GtkWidget *dialog;
     //dialog = gtk_file_chooser_dialog_new("Import image from device files", GTK_WINDOW(window),
@@ -54,10 +54,10 @@ void on_button_import_clicked(GtkButton *b)
     
     
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
-	gchar *filename = gtk_file_chooser_get_filename(chooser);
+    gchar *filename = gtk_file_chooser_get_filename(chooser);
     
     //gchar *filename = gtk_file_chooser_get_filename(button_import("Import image from device files"));
-	//gchar *filename = gtk_file_chooser_get_current_name(button_import);
-	gtk_image_set_from_file(GTK_IMAGE(image),filename);
-	g_free(filename);
+    //gchar *filename = gtk_file_chooser_get_current_name(button_import);
+    gtk_image_set_from_file(GTK_IMAGE(image),filename);
+    g_free(filename);
 }
