@@ -5,7 +5,9 @@ DEBUG=-g
 LIB=-lSDL2
 
 SRC=\
-	blur.c
+	blur.c \
+	../Utils/sdl_utils.c \
+	../Utils/convert.c
 
 OBJ= $(SRC:.c=.o)
 
