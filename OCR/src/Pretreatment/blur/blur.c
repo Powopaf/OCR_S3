@@ -53,9 +53,13 @@ int main(int argc, char* argv[]) {
     convert(argv[1]);
     sdl_setup();
     SDL_Surface* surface = SDL_LoadBMP("img.bmp");
-    //greyscale(surface);
-    SDL_SaveBMP(surface, "blur.bmp");
+    greyscale(surface);
+    SDL_SaveBMP(surface, "grey.bmp");
     SDL_FreeSurface(surface);
+    SDL_Surface* surf = SDL_LoadBMP("grey.bmp");
+    blurring(surf);
+    SDL_SaveBMP(surf, "blur.bmp");
+    SDL_FreeSurface(surf);
     sdl_close();
     return EXIT_SUCCESS;
 }
