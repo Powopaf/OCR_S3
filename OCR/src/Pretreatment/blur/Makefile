@@ -16,7 +16,7 @@ BIN=\
 	blur.out
 
 blur: $(OBJ)
-	$(CC) -o $(BIN) $+ $(LIB)
+	$(CC) -g -o $(BIN) $+ $(LIB)
 
 debug_blur: $(OBJ)
 	$(CC) $(DEBUG) -o $(BIN) $+ $(LIB)
