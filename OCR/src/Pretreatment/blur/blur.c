@@ -2,9 +2,9 @@
 #include <err.h>
 
 //comment this include to run project uncomment to run blur.c
-#include "../Utils/convert.h"
-#include "../Utils/sdl_utils.h"
-#include "../GreyScale/greyscale.h"
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
+//#include "../GreyScale/greyscale.h"
 //////////////////////////////////////////////////////////////
 
 void blurring(SDL_Surface* surface) {
@@ -52,7 +52,7 @@ void blurring(SDL_Surface* surface) {
 
 
 //comment to run project uncomment to run blurring()
-int main(int argc, char* argv[]) {
+/*int main(int argc, char* argv[]) {
     convert(argv[1]);
     sdl_setup();
     SDL_Surface* surface = SDL_LoadBMP("img.bmp");
@@ -65,4 +65,4 @@ int main(int argc, char* argv[]) {
     SDL_FreeSurface(surf);
     sdl_close();
     return EXIT_SUCCESS;
-}
+}*/
