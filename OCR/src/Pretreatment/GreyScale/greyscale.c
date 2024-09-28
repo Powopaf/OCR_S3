@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+
 ///////////////////////////
 // to run greyscale only //
 //////////////////////////
@@ -34,7 +35,6 @@ void greyscale(SDL_Surface *surface) {
     
     //unlock when finish
     SDL_UnlockSurface(surface);
-    printf("Greyscale : success\n");
 }
 //comment to run project uncomment to test greyscale
 /*int main(int argc, char* argv[]) {
