@@ -43,7 +43,6 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
                     }
                 }
             }
-
             // calculates local mean and standard deviation
             double mean = sum / (double)count;
             double variance = (sq_sum / (double)count) - (mean * mean);
@@ -58,10 +57,8 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
             int binarized_value = (intensity > threshold) ? 0 : 255;
             
             Map[y][x] = binarized_value;//store the binarized value of the pixel
-
         }
     }
-
     //apply the binarized values
     for(int j = 0; j < height; j++) {
         for(int i = 0; i < width; i++) {
@@ -75,6 +72,7 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
 
     SDL_UnlockSurface(surface);
 }
+
 //comment to run project uncomment to test greyscale
 int main(int argc, char* argv[]) {
     sdl_setup();

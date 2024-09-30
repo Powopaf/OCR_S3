@@ -6,9 +6,9 @@ LDFLAGS=-g
 LIB=-lSDL2
 
 SRC=\
-	src/Pretreatment/Utils/convert.c \
-	src/Pretreatment/Utils/sdl_utils.c \
-	src/Pretreatment/GreyScale/greyscale.c
+	../Utils/convert.c \
+	../Utils/sdl_utils.c \
+	greyscale.c
 
 OBJ= $(SRC:.c=.o)
 
