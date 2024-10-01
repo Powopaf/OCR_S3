@@ -5,19 +5,6 @@
 #include "../Utils/sdl_utils.h"
 ////////////
 
-// Sert à obtenir la valeur d’un pixel spécifique (sans modif)
-Uint8 getPixel(SDL_Surface *surface,int x, int y) 
-{
-    Uint8 *pixels = (Uint8 *)surface->pixels; //création d’un pointeur rep. l’adresse d’un pixel
-    return pixels[(y * surface->pitch) + x];
-}
-
-// Sert à modif. la valeur d’un pixel
-void setPixel(SDL_Surface *surface, int x, int y, Uint8 pixel)
-{
-        Uint8 *pixels = (Uint8 *)surface->pixels;
-        pixels[(y * surface->pitch) + x] = pixel;
-}
 
 // Rotation de l’image
 SDL_Surface *rotation(SDL_Surface* image, double angle)
@@ -41,14 +28,14 @@ SDL_Surface *rotation(SDL_Surface* image, double angle)
                 for (int j = 0; j < width; j++)
                 {
 			Uint8* pixel = pix + i * p + j * bpp; //get current pixel
-                        double xOff = i - center_x;
-                        double yOff = j - center_y;
+                        double xOff = i - center_y;
+                        double yOff = j - center_x;
                         int new_x = round(xOff * cos_angle + yOff * sin_angle + center_x);
                         int new_y = round(yOff * cos_angle - xOff * sin_angle + center_y);
 
-                        if (0 <= new_x && new_x < width && 0 <= new_y && new_y < height)
+                        if (1 || (0 <= new_x && new_x < width && 0 <= new_y && new_y < height))
                         {
-				Uint8* newp = pix_r + new_x * protate + new_y * bpp;
+				Uint8* newp = pix_r + (new_x+center_x/2) * protate + (new_y+center_y/2) * rotated_image->format->BytesPerPixel;
 				newp[0] = pixel[0];
 				newp[1] = pixel[1];
 				newp[2] = pixel[2];
