@@ -1,48 +1,51 @@
 #include "rotate.h"
 
-
+// Sert à obtenir la valeur d’un pixel spécifique (sans modif)
 Uint8 getPixel(SDL_Surface *surface,int x, int y) 
 {
-	Uint8 *pixels = (Uint8 *)surface->pixels;
-	return pixels[(y * surface->w) + x];
+    Uint8 *pixels = (Uint8 *)surface->pixels; //création d’un pointeur rep. l’adresse d’un pixel
+    return pixels[(y * surface->pitch) + x];
 }
 
-void setPixel(SDL_Surface *surface, int x, int y, Uint8 pixel) 
+// Sert à modif. la valeur d’un pixel
+void setPixel(SDL_Surface *surface, int x, int y, Uint8 pixel)
 {
-	Uint8 *pixels = (Uint8 *)surface->pixels;
-	pixels[(y * surface->w) + x] = pixel;
+        Uint8 *pixels = (Uint8 *)surface->pixels;
+        pixels[(y * surface->pitch) + x] = pixel;
 }
 
+// Rotation de l’image
 SDL_Surface *rotation(SDL_Surface *image, double angle)
 {
-	int width = image->w;
-	int height = image->h;
-	double angle_radian = angle * (M_PI / 180.0);
-	int center_x = width / 2;
-	int center_y = height / 2;
-	double cos_angle = cos(angle_radian);
-	double sin_angle = sin(angle_radian);
-	SDL_Surface *rotated_image = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, image->format->format);
+        int width = image->w;
+        int height = image->h;
+        double angle_radian = angle * (M_PI / 180);
+        int center_x = width / 2;
+        int center_y = height / 2;
+        double cos_angle = cos(angle_radian);
+        double sin_angle = sin(angle_radian);
+        SDL_Surface *rotated_image = SDL_CreateRGBSurfaceWithFormat(0, width, height, image->format->BitsPerPixel, image->format->format);
 
-	for (int x = 0; x < width; x++) 
-	{
-        	for (int y = 0; y < height; y++) 
-		{
-            		double xOff = x - center_x;
-            		double yOff = y - center_y;
-            		int new_x = round(xOff * cos_angle + yOff * sin_angle + center_x);
-            		int new_y = round(yOff * cos_angle - xOff * sin_angle + center_y);
+        for (int x = 0; x < width; x++)
+        {
+                for (int y = 0; y < height; y++)
+                {
+                        double xOff = x - center_x;
+                        double yOff = y - center_y;
+                        int new_x = round(xOff * cos_angle + yOff * sin_angle + center_x);
+                        int new_y = round(yOff * cos_angle - xOff * sin_angle + center_y);
 
-            		if (0 <= new_x && new_x < width && 0 <= new_y && new_y < height) 
-			{
-             	   		Uint8 pixel = getPixel(image, x, y);
-                		setPixel(rotated_image, new_x, new_y, pixel);
-            		}
-        	}
-	}
-	return rotated_image;
+                        if (0 <= new_x && new_x < width && 0 <= new_y && new_y < height)
+                        {
+                                Uint8 pixel = getPixel(image, x, y);
+                                setPixel(rotated_image, new_x, new_y, pixel);
+                        }
+                }
+        }
+        return rotated_image;
 }
 
+// Tester la fonction
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL initialization failed: %s\n", SDL_GetError());
@@ -67,13 +70,13 @@ int main(int argc, char* argv[]) {
 
     SDL_Surface *screen_surface = SDL_GetWindowSurface(window);
 
-    SDL_Surface *image = IMG_Load("donkey.png"); 
+    SDL_Surface *image = IMG_Load("n1_1.png");
     if (!image) {
         printf("Image loading failed: %s\n", IMG_GetError());
         return -1;
     }
 
-    SDL_Surface *rotated_image = rotation(image, 90.0);  
+    SDL_Surface *rotated_image = rotation(image, 17.0);
 
     SDL_BlitSurface(rotated_image, NULL, screen_surface, NULL);
     SDL_UpdateWindowSurface(window);
@@ -88,4 +91,7 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+
+
 

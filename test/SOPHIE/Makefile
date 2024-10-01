@@ -9,10 +9,12 @@ SRC_DIR=src
 
 
 SRC= rotate.c
+#rotate.c
 
 OBJ= $(SRC:.c=.o)
 
 BIN= rotate.out
+#rotate.out
 
 rotation: $(OBJ)
 	$(LD) $(LDFLAGS) -o rotate.out $+ $(LIB)
