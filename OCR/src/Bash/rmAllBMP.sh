@@ -1,9 +1,9 @@
 #!/bin/bash
 
-for dir in */; do
-    rm *.bmp
-    if [ -L "${d%/}" ]
-    then
-        cd dir
-    fi
+# Loop through all .bmp file to delete them
+
+for f in $(find -type f -name "*bmp"); do
+    rm "$f"
+    echo "Deleted $f"
 done
+echo "no .bmp in project (all remove)"
