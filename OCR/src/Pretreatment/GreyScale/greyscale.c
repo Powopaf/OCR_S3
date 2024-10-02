@@ -1,16 +1,21 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+#include <unistd.h>
 
 ///////////////////////////
 // to run greyscale only //
 //////////////////////////
-//#include "../Utils/convert.h"
-//#include "../Utils/sdl_utils.h"
+#include "../Utils/convert.h"
+#include "../Utils/sdl_utils.h"
 ////////////////////////////////
 
 
-void greyscale(SDL_Surface *surface) {
-    
+void greyscale(SDL_Surface* surface) {
+    if (surface == NULL) {
+        char* arg[2] = { "../../Bash/rmAllBMP.sh", NULL };
+        execvp("../../Bash/rmAllBMP.sh", arg);
+        errx(EXIT_FAILURE, "surface is NULL can't apply greyscale");
+    }
     //init variable to check each pixels
     SDL_PixelFormat* format = surface->format;
     int width = surface->w;
@@ -37,12 +42,13 @@ void greyscale(SDL_Surface *surface) {
     SDL_UnlockSurface(surface);
 }
 //comment to run project uncomment to test greyscale
-/*int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     convert(argv[1]);
     sdl_setup();
     SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
-    greyscale(surface);
+    greyscale(NULL);
     SDL_SaveBMP(surface, "img.bmp");
     SDL_FreeSurface(surface);
     sdl_close();
-}*/
+
+}
