@@ -1,9 +1,6 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
 // Variables globales
 extern char filename[];
 extern char grid[256][256];

@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Loop through all .bmp file to delete them from the current directory
-
-#for f in $(find -type f -name "*.bmp"); do
-#    rm "$f"
-#    echo "Deletedi $f"
-#done
-#echo "no .bmp in project (all remove)"
-
 if [[ $# -lt 1 ]]; then
     echo "Usage: $0 <levels>"
     exit 1
