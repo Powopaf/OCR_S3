@@ -57,41 +57,6 @@ void InitMatrix(SDL_Surface *surface, int*** Map, int*** surf)
     }
 }
 
-void ShapeFilter(Node** shapeList)
-{
-    Node* current = *shapeList;
-    int totalLength = 0;
-    int count = 0;
-    while (current != NULL)
-    {
-        totalLength += current->data->Len;
-        count++;
-        current = current->next;
-    }
-
-    double averageLength = (double)totalLength / count;
-
-    current = *shapeList;
-    Node* prev;
-    prev = NULL;
-    int i = 0;
-    while (current != NULL)
-    {
-        Node* next = current->next;
-        if (current->data->Len > 3 * averageLength || 
-            current->data->Len < 0.3 * averageLength)
-        {
-            RemoveNode(shapeList, i);
-        }
-        else
-        {
-            prev = current;
-            i++;
-        }
-        current = next;
-    }
-}
-
 void Draw(SDL_Surface *surface, Node* shape_lst)
 {
     SDL_PixelFormat* format = surface->format;

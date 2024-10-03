@@ -10,8 +10,6 @@ void FreeMatrix(int **arr, int sizex);
 
 int IsOnSurface(int x, int y, int h, int w);
 void InitMatrix(SDL_Surface *surface, int*** Map, int*** surf);
-void ShapeFilter(Node** shapeList);
-
 
 void Draw(SDL_Surface *surface, Node* s);
 
