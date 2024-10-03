@@ -4,17 +4,19 @@
 #include <stdio.h>
 #include <err.h>
 #include <stdlib.h>
+#include "../Shape/shape.h"
 
 typedef struct Node
 {
-    int data;
+    Shape* data;
     struct Node* next;
 } Node;
 
-Node* NewNode(int data);
-void AddNode(Node* lst, Node* node);
-Node* RemoveNode(Node* lst, int i);
-int LenNode(Node* lst);
-Node* GetNode(Node* lst, int i);
-
+Node* NewNode(Shape* data);
+void AddNode(Node** lst, Node* node);
+void RemoveNode(Node** lst, int i);
+int LenNode(Node** lst);
+Node* GetNode(Node** lst, int i);
+void FreeNode(Node* node);
+void FreeNodeList(Node** lst);
 #endif //NODE_H

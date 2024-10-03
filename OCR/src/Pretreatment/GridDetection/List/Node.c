@@ -1,69 +1,86 @@
 #include "Node.h"
 
-Node* NewNode(int data)
+Node* NewNode(Shape* data)
 {
     Node* node = (Node*)malloc(sizeof(Node));
+    if (node == NULL)
+    {
+        err(1, "ERROR: Memory allocation for node failed\n");
+    }
     node->data = data;
     node->next = NULL;
     return node;
 }
 
-void AddNode(Node* lst, Node* node)
+void AddNode(Node** lst, Node* node)
 {
-    if(lst==NULL)
+    if (lst == NULL || node == NULL)
     {
-        lst = node;
+        err(1, "ERROR: Invalid list or node\n");
+    }
+    
+    if (*lst == NULL)
+    {
+        *lst = node;
         return;
     }
-    Node* n = lst;
-    while(n->next!=NULL)
+
+    Node* n = *lst;
+    while (n->next != NULL)
     {
         n = n->next;
     }
-
     n->next = node;
 }
 
-Node* RemoveNode(Node* lst, int i)
+void RemoveNode(Node** lst, int index)
 {
-    if(i<0)
-    {
-        err(1,"ERROR index < 0\n");
-    }
-    if(i==0)
-    {
-        return lst->next;
+    if (*lst == NULL) {
+        err(1, "ERROR: List is empty\n");
     }
 
-    Node* n = lst;
+    if (index < 0) {
+        err(1, "ERROR: Index cannot be negative\n");
+    }
 
-    while(i>1)
-    {
-        if(n->next==NULL)
-        {
-            err(1,"ERROR LST: Index out of range\n");
+    Node* current = *lst;
+
+    // Cas où le premier nœud doit être supprimé
+    if (index == 0) {
+        *lst = current->next; // Le premier élément pointe vers le suivant
+        FreeNode(current);     // Libère le nœud supprimé
+        return;
+    }
+
+    // Parcourir la liste jusqu'à l'index-1
+    for (int i = 0; i < index - 1; i++) {
+        if (current == NULL || current->next == NULL) {
+            err(1, "ERROR: Index out of range\n");
         }
-        n = n->next;
-        i--;
+        current = current->next;
     }
-    Node* node = n->next;
-    n->next = (n->next)->next;
-    printf("%i\n",node->data);
-    free(node);
-    
-    return lst;
+
+    Node* nodeToRemove = current->next;
+    if (nodeToRemove == NULL) {
+        err(1, "ERROR: Index out of range\n");
+    }
+
+    // Supprimer le nœud et relier les éléments de la liste
+    current->next = nodeToRemove->next;
+    FreeNode(nodeToRemove);  // Libérer la mémoire du nœud supprimé
 }
 
-int LenNode(Node* lst)
+
+int LenNode(Node** lst)
 {
-    if(lst==NULL)
+    if (lst == NULL || *lst == NULL)
     {
-        return -1;
+        return 0;
     }
 
     int i = 1;
-    Node* n = lst;
-    while(n->next!=NULL)
+    Node* n = *lst;
+    while (n->next != NULL)
     {
         i++;
         n = n->next;
@@ -71,18 +88,19 @@ int LenNode(Node* lst)
     return i;
 }
 
-Node* GetNode(Node* lst, int i)
+Node* GetNode(Node** lst, int i)
 {
-    if(lst==NULL)
+    if (lst == NULL || *lst == NULL)
     {
-        err(1,"ERROR LST EMPTY\n");
+        err(1, "ERROR: List is empty\n");
     }
-    Node* n = lst;
-    while(i>0)
+
+    Node* n = *lst;
+    while (i > 0)
     {
-        if(n->next == NULL)
+        if (n->next == NULL)
         {
-            err(1,"ERROR LST: Index out of range\n");
+            err(1, "ERROR: Index out of range\n");
         }
         n = n->next;
         i--;
@@ -90,17 +108,32 @@ Node* GetNode(Node* lst, int i)
     return n;
 }
 
-int main()
+void FreeNode(Node* node)
 {
-    Node* lst = NewNode(0);
+    if (node == NULL)
+    {
+        return;
+    }
 
-    AddNode(lst,NewNode(1));
-    AddNode(lst,NewNode(2));
-    AddNode(lst,NewNode(3));
-    AddNode(lst,NewNode(4));
-    AddNode(lst,NewNode(5));
+    if (node->data != NULL)
+    {
+        free(node->data);
+    }
+    free(node);
+    
+}
 
-    printf("%i\n",LenNode(lst));
-    lst = RemoveNode(lst,5);
-    printf("%i\n",(GetNode(lst,3))->data);
+void FreeNodeList(Node** lst)
+{
+    Node* c = *lst;
+    Node* n;
+
+    while(c!=NULL)
+    {
+        n = c->next;
+        FreeNode(c);
+        c = n;
+    }
+
+    *lst = NULL;
 }
