@@ -12,7 +12,7 @@
 
 void greyscale(SDL_Surface* surface) {
     if (surface == NULL) {
-        char* arg[2] = { "../../Bash/rmAllBMP.sh", NULL };
+        char* arg[3] = { "../../Bash/rmAllBMP.sh", "4",  NULL };
         execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "surface is NULL can't apply greyscale");
     }
@@ -43,12 +43,12 @@ void greyscale(SDL_Surface* surface) {
 }
 //comment to run project uncomment to test greyscale
 int main(int argc, char* argv[]) {
-    convert(argv[1]);
+    //convert(argv[1]);
     sdl_setup();
-    SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
+    //SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
     greyscale(NULL);
-    SDL_SaveBMP(surface, "img.bmp");
-    SDL_FreeSurface(surface);
+    //SDL_SaveBMP(surface, "img.bmp");
+    //SDL_FreeSurface(surface);
     sdl_close();
 
 }

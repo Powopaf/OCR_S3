@@ -16,10 +16,10 @@ BIN=\
 	greyscale.out
 
 greyscale: $(OBJ)
-	$(LD) $(LDFLAGS) -o greyscale.out $+ $(LIB)
+	$(LD) -o greyscale.out $+ $(LIB)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm $(OBJ) $(BIN) *.bmp
