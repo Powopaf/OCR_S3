@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+#include <unistd.h>
 
 void sdl_setup() {
     // we can add arguements if needed
