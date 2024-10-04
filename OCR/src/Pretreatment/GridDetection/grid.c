@@ -45,6 +45,8 @@ void ProcessGrid(SDL_Surface *surface) {
     int** Map;
     int** surf;
     
+    SDL_LockSurface(surface);
+
     MallocMatrix(&Map, height, width);
     MallocMatrix(&surf, height, width);
     
@@ -83,5 +85,7 @@ void ProcessGrid(SDL_Surface *surface) {
     Draw(surface, shapeList);
 
     FreeNodeList(&shapeList);
+
+    SDL_UnlockSurface(surface);
 }
 

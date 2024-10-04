@@ -7,7 +7,7 @@
 
 int main()
 {
-    for (int i = 1; i < 9; i++)
+    for (int i = 1; i < 7; i++)
     {
         printf("Processing image %i...\n", i);
         char* s = NULL;
