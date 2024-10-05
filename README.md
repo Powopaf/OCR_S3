@@ -15,7 +15,7 @@
 
 - 1 feature = 1 branches
 - merge via le site
-- suprimer la branche une fois merge
+- supprimer la branche une fois merge
 - lors du premier push sur une branche faire une pull request
 
 ### TUTO GIT
@@ -27,12 +27,12 @@
 * Lors du premier push :
     * créer une pull request comme ça on garde un suivi de la branche sur git
       et on peut faire des commentaires si besoin
-    * ce fait directement sur le site
+    * se fait directement sur le site
     
         1. 
             ![](photoREADME/newpull.png "")
         
-        2. mettre dans base: le main et dans compare la branche créé
+        2. mettre dans base: le main et dans compare la branche créée
             ![](photoREADME/select.png "")
         
         3. 
@@ -44,7 +44,7 @@
     * `git status` (on ne sait jamais)
     * `git add <nom de fichier>` ou `git add .` pour tout d'un coup
     * `git commit -m "mon message"`
-        * mettre se que l'ont a fait dans le message du commit
+        * mettre ce que l'on a fait dans le message du commit
     * `git push`
 * Fin du Dev
     * Squash and merge la branche et la delete comme montré avec les photos si
