@@ -25,8 +25,8 @@
     * `git checkout <nom>`
     * `git push --set-upstream origin <nom>`
 * Lors du premier push :
-    * créer une pull request comme ça on garde un suivie de la branche sur git
-      et ont peut faire des commentaires si besoin
+    * créer une pull request comme ça on garde un suivi de la branche sur git
+      et on peut faire des commentaires si besoin
     * se fait directement sur le site
     
         1. 
