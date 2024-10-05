@@ -58,4 +58,4 @@
 
         3. `git checkout main`
         4. `git branch -d <nom>`
-* Faire d'autre choses
+* Faire d'autres choses
