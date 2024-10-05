@@ -31,12 +31,12 @@ SDL_Surface *rotation2(SDL_Surface* image, double angle)
                         double xOff = i - center_y; //offsets from the center of the image
                         double yOff = j - center_x;
 
-                        int new_x = round(xOff - yOff * tan_angle); //first shear
+                        int new_x = round(xOff + yOff * tan_angle); //first shear (reverse)
                         int new_y = round(yOff);
 			
-			new_y = round(new_x * sin_angle + new_y); //second shear
+			new_y = round(new_x * (-1) * sin_angle + new_y); //second shear (inverted sinus sign)
 
-			new_x = round(new_x - new_y * tan_angle);//third shear
+			new_x = round(new_x + new_y * tan_angle);//third shear (reverse)
 
 			new_y += center_y;
 			new_x += center_x;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 	convert(argv[1]);
     	sdl_setup();
     	SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
-    	SDL_Surface* a = rotation2(surface, 90.0);
+    	SDL_Surface* a = rotation2(surface, 16.0);
     	SDL_SaveBMP(a, "img.bmp");
     	SDL_FreeSurface(surface);
 	SDL_FreeSurface(a);
