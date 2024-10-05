@@ -27,12 +27,12 @@
 * Lors du premier push :
     * créer une pull request comme ça on garde un suivi de la branche sur git
       et on peut faire des commentaires si besoin
-    * se fait directement sur le site
+    * ce fait directement sur le site
     
         1. 
             ![](photoREADME/newpull.png "")
         
-        2. metre dans base: le main et dans compare la branche créé
+        2. mettre dans base: le main et dans compare la branche créé
             ![](photoREADME/select.png "")
         
         3. 
