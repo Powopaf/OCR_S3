@@ -4,7 +4,7 @@
 ///////////////////////
 // to run noise only //
 ///////////////////////
-#include "../Utils/sdl_utils.h"
+#include "../../Utils/sdl_utils.h"
 ////////////////////////////////
 #define kernel_size 5
 #define sigma 1.0
