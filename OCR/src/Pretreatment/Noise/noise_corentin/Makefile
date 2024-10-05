@@ -6,7 +6,7 @@ LDFLAGS=-g
 LIB=-lSDL2
 
 SRC=\
-	../Utils/sdl_utils.c \
+	../../Utils/sdl_utils.c \
 	noise.c
 
 OBJ= $(SRC:.c=.o)
@@ -15,7 +15,7 @@ BIN=\
 	noise.out
 
 noise: $(OBJ)
-	$(LD) $(LDFLAGS) -o noise.out $+ $(LIB)
+	$(LD) $(LDFLAGS) -o $(BIN) $+ $(LIB)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -c $<

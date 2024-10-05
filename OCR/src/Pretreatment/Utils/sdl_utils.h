@@ -1,7 +1,7 @@
-#pragma once
+#ifndef SDL_UTILS
+#define SDL_UTILS
 
 void sdl_setup();
-
 void sdl_close();
 
-void drawline(SDL_Renderer* renderer);
+#endif

@@ -6,7 +6,7 @@ void sdl_setup() {
     // we can add arguements if needed
     if(SDL_Init(SDL_INIT_VIDEO)) {
         char* arg[3] = { "../../Bash/rmAllBMP.sh", "4", NULL };
-        execvp("../../Bash/rmAllBMP.sh, arg");
+        execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "fail to init sdl_video: %s", SDL_GetError());
     }
 }

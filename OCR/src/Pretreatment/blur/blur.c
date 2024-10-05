@@ -15,7 +15,7 @@ void blurring(SDL_Surface* surface) {
     if (surface == NULL) {
         char* arg[3] = { "../../Bash/rmAllBMP.sh", "4", NULL };
         execvp("../../Bash/rmAllBMP.sh", arg);
-        errx(EXIT_FAILURE, "surface is null can't blur")
+        errx(EXIT_FAILURE, "surface is null can't blur");
     }
     SDL_PixelFormat* format = surface->format;
     int p = surface->pitch;

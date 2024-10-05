@@ -98,7 +98,7 @@ int read_grid(char filename[]) {
 	FILE *fichier = fopen(filename, "r");
 
 	if(fichier == NULL) {
-		char* argv = { "../Bash/rmAllBMP.sh", "3", NULL };
+		char* arg[3] = { "../Bash/rmAllBMP.sh", "3", NULL };
         execvp("../Bash/rmALLBMP.sh", arg);
         errx(EXIT_FAILURE, "File not found in solveur: %s", filename);
         return EXIT_FAILURE;
@@ -120,7 +120,7 @@ int read_grid(char filename[]) {
 	return 0;
 }
 // main function, read the grid file and resolve the grid with the input word
-/*int solver(char word[])
+int solver(char word[])
 {
 	
 	read_grid(filename);
@@ -136,12 +136,11 @@ int read_grid(char filename[]) {
 	else
 	{
 		print_grid(Start,End);
-		printf("Word: %s\n",word);
-		printf("Start = (%i,%i)\n",Start[0],Start[1]);
-		printf("End = (%i,%i)\n",End[0],End[1]);
-		printf("(%i,%i)(%i,%i)\n",Start[0],Start[1],End[0],End[1]);
+		printf("Word: %s\n", word);
+		printf("Start = (%i, %i)\n", Start[0], Start[1]);
+		printf("End = (%i, %i)\n", End[0], End[1]);
+		printf("(%i, %i)(%i, %i)\n", Start[0], Start[1], End[0], End[1]);
 	}
-
 	return 0;
 }
 //main function only for debug (remove it!)
@@ -151,4 +150,4 @@ int main(int argc, char *argv[])
 		printf("ERROR: argument missing\n");
 	else
 		return solver(argv[1]);
-}*/
+}

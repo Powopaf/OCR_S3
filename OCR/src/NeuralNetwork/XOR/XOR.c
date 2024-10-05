@@ -84,6 +84,7 @@ void compute(double InputsLayer[], double outputLayer[])
 int main()
 {
 	double input[2] = {1.0,0.0};
+    printf("Input: %f, %f\n", input[0], input[1]);
 	double output[1];
 	compute(input,output);
 	printf("Output: %f\n",output[0]);
