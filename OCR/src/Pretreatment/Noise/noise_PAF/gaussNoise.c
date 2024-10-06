@@ -8,6 +8,7 @@
 #include "../../Utils/sdl_utils.h"
 #include "../../GreyScale/greyscale.h"
 #include "../../blur/blur.h"
+#include "medianFilter.h"
 //////////////////////////////////////////////////////////////////////
 
 double gFunc(int x, int y) {
@@ -80,15 +81,18 @@ int main(int argc, char* argv[]) {
     greyscale(surface);
     SDL_SaveBMP(surface, "img.bmp");
     SDL_FreeSurface(surface);
-    SDL_Surface* s = SDL_LoadBMP("img.bmp");
-    gaussianBlur(s);
-    SDL_SaveBMP(s, "gauss.bmp");
-    SDL_FreeSurface(s);
-    SDL_Surface* s2 = SDL_LoadBMP("gauss.bmp");
-    blurring(s2);
-    SDL_SaveBMP(s2, "gauss.bmp");
+    //SDL_Surface* s = SDL_LoadBMP("img.bmp");
+    //gaussianBlur(s);
+    //SDL_SaveBMP(s, "gauss1.bmp");
+    //SDL_FreeSurface(s);
+    SDL_Surface* s2 = SDL_LoadBMP("img.bmp");
+    median(s2);
+    SDL_SaveBMP(s2, "gauss2.bmp");
     SDL_FreeSurface(s2);
-
+    //SDL_Surface* s3 = SDL_LoadBMP("gauss2.bmp");
+    //blurring(s3);
+    //SDL_SaveBMP(s3, "gauss3.bmp");
+    //SDL_FreeSurface(s3);
     sdl_close();
     return EXIT_SUCCESS;
 }
