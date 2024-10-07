@@ -9,16 +9,23 @@
 void ShapeFilter(Node** shapeList)
 {
     Node* current = *shapeList;
-    int totalLength = 0;
+    int sumH = 0;
+    int sumW = 0;
+    int sumL = 0;
     int count = 0;
     while (current != NULL)
     {
-        totalLength += current->data->Len;
+        sumH += current->data->MaxY - current->data->MinY;
+        sumW += current->data->MaxX - current->data->MinX;
+        sumL += current->data->Len;
         count++;
         current = current->next;
     }
 
-    double averageLength = (double)totalLength / count;
+    double averageH = (double)sumH / count;
+    double averageW = (double)sumW / count;
+    double averageL = (double)sumL / count;
+
 
     current = *shapeList;
     int i = 0;
@@ -26,8 +33,15 @@ void ShapeFilter(Node** shapeList)
     while (current != NULL)
     {
         Node* next = current->next;
-        if (current->data->Len > 3 * averageLength || 
-            current->data->Len < 0.3 * averageLength)
+        int h = current->data->MaxY - current->data->MinY;
+        int w = current->data->MaxX - current->data->MinX;
+        int l = current->data->Len;
+        if (h > 3 * averageH ||
+            h < 0.2 * averageH ||
+            w > 3 * averageW ||
+            w < 0.2 * averageW ||
+            l > 2 * averageL ||
+            l < 0.2 * averageL)
         {
             RemoveNode(shapeList, i);
         }
