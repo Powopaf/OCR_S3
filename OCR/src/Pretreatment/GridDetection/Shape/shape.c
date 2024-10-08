@@ -9,14 +9,24 @@ Shape* CreateShape(int id, int x, int y) {
         err(1, "ERROR Memory Allocation");
     }
     s->id = id;
+
     s->Cx = x;
     s->Cy = y;
+
     s->MaxX = x;
     s->MaxY = y;
     s->MinX = x;
     s->MinY = y;
+
     s->Len = 0;
+    s->AverageDist = 0;
     return s;
+}
+
+void ComputeCenter(Shape* s)
+{
+    s->Cx = s->MinX + (s->MaxX - s-> MinX)/2;
+    s->Cy = s->MinY + (s->MaxY - s-> MinY)/2;
 }
 
 void FindShape(Shape* s, int** surface, int** Map, int x, int y, int height, int width) {
