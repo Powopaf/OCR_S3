@@ -17,6 +17,7 @@ void AddNode(Node** lst, Node* node);
 void RemoveNode(Node** lst, int i);
 int LenNode(Node** lst);
 Node* GetNode(Node** lst, int i);
-void FreeNode(Node* node);
-void FreeNodeList(Node** lst);
+void FreeNode(Node* node, int freeData);
+void FreeNodeList(Node** lst, int freeData);
+int ContainsNode(Node* lst, Shape* s);
 #endif //NODE_H

@@ -18,6 +18,11 @@ void AddNode(Node** lst, Node* node)
     {
         err(1, "ERROR: Invalid list or node\n");
     }
+
+    if (node->next == node)  // Vérifie si le nœud pointe vers lui-même
+    {
+        err(1, "ERROR: Self-referencing node\n");
+    }
     
     if (*lst == NULL)
     {
@@ -30,8 +35,16 @@ void AddNode(Node** lst, Node* node)
     {
         n = n->next;
     }
+
+    if (n == node)  // Vérifie que nous n'ajoutons pas une boucle
+    {
+        err(1, "ERROR: Circular reference when adding node\n");
+        return;
+    }
+
     n->next = node;
 }
+
 
 void RemoveNode(Node** lst, int index)
 {
@@ -48,7 +61,7 @@ void RemoveNode(Node** lst, int index)
     // Cas où le premier nœud doit être supprimé
     if (index == 0) {
         *lst = current->next; // Le premier élément pointe vers le suivant
-        FreeNode(current);     // Libère le nœud supprimé
+        FreeNode(current,1);     // Libère le nœud supprimé
         return;
     }
 
@@ -67,7 +80,7 @@ void RemoveNode(Node** lst, int index)
 
     // Supprimer le nœud et relier les éléments de la liste
     current->next = nodeToRemove->next;
-    FreeNode(nodeToRemove);  // Libérer la mémoire du nœud supprimé
+    FreeNode(nodeToRemove,1);  // Libérer la mémoire du nœud supprimé
 }
 
 
@@ -108,14 +121,14 @@ Node* GetNode(Node** lst, int i)
     return n;
 }
 
-void FreeNode(Node* node)
+void FreeNode(Node* node, int freeData)
 {
     if (node == NULL)
     {
         return;
     }
 
-    if (node->data != NULL)
+    if (node->data != NULL && freeData==1)
     {
         free(node->data);
     }
@@ -123,7 +136,7 @@ void FreeNode(Node* node)
     
 }
 
-void FreeNodeList(Node** lst)
+void FreeNodeList(Node** lst, int freeData)
 {
     Node* c = *lst;
     Node* n;
@@ -131,9 +144,28 @@ void FreeNodeList(Node** lst)
     while(c!=NULL)
     {
         n = c->next;
-        FreeNode(c);
+        FreeNode(c,freeData);
         c = n;
     }
 
     *lst = NULL;
+}
+
+int ContainsNode(Node* lst, Shape* s)
+{
+    Node* c = lst;
+    while(c!=NULL)
+    {
+        if(c->next!=NULL && c->data->id == c->next->data->id)
+        {
+            err(1, "ERROR: Circular reference detected\n");
+        }
+        //printf("Test Contains shape %i\n",c->data->id);
+        if(c->data->id == s->id)
+        {
+            return 1;
+        }
+        c = c->next;
+    }
+    return 0;
 }

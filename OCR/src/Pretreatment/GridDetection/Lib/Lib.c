@@ -57,7 +57,35 @@ void InitMatrix(SDL_Surface *surface, int*** Map, int*** surf)
     }
 }
 
-void Draw(SDL_Surface *surface, Node* shape_lst)
+void PrintNodeList(Node* lst, char* name)
+{
+    printf("%s:",name);
+    Node* c = lst;
+    while(c!=NULL)
+    {
+        printf(" %i",c->data->id);
+        c = c->next;
+    }
+    printf("\n");
+
+}
+
+double distance(Shape* s1, Shape* s2)
+{
+    double dx = s2->Cx - s1->Cx;
+    double dy = s2->Cy - s1->Cy;
+    double distance = sqrt(dx * dx + dy * dy);
+    // Ponderer la distance selon la taille des formes
+    double sizeFactor = (s1->Len + s2->Len) / 2.0;
+    return distance / sizeFactor;  // distance ajustée
+    /*
+    double dx = s2->Cx - s1->Cx;
+    double dy = s2->Cy - s1->Cy;
+    return sqrt(dx * dx + dy * dy);
+    */
+}
+
+void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 {
     SDL_PixelFormat* format = surface->format;
     int p = surface->pitch;
@@ -75,9 +103,9 @@ void Draw(SDL_Surface *surface, Node* shape_lst)
         {
             Uint8* pixel1 = pix + j * p + s->MaxY * bpp; 
             Uint8* pixel2 = pix + j * p + s->MinY * bpp; 
-            pixel1[0] = pixel2[0] = 255;
-            pixel1[1] = pixel2[1] = 255;
-            pixel1[2] = pixel2[2] = 0;
+            pixel1[0] = pixel2[0] = r;
+            pixel1[1] = pixel2[1] = g;
+            pixel1[2] = pixel2[2] = b;
         }
 
         // Draw horizontal lines
@@ -85,12 +113,16 @@ void Draw(SDL_Surface *surface, Node* shape_lst)
         {
             Uint8* pixel1 = pix + s->MaxX * p + i * bpp; 
             Uint8* pixel2 = pix + s->MinX * p + i * bpp; 
-            pixel1[0] = pixel2[0] = 255;
-            pixel1[1] = pixel2[1] = 255;
-            pixel1[2] = pixel2[2] = 0;
+            pixel1[0] = pixel2[0] = r;
+            pixel1[1] = pixel2[1] = g;
+            pixel1[2] = pixel2[2] = b;
         }
 
         n = n->next;
+        Uint8* px = pix + s->Cx * p + s->Cy * bpp;
+        px[0] = r;
+        px[0] = g;
+        px[2] = b;
     }
     SDL_UnlockSurface(surface);
 }

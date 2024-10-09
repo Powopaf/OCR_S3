@@ -7,13 +7,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
+void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) 
+{
+    if(surface==NULL)
+    {
+        err(1,"ERROR: Surface NULL\n");
+    }
+    SDL_LockSurface(surface);
+
     int width = surface->w;
     int height = surface->h;
     int p = surface->pitch;
     int bpp = surface->format->BytesPerPixel;
     Uint8* pix = (Uint8*)surface->pixels;
-    SDL_LockSurface(surface);
 
     int half_window = window_size / 2;
     double R = 128.0;
@@ -60,6 +66,7 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
             Map[y][x] = binarized_value;//store the binarized value of the pixel
 
         }
+        SDL_UnlockSurface(surface);
     }
 
     //apply the binarized values
@@ -76,11 +83,27 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) {
     SDL_UnlockSurface(surface);
 }
 //comment to run project uncomment to test greyscale
-int main(int argc, char* argv[]) {
-    sdl_setup();
-    SDL_Surface* surface = SDL_LoadBMP(argv[1]); //convert() create a img.bmp
-    binarisation_sauvola(surface,15,0.05);
-    SDL_SaveBMP(surface, "imgBin.bmp");
-    SDL_FreeSurface(surface);
-    sdl_close();
+int main() {
+    for(int i = 1; i<=7; i++)
+    {
+        printf("Proccessing img%i ...\n",i);
+        char* file = NULL;
+        char* save = NULL;
+
+        asprintf(&file,"img/img%i.bmp",i);
+        asprintf(&save,"img/img%iBin.bmp",i);
+
+        sdl_setup();
+        SDL_Surface* surface = SDL_LoadBMP(file); //convert() create a img.bmp
+        if (surface == NULL)
+        {
+            err(1, "Unable to load image: %s\n", SDL_GetError());
+        }
+        binarisation_sauvola(surface,21,0.35);
+        SDL_SaveBMP(surface, save);
+        SDL_FreeSurface(surface);
+        sdl_close();
+        free(file);
+        free(save);
+    }
 }
