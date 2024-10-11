@@ -7,6 +7,37 @@
 #include <stdlib.h>
 #include <math.h>
 
+Node** ReduceArray(Node** lst, int* size, int nsize)
+{
+    int count = nsize;
+    if(nsize==0)
+    {
+        for(int i = 0; i<*size; i++)
+        {
+            if(lst[i]!=NULL)
+            {
+                count++;
+            }
+        }
+    }
+
+    
+    Node** res = (Node**)malloc(count*sizeof(Node*));
+    int k = 0;
+    for(int i = 0; i<*size; i++)
+    {
+        if(lst[i]!=NULL)
+        {
+            res[k] = lst[i];
+            k++;
+        }
+    }
+    *size = count;
+    free(lst);
+    return res;
+}
+
+
 double FindLowestDist(Shape* s1, Shape* s2)
 {
     int p1[4][2] = {
@@ -150,48 +181,31 @@ void ShapeFilter(Node** shapeList)
 }
 
 
-Node** CreateCluster(SDL_Surface* surface, Node** shapeList)
+Node** CreateCluster(Node** shapeList, int* size)
 {
     int n = LenNode(shapeList);
     Node** clusterList = (Node**)malloc(n*sizeof(Node*));
 
-    for (int i = 0; i < n; i++) {
-        clusterList[i] = (Node*)malloc(sizeof(Node));
-        if (clusterList[i] == NULL) {
-            err(1,"Échec de l'allocation mémoire pour le Node\n");
-            for (int j = 0; j < i; j++) {
-                free(clusterList[j]);
-            }
-            free(clusterList);
-            return NULL;
-        }
-        clusterList[i]->data = NULL;
-        clusterList[i]->next = NULL;
-    }
-
     Node* c = *shapeList;
     Node* visited = NULL;
     int i = 1;
+    int count = 0;
     while(c!=NULL)
     {
         Node* cluster = NULL;
         FindCluster(&visited,&cluster,shapeList,c->data);
-        
-        //d
-        float hue = (i * 360.0 / n);
-        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2);
-        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
-        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
-        Draw(surface,cluster,r,g,b);
-        //d
-        //PrintNodeList(cluster," Cluster");
-        FreeNodeList(&cluster,0);
+        clusterList[i-1] = cluster;
+        if(cluster!=NULL)
+        {
+            count++;
+        }
+        //
         i++;
         c = c->next;
     }
     FreeNodeList(&visited,0);
-
-    return clusterList;
+    *size = n; 
+    return ReduceArray(clusterList,size, count);
 }
 
 void ProcessGrid(SDL_Surface *surface) {
@@ -237,8 +251,48 @@ void ProcessGrid(SDL_Surface *surface) {
     
     ShapeFilter(&shapeList);
     
-    Node** clusterList = CreateCluster(surface,&shapeList);
+    int size = 0;
+    Node** clusterList = CreateCluster(&shapeList,&size);
     //Draw(surface, shapeList,255,255,0);
+    
+    double sumSize = 0;
+    for(int i = 0; i<size; i++)
+    {
+        sumSize+=LenNode(&clusterList[i]);
+    }
+    double avSize = sumSize/(double)size;
+    int k = 0;
+    for(int i = 0; i<size; i++)
+    {
+        if(LenNode(&clusterList[i])<avSize)
+        {
+            FreeNodeList(&clusterList[i],0);
+            clusterList[i] = NULL;
+        }
+        else
+        {
+            k++;
+        }
+    }
+    clusterList = ReduceArray(clusterList,&size,k);
+    for(int i = 0; i<size; i++)
+    {
+        //d
+        float hue = (i * 360.0 / size);
+        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2);
+        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
+        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+        Draw(surface,clusterList[i],r,g,b);
+        //d
+    }
+
+
+    for(int i = 0; i<size; i++)
+    {
+        PrintNodeList(clusterList[i]," Cluster");
+        FreeNodeList(&clusterList[i],0);
+    }
+    free(clusterList);
 
     FreeNodeList(&shapeList,1);
 
