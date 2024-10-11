@@ -39,33 +39,3 @@ void median(SDL_Surface* surface) {
     }
     SDL_UnlockSurface(surface);
 }
-
-void contrast(SDL_Surface* surf) {
-    //image must be gray
-    const Uint8 low = 85; //because 255/3=85
-    const Uint8 high = 170; //because 255 - 85 = 175
-    SDL_LockSurface(surf);
-    for (int i = 0; i < surf->h; i++) {
-        for (int j = 0; j < surf->w; j++) {
-            Uint8* pixel = surf->pixels + i * surf->pitch + j * surf->format->BytesPerPixel;
-            if (pixel[0] < low) {
-                pixel[0] = 0;
-                pixel[1] = 0;
-                pixel[2] = 0;
-            }
-            else if (pixel[0] > high) {
-                pixel[0] = 255;
-                pixel[1] = 255;
-                pixel[2] = 255;
-            }
-            else {
-                Uint8 color = 255 * (pixel[0] - low) / (high - low);
-                pixel[0] = color;
-                pixel[1] = color;
-                pixel[2] = color;
-            }
-        }
-    }
-    SDL_UnlockSurface(surf);
-}
-
