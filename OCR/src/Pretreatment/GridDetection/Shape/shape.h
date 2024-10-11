@@ -6,14 +6,14 @@
 typedef struct Shape {
     int id;
     int Cx, Cy;
-    int MaxX, MaxY;
-    int MinX, MinY;
+    int h,w;
+    int Maxj, Maxi;
+    int Minj, Mini;
     int Len;
-    double AverageDist;
 } Shape;
 
 Shape* CreateShape(int id, int x, int y);
-void ComputeCenter(Shape* s);
+void ComputeShape(Shape* s);
 void FindShape(Shape* s, int** surface, int** Map, int x, int y, int height, int width);
 int IsShapeValid(SDL_Surface* surface, Shape* s);
 #endif
