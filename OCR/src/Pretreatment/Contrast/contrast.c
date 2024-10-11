@@ -1,14 +1,12 @@
 #include <SDL2/SDL.h>
 
 //comment to run project, uncomment to run contrast
-#include "../Utils/convert.h"
-#include "../Utils/sdl_utils.h"
-#include "../GreyScale/greyscale.h"
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
+//#include "../GreyScale/greyscale.h"
 
 
 void contrast(SDL_Surface* surface) {
-    //const Uint8 max_intensity = 0;
-    //const Uint8 min_intensity = 255;
     int width = surface->w;
     int height = surface->h;
     int bpp = surface->format->BytesPerPixel;
@@ -45,7 +43,7 @@ void contrast(SDL_Surface* surface) {
 
 
 //comment to run project, uncomment to run contrast
-int main(int argc, char* argv[]) {
+/*int main(int argc, char* argv[]) {
     convert(argv[1]);
     sdl_setup();
     SDL_Surface* s = SDL_LoadBMP("img.bmp");
@@ -58,4 +56,4 @@ int main(int argc, char* argv[]) {
     SDL_FreeSurface(s);
     sdl_close();
     return EXIT_SUCCESS;
-}
+}*/
