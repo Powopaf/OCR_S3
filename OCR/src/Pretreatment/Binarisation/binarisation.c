@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <err.h>
 
-#include "../Utils/sdl_utils.h"
+//#include "../Utils/sdl_utils.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -83,7 +83,7 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k)
     SDL_UnlockSurface(surface);
 }
 //comment to run project uncomment to test greyscale
-int main() {
+/*int main() {
     for(int i = 1; i<=7; i++)
     {
         printf("Proccessing img%i ...\n",i);
@@ -106,4 +106,4 @@ int main() {
         free(file);
         free(save);
     }
-}
+}*/
