@@ -131,8 +131,10 @@ void FreeNode(Node* node, int freeData)
     if (node->data != NULL && freeData==1)
     {
         free(node->data);
+        node->data = NULL;
     }
     free(node);
+    node = NULL;
     
 }
 
@@ -147,6 +149,7 @@ void FreeNodeList(Node** lst, int freeData)
         FreeNode(c,freeData);
         c = n;
     }
+    c = NULL;
 
     *lst = NULL;
 }
