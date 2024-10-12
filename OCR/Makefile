@@ -12,15 +12,16 @@ SRC=\
 	src/Pretreament/Contrast/contrast.c \
 	src/Pretreament/Noise/gauss.c \
 	src/Pretreament/blur/blur.c \
+	src/Preatrement/Noise/median.c \
 	main.c
 
-OBJ= $(SRC:.c=.o)
+OBJ= $(SRC:.o=.c)
 
 ocr: $(BIN)
 	$(CC) -o ocr.out $+ $(LIB)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm $(OBJ) ocr.out *.bmp

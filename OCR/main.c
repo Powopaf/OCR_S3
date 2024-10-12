@@ -1,7 +1,14 @@
-#include <SDL2/SDL.h>
+#include <SDL2/SDL.h>1
+#include "src/Preatrement/Utils/sdl_utils.h"
+#include "src/Preatrement/Utils/convert.h"
+#include "src/Preatrement/GreyScale/greyscale.h"
+#include "src/Preatrement/Contrast/contrast.h"
+#include "src/Preatrement/Noise/gauss.h"
+#include "src/Preatrement/Noise/median.h"
+#include "src/Preatrement/Binarisation/binarisation.h"
 
 int main(int argc, char* argv[]) {
-    sdl_set_();
+    sdl_setup();
     convert(argv[1]);
     SDL_Surface* s = SDL_LoadBMP("img.bmp");
     greyscale(s);
