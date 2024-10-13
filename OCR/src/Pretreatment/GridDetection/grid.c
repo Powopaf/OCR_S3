@@ -1,7 +1,6 @@
 #include "grid.h"
 #include "Shape/shape.h"
 #include "Lib/Lib.h"
-#include "../Utils/sdl_utils.h"
 #include "List/Node.h"
 #include <stdio.h>
 #include <stdlib.h>

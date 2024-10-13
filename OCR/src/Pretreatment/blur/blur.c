@@ -8,7 +8,7 @@
 //#include "../GreyScale/greyscale.h"
 //////////////////////////////////////////////////////////////
 
-void blurring(SDL_Surface* surface) {
+void blur(SDL_Surface* surface) {
     /*
      * this function should be use AFTER greyscale()
     */

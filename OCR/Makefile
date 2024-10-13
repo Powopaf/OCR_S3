@@ -5,24 +5,23 @@ DEBUG=-g
 LIB=-lSDL2 -lm
 
 SRC=\
-	src/Pretreament/Utils/convert.c \
-	src/Pretreament/Utils/sdl_utils.c \
-	src/Pretreament/GreyScale/greyscale.c \
-	src/Pretreament/Binarisation/binarisation.c \
-	src/Pretreament/Contrast/contrast.c \
-	src/Pretreament/Noise/gauss.c \
-	src/Pretreament/blur/blur.c \
-	src/Preatrement/Noise/median.c \
+	src/Pretreatment/Utils/convert.c \
+	src/Pretreatment/Utils/sdl_utils.c \
+	src/Pretreatment/GreyScale/greyscale.c \
+	src/Pretreatment/Binarisation/binarisation.c \
+	src/Pretreatment/Contrast/contrast.c \
+	src/Pretreatment/Noise/gauss.c \
+	src/Pretreatment/blur/blur.c \
+	src/Pretreatment/Noise/median.c \
 	main.c
 
-OBJ= $(SRC:.o=.c)
+OBJ= $(SRC:.c=.o)
 
-ocr: $(BIN)
-	$(CC) -o ocr.out $+ $(LIB)
+main: $(BIN)
+	$(CC) -o main.out $+ $(LIB)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm $(OBJ) ocr.out *.bmp
-
+	rm $(OBJ) main.out *.bmp
