@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) 
+void binarisation(SDL_Surface *surface, int window_size, double k) 
 {
     if(surface==NULL)
     {
@@ -99,7 +99,7 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k)
         {
             err(1, "Unable to load image: %s\n", SDL_GetError());
         }
-        binarisation_sauvola(surface,21,0.35);
+        binarisation(surface,21,0.35);
         SDL_SaveBMP(surface, save);
         SDL_FreeSurface(surface);
         sdl_close();

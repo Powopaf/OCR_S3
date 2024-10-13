@@ -1,11 +1,11 @@
-#include <SDL2/SDL.h>1
-#include "src/Preatrement/Utils/sdl_utils.h"
-#include "src/Preatrement/Utils/convert.h"
-#include "src/Preatrement/GreyScale/greyscale.h"
-#include "src/Preatrement/Contrast/contrast.h"
-#include "src/Preatrement/Noise/gauss.h"
-#include "src/Preatrement/Noise/median.h"
-#include "src/Preatrement/Binarisation/binarisation.h"
+#include <SDL2/SDL.h>
+#include "src/Pretreatment/Utils/sdl_utils.h"
+#include "src/Pretreatment/Utils/convert.h"
+#include "src/Pretreatment/GreyScale/greyscale.h"
+#include "src/Pretreatment/Contrast/contrast.h"
+#include "src/Pretreatment/Noise/gauss.h"
+#include "src/Pretreatment/Noise/median.h"
+#include "src/Pretreatment/Binarisation/binarisation.h"
 
 int main(int argc, char* argv[]) {
     sdl_setup();
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     contrast(s);
     gauss(s);
     median(s);
-    binarisation(s);
+    binarisation(s, 21, 0.35);
     SDL_SaveBMP(s, "a.bmp");
     SDL_FreeSurface(s);
     sdl_close();
