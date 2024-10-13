@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-Wall
 
 DEBUG=-g
 LIB=-lSDL2 -lm
@@ -13,11 +13,11 @@ SRC=\
 	src/Pretreatment/Noise/gauss.c \
 	src/Pretreatment/blur/blur.c \
 	src/Pretreatment/Noise/median.c \
-	main.c
+	./main.c
 
 OBJ= $(SRC:.c=.o)
 
-main: $(BIN)
+main: $(OBJ)
 	$(CC) -o main.out $+ $(LIB)
 
 %.o: %.c

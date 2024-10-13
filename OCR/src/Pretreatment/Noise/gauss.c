@@ -22,7 +22,7 @@ double gFunc(int x, int y) {
     return part1 * part2;
 }
 
-void gaussianBlur(SDL_Surface* surface) {
+void gauss(SDL_Surface* surface) {
     /*
      * G(x,y) = (1/2*pi*sig^2)*(exp^(-(x^2 + y^2/2*sig^2)))
      * with x, y the neighboring pixel
