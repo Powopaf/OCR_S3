@@ -25,3 +25,4 @@ ocr: $(BIN)
 
 clean:
 	rm $(OBJ) ocr.out *.bmp
+
