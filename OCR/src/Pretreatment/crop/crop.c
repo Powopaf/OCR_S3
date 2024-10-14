@@ -20,14 +20,10 @@ SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
      * specific name
     */
     if (surface == NULL) {
-        char* arg[3] = { "../../Bash/rmAllBMP.sh", "4", NULL };
-        execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "surface is NULL can't crop");
     }
     SDL_Surface* cropImage = SDL_CreateRGBSurfaceWithFormat(0, w, h, 24, SDL_PIXELFORMAT_RGB24);
     if (SDL_LockSurface(surface) < 0 || SDL_LockSurface(cropImage) < 0) {
-        char* arg[3] = {"../../Bash/rmAllBMP.sh", "4", NULL };
-        execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "Lock issue: %s", SDL_GetError());
     }
     for (int i = 0; i < h; i++) {
