@@ -94,21 +94,17 @@ void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth)
 
 void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
 {   
-    //printf("Processing Shape %i\n",shape->id);
     if(!ContainsNode(*visited,shape))
     {
-        //printf("Pass the contains\n");
         Node* nv = NewNode(shape);
         Node* nc = NewNode(shape);
         AddNode(visited,nv);
-        //PrintNodeList(*visited," Visited");
+
         AddNode(cluster,nc);
-        //PrintNodeList(*cluster," Cluster");
-        //printf("PreVerif Node %i\n",shape->id);
+
         Node* current = *shapeList;
         while(current!=NULL)
         {
-            //printf("Verif Node %i\n",current->data->id);
             if(shape->id!=current->data->id)
             {
                 double seuil = 1.5;
@@ -125,11 +121,6 @@ void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
             current = current->next;
         }
     }
-    else
-    {
-        //printf("Node %i already Visited\n",shape->id);
-    }
-
 }
 
 void ShapeFilter(Node** shapeList)
@@ -253,6 +244,35 @@ void AdjustList(Node** lst) {
             prev = c;
             c = c->next;
         }
+
+    }
+}
+
+void ClusterFilter(Node** clusterList, int size)
+{
+    if(size>2)
+    {
+        double sumSize = 0;
+        for(int i = 0; i<size; i++)
+        {
+            sumSize+=ListSum(clusterList[i]);
+        }
+        double avSize = sumSize/(double)size;
+        int k = 0;
+
+        for(int i = 0; i<size; i++)
+        {
+            if(ListSum(clusterList[i])<avSize)
+            {
+                FreeNodeList(&clusterList[i],0);
+                clusterList[i] = NULL;
+            }
+            else
+            {
+                k++;
+            }
+        }
+        clusterList = ReduceArray(clusterList,&size,k);
     }
 }
 
@@ -304,33 +324,11 @@ void ProcessGrid(SDL_Surface *surface) {
     Node** clusterList = CreateCluster(&shapeList,&size);
     //Draw(surface, shapeList,255,255,0);
     
-    if(size>2)
-    {
-        double sumSize = 0;
-        for(int i = 0; i<size; i++)
-        {
-            sumSize+=ListSum(clusterList[i]);
-        }
-        double avSize = sumSize/(double)size;
-        int k = 0;
-
-        for(int i = 0; i<size; i++)
-        {
-            if(ListSum(clusterList[i])<avSize)
-            {
-                FreeNodeList(&clusterList[i],0);
-                clusterList[i] = NULL;
-            }
-            else
-            {
-                k++;
-            }
-        }
-        clusterList = ReduceArray(clusterList,&size,k);
-    }
+    ClusterFilter(clusterList,size);
     
     for(int i = 0; i<size; i++)
     {
+
         AdjustList(&clusterList[i]);
     }
     
