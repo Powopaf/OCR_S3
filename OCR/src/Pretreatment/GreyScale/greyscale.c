@@ -14,8 +14,6 @@ void greyscale(SDL_Surface* surface) {
     
     // error handling
     if (surface == NULL) {
-        char* arg[3] = { "../../Bash/rmAllBMP.sh", "4",  NULL };
-        execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "surface is NULL can't apply greyscale");
     }
 
@@ -29,8 +27,6 @@ void greyscale(SDL_Surface* surface) {
     
     //lock to protect memory with error handling
     if (SDL_LockSurface(surface) < 0) {
-        char* arg[3] = {"../../Bash/rmAllBMP.sh", "4", NULL };
-        execvp("../../Bash/rmALLBMP.sh", arg);
         errx(EXIT_FAILURE, "SDL_LockSurface fail:  %s", SDL_GetError());
     }
     
