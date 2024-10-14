@@ -41,7 +41,6 @@
 *.su
 *.idb
 *.pdb
-*.glade~
 
 # Kernel Module Compile Results
 *.mod*
@@ -57,4 +56,3 @@ dkms.conf
 
 # glade
 *.glade~
-
