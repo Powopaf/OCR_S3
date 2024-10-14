@@ -26,7 +26,7 @@
             <property name="margin-end">5</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkImage">
+              <object class="GtkImage" id="image_logo">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="pixbuf">icon_black.png</property>
@@ -69,7 +69,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_import">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Load Word Search Image / Picture</property>
@@ -82,7 +82,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkFileChooserButton" id="button_file">
+              <object class="GtkFileChooserButton" id="button_import">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">baseline</property>
@@ -107,7 +107,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_rotation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Manual Rotation</property>
@@ -120,7 +120,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScale">
+              <object class="GtkScale" id="scale_rotation">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="adjustment">adjustment_rotation</property>
@@ -147,7 +147,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_process">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Image Processing</property>
@@ -160,7 +160,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button_process">
                 <property name="label" translatable="yes">PROCESS</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -173,7 +173,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar">
+              <object class="GtkProgressBar" id="progress_bar">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="inverted">True</property>
@@ -186,7 +186,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSeparator">
+              <object class="GtkSeparator" id="sep_4">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
@@ -198,7 +198,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_steps">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Processing Steps</property>
@@ -211,7 +211,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step0">
+              <object class="GtkToggleButton" id="step_0">
                 <property name="label" translatable="yes">Original Image</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -225,7 +225,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step1">
+              <object class="GtkToggleButton" id="step_1">
                 <property name="label" translatable="yes">Greyscale</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -239,7 +239,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step2">
+              <object class="GtkToggleButton" id="step_2">
                 <property name="label" translatable="yes">Binarization</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -253,7 +253,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step3">
+              <object class="GtkToggleButton" id="step_3">
                 <property name="label" translatable="yes">Shape Detection</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -267,7 +267,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step4">
+              <object class="GtkToggleButton" id="step_4">
                 <property name="label" translatable="yes">Shape Filter</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -281,7 +281,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step5">
+              <object class="GtkToggleButton" id="step_5">
                 <property name="label" translatable="yes">Cluster Detection</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -295,7 +295,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step6">
+              <object class="GtkToggleButton" id="step_6">
                 <property name="label" translatable="yes">Cluster filter</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -309,7 +309,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step7">
+              <object class="GtkToggleButton" id="step_7">
                 <property name="label" translatable="yes">Solution</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -332,7 +332,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSeparator" id="sep_4">
+          <object class="GtkSeparator" id="sep_5">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
           </object>
@@ -365,31 +365,5 @@
       <mime-type>jpeg</mime-type>
       <mime-type>bmp</mime-type>
     </mime-types>
-  </object>
-  <object class="GtkListStore" id="list_steps">
-    <columns>
-      <!-- column-name step -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0">Original image</col>
-      </row>
-      <row>
-        <col id="0">Greyscale</col>
-      </row>
-      <row>
-        <col id="0">Noise Reduction</col>
-      </row>
-      <row>
-        <col id="0">Binarization</col>
-      </row>
-      <row>
-        <col id="0">Grid Detection</col>
-      </row>
-      <row>
-        <col id="0">Final Result</col>
-      </row>
-    </data>
   </object>
 </interface>

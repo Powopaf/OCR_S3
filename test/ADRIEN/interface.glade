@@ -69,7 +69,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label_load">
+              <object class="GtkLabel" id="label_import">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Load Word Search Image / Picture</property>
@@ -82,7 +82,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkFileChooserButton" id="button_file">
+              <object class="GtkFileChooserButton" id="button_import">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">baseline</property>
@@ -211,7 +211,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step0">
+              <object class="GtkToggleButton" id="step_0">
                 <property name="label" translatable="yes">Original Image</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -225,7 +225,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step1">
+              <object class="GtkToggleButton" id="step_1">
                 <property name="label" translatable="yes">Greyscale</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -239,7 +239,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step2">
+              <object class="GtkToggleButton" id="step_2">
                 <property name="label" translatable="yes">Binarization</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -253,7 +253,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step3">
+              <object class="GtkToggleButton" id="step_3">
                 <property name="label" translatable="yes">Shape Detection</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -267,7 +267,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step4">
+              <object class="GtkToggleButton" id="step_4">
                 <property name="label" translatable="yes">Shape Filter</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -281,7 +281,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step5">
+              <object class="GtkToggleButton" id="step_5">
                 <property name="label" translatable="yes">Cluster Detection</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -295,7 +295,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step6">
+              <object class="GtkToggleButton" id="step_6">
                 <property name="label" translatable="yes">Cluster filter</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -309,7 +309,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="step7">
+              <object class="GtkToggleButton" id="step_7">
                 <property name="label" translatable="yes">Solution</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
