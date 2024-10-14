@@ -1,13 +1,13 @@
 #include <SDL2/SDL.h>
 #include <err.h>
 
-#include "../Utils/sdl_utils.h"
+//#include "../Utils/sdl_utils.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void binarisation_sauvola(SDL_Surface *surface, int window_size, double k) 
+void binarisation(SDL_Surface *surface, int window_size, double k) 
 {
     if(surface==NULL)
     {
@@ -83,7 +83,7 @@ void binarisation_sauvola(SDL_Surface *surface, int window_size, double k)
     SDL_UnlockSurface(surface);
 }
 //comment to run project uncomment to test greyscale
-int main() {
+/*int main() {
     for(int i = 1; i<=7; i++)
     {
         printf("Proccessing img%i ...\n",i);
@@ -99,11 +99,11 @@ int main() {
         {
             err(1, "Unable to load image: %s\n", SDL_GetError());
         }
-        binarisation_sauvola(surface,21,0.35);
+        binarisation(surface,21,0.35);
         SDL_SaveBMP(surface, save);
         SDL_FreeSurface(surface);
         sdl_close();
         free(file);
         free(save);
     }
-}
+}*/

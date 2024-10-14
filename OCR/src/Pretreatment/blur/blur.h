@@ -1,6 +1,6 @@
 #ifndef BLUR
 #define BLUR
 
-void blurring(SDL_Surface* surface);
+void blur(SDL_Surface* surface);
 
 #endif

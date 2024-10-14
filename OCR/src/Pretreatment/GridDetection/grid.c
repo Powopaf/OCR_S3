@@ -1,7 +1,6 @@
 #include "grid.h"
 #include "Shape/shape.h"
 #include "Lib/Lib.h"
-#include "../Utils/sdl_utils.h"
 #include "List/Node.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -245,6 +244,7 @@ void AdjustList(Node** lst) {
             prev = c;
             c = c->next;
         }
+
     }
 }
 
@@ -328,6 +328,7 @@ void ProcessGrid(SDL_Surface *surface) {
     
     for(int i = 0; i<size; i++)
     {
+
         AdjustList(&clusterList[i]);
     }
     
