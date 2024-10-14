@@ -249,34 +249,6 @@ void AdjustList(Node** lst) {
     }
 }
 
-void ClusterFilter(Node** clusterList, int size)
-{
-    if(size>2)
-    {
-        double sumSize = 0;
-        for(int i = 0; i<size; i++)
-        {
-            sumSize+=ListSum(clusterList[i]);
-        }
-        double avSize = sumSize/(double)size;
-        int k = 0;
-
-        for(int i = 0; i<size; i++)
-        {
-            if(ListSum(clusterList[i])<avSize)
-            {
-                FreeNodeList(&clusterList[i],0);
-                clusterList[i] = NULL;
-            }
-            else
-            {
-                k++;
-            }
-        }
-        clusterList = ReduceArray(clusterList,&size,k);
-    }
-}
-
 Node** ClusterFilter(Node** clusterList, int* size)
 {
     if(*size>2)
