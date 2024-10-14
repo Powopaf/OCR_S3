@@ -1,6 +1,7 @@
 #include "grid.h"
 #include "Shape/shape.h"
 #include "Lib/Lib.h"
+#include "../Utils/sdl_utils.h"
 #include "List/Node.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -276,6 +277,35 @@ void ClusterFilter(Node** clusterList, int size)
     }
 }
 
+Node** ClusterFilter(Node** clusterList, int* size)
+{
+    if(*size>2)
+    {
+        double sumSize = 0;
+        for(int i = 0; i<*size; i++)
+        {
+            sumSize+=ListSum(clusterList[i]);
+        }
+        double avSize = sumSize/(double)*size;
+        int k = 0;
+
+        for(int i = 0; i<*size; i++)
+        {
+            if(ListSum(clusterList[i])<avSize)
+            {
+                FreeNodeList(&clusterList[i],0);
+                clusterList[i] = NULL;
+            }
+            else
+            {
+                k++;
+            }
+        }
+        clusterList = ReduceArray(clusterList,size,k);
+
+    }
+    return clusterList;
+}
 
 void ProcessGrid(SDL_Surface *surface) {
     int width = surface->w;
@@ -324,8 +354,8 @@ void ProcessGrid(SDL_Surface *surface) {
     Node** clusterList = CreateCluster(&shapeList,&size);
     //Draw(surface, shapeList,255,255,0);
     
-    ClusterFilter(clusterList,size);
-    
+    clusterList = ClusterFilter(clusterList,&size);
+
     for(int i = 0; i<size; i++)
     {
 
