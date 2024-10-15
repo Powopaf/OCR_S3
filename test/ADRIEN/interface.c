@@ -30,14 +30,14 @@ GtkWidget *sep_3;
 GtkWidget *sep_4;
 GtkWidget *sep_5;
 
-GtkWidget *step_0;
-GtkWidget *step_1;
-GtkWidget *step_2;
-GtkWidget *step_3;
-GtkWidget *step_4;
-GtkWidget *step_5;
-GtkWidget *step_6;
-GtkWidget *step_7;
+GtkToggleButton *step_0;
+GtkToggleButton *step_1;
+GtkToggleButton *step_2;
+GtkToggleButton *step_3;
+GtkToggleButton *step_4;
+GtkToggleButton *step_5;
+GtkToggleButton *step_6;
+GtkToggleButton *step_7;
 
 GtkWidget *image;
 GtkWidget *imageTMP;
@@ -84,124 +84,92 @@ int main(int argc, char *argv[])
     sep_4 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_4"));
     sep_5 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_5"));
 
-    step_0 = GTK_WIDGET(gtk_builder_get_object(builder, "step_0"));
-    step_1 = GTK_WIDGET(gtk_builder_get_object(builder, "step_1"));
-    step_2 = GTK_WIDGET(gtk_builder_get_object(builder, "step_2"));
-    step_3 = GTK_WIDGET(gtk_builder_get_object(builder, "step_3"));
-    step_4 = GTK_WIDGET(gtk_builder_get_object(builder, "step_4"));
-    step_5 = GTK_WIDGET(gtk_builder_get_object(builder, "step_5"));
-    step_6 = GTK_WIDGET(gtk_builder_get_object(builder, "step_6"));
-    step_7 = GTK_WIDGET(gtk_builder_get_object(builder, "step_7"));
+    step_0 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_0"));
+    step_1 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_1"));
+    step_2 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_2"));
+    step_3 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_3"));
+    step_4 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_4"));
+    step_5 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_5"));
+    step_6 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_6"));
+    step_7 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_7"));
+    
+    g_signal_connect(step_0, "toggled", G_CALLBACK(on_step_0_toggled), NULL);
+    g_signal_connect(step_1, "toggled", G_CALLBACK(on_step_1_toggled), NULL);
+    g_signal_connect(step_2, "toggled", G_CALLBACK(on_step_2_toggled), NULL);
+    g_signal_connect(step_3, "toggled", G_CALLBACK(on_step_3_toggled), NULL);
+    g_signal_connect(step_4, "toggled", G_CALLBACK(on_step_4_toggled), NULL);
+    g_signal_connect(step_5, "toggled", G_CALLBACK(on_step_5_toggled), NULL);
+    g_signal_connect(step_6, "toggled", G_CALLBACK(on_step_6_toggled), NULL);
+    g_signal_connect(step_7, "toggled", G_CALLBACK(on_step_7_toggled), NULL);
     
     imageTMP = NULL;
     
     gtk_widget_show(window);
     gtk_main();
+    g_object_unref(builder);
     return EXIT_SUCCESS;
 }
 
 void on_button_import_file_set()
 {
-    //NOT WORKING
-    gtk_label_set_text(GTK_LABEL(label_import),(const gchar*)"Import image from device files");
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
-    gchar *name = gtk_file_chooser_get_filename(chooser);
-    //gtk_image_set_from_file(GTK_IMAGE(image),filename);
-    //g_free(filename);
-    int len = strlen(name);
-    char filename[len + 1];
-    strcpy(filename, name);
-
-    //char filename[] = filename;
-    char cmd[2048];
-    FILE *f1;
-    size_t j;
-    int h;
-    int v;
-    int hor = 150;
-    int ver = 1;
-    
+    //Shows next buttons
     on_button_import_clicked();
 
-    if (imageTMP)
+    //Gets filename into a char array
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
+    gchar *name = gtk_file_chooser_get_filename(chooser);
+    if (name == NULL)
     {
-    	gtk_container_remove(GTK_CONTAINER (box_vertical), imageTMP); // remove old slide
+        return;
     }
-    gtk_widget_hide(image);
+    char *filename = g_strdup(name);
 
-    //Get dimensions of image with identify (ImageMagick)
+    //Clear the previous image
+    if (image)
+    {
+        gtk_widget_destroy(image); 
+        image = NULL;
+    }
+    if (imageTMP) {
+        gtk_widget_destroy(imageTMP);
+        imageTMP = NULL;
+    }
 
-    sprintf(cmd, "identify -format %%wx%%h \"%s\"\n", filename);
-    f1 = popen(cmd, "r");
-    strcpy(cmd, "");
-    fgets(cmd, 512, f1);
-    fclose(f1);
+    //Gets GTK window size to adjust the image height
+    int window_width, window_height;
+    gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
+    int height = window_height;
 
-	h = v = 1;
-
-	if (strlen(cmd))
-	{
-		for (j = 0; j < strlen(cmd) - 1; j++)
-        {
-            if (cmd[j] == 'x')
-            {
-                break;
-            }
-        }
-
-        if (cmd[j] == 'x')
-        {
-			cmd[j] = 0;
-			sscanf(cmd, "%d", &h);
-			sscanf(&cmd[j+1], "%d", &v);
-		}
-	}
-
-    //Resize the image with convert (ImageMagick)
-
-    int width = 900; 
-    int height = 700;
-
-    sprintf(cmd, "magick \"%s\" -resize %dx%d tmp.jpg", filename, width, height);
+    //Resizing the image with ImageMagick
+    char cmd[2048];
+    sprintf(cmd, "magick \"%s\" -resize x%d tmp.jpg", filename, height);
     system(cmd);
 
-    strcpy(filename,"tmp.jpg");
-
-//	Get new image dimensions  - actual dimensions will be in the
-//	range of the conversion. Conversion will maintain ratio.
-
-    sprintf(cmd, "identify -format %%wx%%h \"%s\"\n", filename);
-    f1 = popen(cmd, "r");
-    strcpy(cmd,"");
-    fgets(cmd, 512, f1);
-    fclose(f1);
-    h = v = 1;
-
-    if (strlen(cmd)) 
+    //Maintain the right ratio
+    sprintf(cmd, "identify -format %%wx%%h \"tmp.jpg\"\n");
+    FILE *f1 = popen(cmd, "r");
+    if (f1 == NULL)
     {
-        for (j = 0; j < strlen(cmd) - 1; j++) 
-            if (cmd[j] == 'x') 
-                break;
-
-        if (cmd[j] == 'x')
-        {
-            cmd[j] = 0;
-            sscanf(cmd, "%d", &h);
-            sscanf(&cmd[j+1], "%d", &v);
-        }
+        g_print("Error reading image dimensions\n");
+        g_free(filename);
+        return;
     }
+    char dimensions[512];
+    fgets(dimensions, sizeof(dimensions), f1);
+    pclose(f1);
+    int resized_width = 1;
+    int resized_height = 1;
+    sscanf(dimensions, "%dx%d", &resized_width, &resized_height);
 
-//h and v are now the actual new dimensions which you can use
-//to better center your image in the GUI
+    // Load the resized image
+    imageTMP = gtk_image_new_from_file("tmp.jpg");
+    gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
+    gtk_widget_show(imageTMP);
 
-	imageTMP = gtk_image_new_from_file(filename);
-
-	gtk_container_add (GTK_CONTAINER(box_vertical), imageTMP);
-	gtk_widget_show(imageTMP);
-
-	gtk_fixed_move (GTK_FIXED(box_vertical), imageTMP, hor, ver);
-
-	system("rm tmp.jpg");
+    system("rm tmp.jpg");
+    g_free(filename);
 }
 
 void on_button_import_clicked()
@@ -215,14 +183,14 @@ void on_button_import_clicked()
 
     gtk_widget_hide(sep_4);
     gtk_widget_hide(label_steps);
-    gtk_widget_hide(step_0);
-    gtk_widget_hide(step_1);
-    gtk_widget_hide(step_2);
-    gtk_widget_hide(step_3);
-    gtk_widget_hide(step_4);
-    gtk_widget_hide(step_5);
-    gtk_widget_hide(step_6);
-    gtk_widget_hide(step_7);
+    gtk_widget_hide(GTK_WIDGET(step_0));
+    gtk_widget_hide(GTK_WIDGET(step_1));
+    gtk_widget_hide(GTK_WIDGET(step_2));
+    gtk_widget_hide(GTK_WIDGET(step_3));
+    gtk_widget_hide(GTK_WIDGET(step_4));
+    gtk_widget_hide(GTK_WIDGET(step_5));
+    gtk_widget_hide(GTK_WIDGET(step_6));
+    gtk_widget_hide(GTK_WIDGET(step_7));
 
 }
 
@@ -230,76 +198,63 @@ void on_button_process_clicked()
 {
     gtk_widget_show(sep_4);
     gtk_widget_show(label_steps);
-    gtk_widget_show(step_0);
-    gtk_widget_show(step_1);
-    gtk_widget_show(step_2);
-    gtk_widget_show(step_3);
-    gtk_widget_show(step_4);
-    gtk_widget_show(step_5);
-    gtk_widget_show(step_6);
-    gtk_widget_show(step_7);
+    gtk_widget_show(GTK_WIDGET(step_0));
+    gtk_widget_show(GTK_WIDGET(step_1));
+    gtk_widget_show(GTK_WIDGET(step_2));
+    gtk_widget_show(GTK_WIDGET(step_3));
+    gtk_widget_show(GTK_WIDGET(step_4));
+    gtk_widget_show(GTK_WIDGET(step_5));
+    gtk_widget_show(GTK_WIDGET(step_6));
+    gtk_widget_show(GTK_WIDGET(step_7));
 }
 
-void toggle_button_clicked(GtkToggleButton *toggled_button)
-{
-    //Cast GtkWidget* to GtkToggleButton*
-    GtkToggleButton *buttons[] =
-    {
-        GTK_TOGGLE_BUTTON(step_0),
-        GTK_TOGGLE_BUTTON(step_1),
-        GTK_TOGGLE_BUTTON(step_2),
-        GTK_TOGGLE_BUTTON(step_3),
-        GTK_TOGGLE_BUTTON(step_4),
-        GTK_TOGGLE_BUTTON(step_5),
-        GTK_TOGGLE_BUTTON(step_6),
-        GTK_TOGGLE_BUTTON(step_7)
-    };
+void toggle_buttons_clicked(GtkToggleButton *active_button) {
+    GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
 
-    for (int i = 0; i < 8; i++)
-    {
-        if (buttons[i] != toggled_button)
-        {
+    // Check if the clicked button is already active
+    if (gtk_toggle_button_get_active(active_button)) {
+        return; // Exit if the active button is already checked
+    }
+
+    // Deactivate all buttons except the active one
+    for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+        if (buttons[i] != active_button) {
             gtk_toggle_button_set_active(buttons[i], FALSE);
         }
     }
+    // Activate the clicked button
+    gtk_toggle_button_set_active(active_button, TRUE);
 }
 
-void on_step_0_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_0));
+
+void on_step_0_toggled() {
+    toggle_buttons_clicked(step_0);
 }
 
-void on_step_1_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_1));
+void on_step_1_toggled() {
+    toggle_buttons_clicked(step_1);
 }
 
-void on_step_2_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_2));
+void on_step_2_toggled() {
+    toggle_buttons_clicked(step_2);
 }
 
-void on_step_3_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_3));
+void on_step_3_toggled() {
+    toggle_buttons_clicked(step_3);
 }
 
-void on_step_4_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_4));
+void on_step_4_toggled() {
+    toggle_buttons_clicked(step_4);
 }
 
-void on_step_5_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_5));
+void on_step_5_toggled() {
+    toggle_buttons_clicked(step_5);
 }
 
-void on_step_6_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_6));
+void on_step_6_toggled() {
+    toggle_buttons_clicked(step_6);
 }
 
-void on_step_7_toggled()
-{
-    toggle_button_clicked(GTK_TOGGLE_BUTTON(step_7));
+void on_step_7_toggled() {
+    toggle_buttons_clicked(step_7);
 }
