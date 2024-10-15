@@ -3,6 +3,24 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 
+SDL_Surface* DuplicateSurface(SDL_Surface* surface)
+{
+    SDL_UnlockSurface(surface);
+    SDL_Surface* duplicate_surface = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, 24, SDL_PIXELFORMAT_RGB24);
+    if(duplicate_surface==NULL)
+    {
+        err(1,"ERROR: duplicate surface\n");
+    }
+
+    if(SDL_BlitSurface(surface, NULL, duplicate_surface, NULL) < 0) 
+    {
+        SDL_FreeSurface(duplicate_surface); // Free the duplicate in case of an error
+        err(1,"ERROR: copy duplicate surface\n");
+    }
+    SDL_LockSurface(surface);
+    return duplicate_surface;
+}
+
 
 void MallocMatrix(int ***arr, int sizex, int sizey) {
     *arr = (int **)malloc(sizex * sizeof(int *));
@@ -77,6 +95,55 @@ double distance(int x1, int y1, int x2, int y2)
     return sqrt(dx * dx + dy * dy);
 }
 
+int ListSum(Node* lst)
+{
+    int sum = 0;
+    while(lst!=NULL)
+    {
+        sum+=lst->data->Len;
+        lst = lst->next;
+    }
+    return sum;
+}
+
+Node** ReduceArray(Node** lst, int* size, int nsize)
+{
+    int count = nsize;
+    if(nsize==0)
+    {
+        for(int i = 0; i<*size; i++)
+        {
+            if(lst[i]!=NULL)
+            {
+                count++;
+            }
+        }
+    }
+
+    
+    Node** res = (Node**)malloc(count*sizeof(Node*));
+    int k = 0;
+    for(int i = 0; i<*size; i++)
+    {
+        if(lst[i]!=NULL)
+        {
+            res[k] = lst[i];
+            k++;
+        }
+    }
+    *size = count;
+    free(lst);
+    return res;
+}
+
+void FindShapePosMatrix(Node* shapeList, int* j, int* i)
+{
+    // find for each Shape the position in the matrix, store the result in
+    // Shape->Matj and Shape->Mati, and store the dimension of the matrix in j
+    // and i
+    return;
+}
+
 void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 {
     SDL_PixelFormat* format = surface->format;
@@ -119,3 +186,14 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
     SDL_UnlockSurface(surface);
 }
 
+void DrawList(SDL_Surface* surface, Node** clusterList, int size)
+{
+    for(int i = 0; i<size; i++)
+    {
+        float hue = (i * 360.0 / size);
+        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2);
+        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
+        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+        Draw(surface,clusterList[i],r,g,b);
+    }
+}

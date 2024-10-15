@@ -20,6 +20,9 @@ Shape* CreateShape(int id, int j, int i) {
     s->Maxi = i;
     s->Minj = j;
     s->Mini = i;
+    
+    s->Matj = 0;
+    s->Mati = 0;
 
     s->Len = 0;;
     return s;
@@ -60,5 +63,38 @@ void FindShape(Shape* s, int** surface, int** Map, int j, int i, int height, int
 
 int IsShapeValid(SDL_Surface* surface, Shape* s) {
     return (s->w < surface->w / 8 && s->h < surface->h / 8);
+}
+
+double FindLowestDist(Shape* s1, Shape* s2)
+{
+    int p1[4][2] = {
+        {s1->Minj,s1->Mini},
+        {s1->Minj,s1->Maxi},
+        {s1->Maxj,s1->Mini},
+        {s1->Maxj,s1->Maxi}
+    };
+
+    int p2[4][2] = {
+        {s2->Minj,s2->Mini},
+        {s2->Minj,s2->Maxi},
+        {s2->Maxj,s2->Mini},
+        {s2->Maxj,s2->Maxi}
+    };
+
+    double MinDist = distance(p1[0][0],p1[0][1],p2[0][0],p2[0][1]);
+    for(int i = 0; i<4; i++)
+    {
+        for(int j = 0; j<4; j++)
+        {
+            double dist = distance(p1[i][0],p1[i][1],p2[j][0],p2[j][1]);
+            if(dist<MinDist)
+            {
+                MinDist = dist;
+            }
+        }
+    }
+
+    return MinDist;
+
 }
 
