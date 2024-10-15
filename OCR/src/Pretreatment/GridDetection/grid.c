@@ -206,7 +206,8 @@ Node** ClusterFilter(Node** clusterList, int* size)
     return clusterList;
 }
 
-void ProcessGrid(SDL_Surface *surface) {
+void ProcessGrid(SDL_Surface *surface) 
+{
     int width = surface->w;
     int height = surface->h;
     int** Map;
@@ -248,14 +249,25 @@ void ProcessGrid(SDL_Surface *surface) {
     FreeMatrix(surf, height);
     
     SDL_Surface* temp_surface = DuplicateSurface(surface);
-    SDL_SaveBMP(temp_surface, "imgFindShape.bmp");
+    Draw(temp_surface,shapeList,177,0,0);
+    SDL_SaveBMP(temp_surface, "output/imgFindShape.bmp");
     SDL_FreeSurface(temp_surface);
 
     ShapeFilter(&shapeList);
     
+    temp_surface = DuplicateSurface(surface);
+    Draw(temp_surface,shapeList,177,0,0);
+    SDL_SaveBMP(temp_surface, "output/imgShapeFilter.bmp");
+    SDL_FreeSurface(temp_surface);
+    
     int size = 0;
     Node** clusterList = CreateCluster(&shapeList,&size);
-    //Draw(surface, shapeList,255,255,0);
+    //Draw(surface, shapeList,255,255,0
+    
+    temp_surface = DuplicateSurface(surface);
+    DrawList(temp_surface,clusterList,size);
+    SDL_SaveBMP(temp_surface, "output/imgFindCluster.bmp");
+    SDL_FreeSurface(temp_surface);
     
     clusterList = ClusterFilter(clusterList,&size);
 
@@ -268,11 +280,10 @@ void ProcessGrid(SDL_Surface *surface) {
     
     for(int i = 0; i<size; i++)
     {
-        PrintNodeList(clusterList[i]," Cluster");
+        //PrintNodeList(clusterList[i]," Cluster");
         FreeNodeList(&clusterList[i],0);
     }
     free(clusterList);
-
     FreeNodeList(&shapeList,1);
 
     SDL_UnlockSurface(surface);
