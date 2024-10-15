@@ -8,6 +8,14 @@
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
+  <object class="GtkFileFilter" id="filter">
+    <patterns>
+      <pattern>*.png</pattern>
+      <pattern>*.jpg</pattern>
+      <pattern>*.jpeg</pattern>
+      <pattern>*.bmp</pattern>
+    </patterns>
+  </object>
   <object class="GtkWindow" id="window">
     <property name="can-focus">False</property>
     <property name="window-position">center</property>
@@ -72,7 +80,7 @@
               <object class="GtkLabel" id="label_import">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Load Word Search Image / Picture</property>
+                <property name="label">Load Word Search Image / Picture</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -86,7 +94,10 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">baseline</property>
-                <property name="title" translatable="yes"/>
+                <property name="create-folders">False</property>
+                <property name="filter">filter</property>
+                <property name="title"/>
+                <signal name="file-set" handler="on_button_import_file_set" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -96,7 +107,6 @@
             </child>
             <child>
               <object class="GtkSeparator" id="sep_2">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
               <packing>
@@ -108,9 +118,8 @@
             </child>
             <child>
               <object class="GtkLabel" id="label_rotation">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Manual Rotation</property>
+                <property name="label">Manual Rotation</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -121,7 +130,6 @@
             </child>
             <child>
               <object class="GtkScale" id="scale_rotation">
-                <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="adjustment">adjustment_rotation</property>
                 <property name="fill-level">180</property>
@@ -136,7 +144,6 @@
             </child>
             <child>
               <object class="GtkSeparator" id="sep_3">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
               <packing>
@@ -148,9 +155,8 @@
             </child>
             <child>
               <object class="GtkLabel" id="label_process">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Image Processing</property>
+                <property name="label">Image Processing</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -161,10 +167,10 @@
             </child>
             <child>
               <object class="GtkButton" id="button_process">
-                <property name="label" translatable="yes">PROCESS</property>
-                <property name="visible">True</property>
+                <property name="label">PROCESS</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
+                <signal name="clicked" handler="on_button_process_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -173,21 +179,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar" id="progress_bar">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="inverted">True</property>
-                <property name="show-text">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">11</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkSeparator" id="sep_4">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
               <packing>
@@ -199,9 +191,8 @@
             </child>
             <child>
               <object class="GtkLabel" id="label_steps">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Processing Steps</property>
+                <property name="label">Processing Steps</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -212,11 +203,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_0">
-                <property name="label" translatable="yes">Original Image</property>
-                <property name="visible">True</property>
+                <property name="label">Original Image</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_0_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -226,11 +217,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_1">
-                <property name="label" translatable="yes">Greyscale</property>
-                <property name="visible">True</property>
+                <property name="label">Greyscale</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_1_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -240,11 +231,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_2">
-                <property name="label" translatable="yes">Binarization</property>
-                <property name="visible">True</property>
+                <property name="label">Binarization</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_2_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -254,11 +245,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_3">
-                <property name="label" translatable="yes">Shape Detection</property>
-                <property name="visible">True</property>
+                <property name="label">Shape Detection</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_3_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -268,11 +259,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_4">
-                <property name="label" translatable="yes">Shape Filter</property>
-                <property name="visible">True</property>
+                <property name="label">Shape Filter</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_4_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -282,11 +273,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_5">
-                <property name="label" translatable="yes">Cluster Detection</property>
-                <property name="visible">True</property>
+                <property name="label">Cluster Detection</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_5_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -296,11 +287,11 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_6">
-                <property name="label" translatable="yes">Cluster filter</property>
-                <property name="visible">True</property>
+                <property name="label">Cluster filter</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_6_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -310,12 +301,12 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_7">
-                <property name="label" translatable="yes">Solution</property>
-                <property name="visible">True</property>
+                <property name="label">Solution</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
                 <property name="margin-bottom">10</property>
+                <signal name="toggled" handler="on_step_7_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -346,7 +337,7 @@
           <object class="GtkImage" id="image">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="pixel-size">40</property>
+            <property name="pixel-size">120</property>
             <property name="icon-name">document-open</property>
           </object>
           <packing>
@@ -357,13 +348,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkFileFilter" id="filter">
-    <mime-types>
-      <mime-type>png</mime-type>
-      <mime-type>jpg</mime-type>
-      <mime-type>jpeg</mime-type>
-      <mime-type>bmp</mime-type>
-    </mime-types>
   </object>
 </interface>
