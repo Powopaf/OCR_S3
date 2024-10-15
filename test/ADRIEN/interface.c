@@ -1,4 +1,4 @@
-//GTK interface using Glade
+// GTK interface using Glade and gtk3
 
 #include "interface.h"
 #include <gtk/gtk.h>
@@ -17,6 +17,7 @@ GtkWidget *image_logo;
 GtkWidget *scale_rotation;
 GtkWidget *button_import;
 GtkWidget *button_process;
+GtkWidget *button_export;
 
 GtkWidget *label_title;
 GtkWidget *label_import;
@@ -29,6 +30,7 @@ GtkWidget *sep_2;
 GtkWidget *sep_3;
 GtkWidget *sep_4;
 GtkWidget *sep_5;
+GtkWidget *sep_6;
 
 GtkToggleButton *step_0;
 GtkToggleButton *step_1;
@@ -44,19 +46,19 @@ GtkWidget *imageTMP;
 
 int main(int argc, char *argv[]) 
 {
-    //Initialize GTK with arguments
+    // Initialize GTK with arguments
     gtk_init(&argc, &argv);
     
-    //Reads the XML glade file
+    // Reads the XML glade file
     builder = gtk_builder_new_from_file("interface.glade");
     
-    //Builds the GTK window
+    // Builds the GTK window
     window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     
-    //Destroys program on application exit
+    // Destroys program on application exit
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
-    //Builds a table to see where does the signals come from
+    // Builds a table to see where does the signals come from
     gtk_builder_connect_signals(builder, NULL);
     
     //Pointers for GTK objects
@@ -72,6 +74,7 @@ int main(int argc, char *argv[])
     adjustment_rotation = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_rotation"));
     filter = GTK_FILE_FILTER(gtk_builder_get_object(builder, "filter"));
     button_process = GTK_WIDGET(gtk_builder_get_object(builder, "button_process"));
+    button_export = GTK_WIDGET(gtk_builder_get_object(builder, "button_export"));
 
     label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
     label_rotation = GTK_WIDGET(gtk_builder_get_object(builder, "label_rotation"));
@@ -83,6 +86,7 @@ int main(int argc, char *argv[])
     sep_3 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_3"));
     sep_4 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_4"));
     sep_5 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_5"));
+    sep_6 = GTK_WIDGET(gtk_builder_get_object(builder, "sep_6"));
 
     step_0 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_0"));
     step_1 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_1"));
@@ -93,15 +97,6 @@ int main(int argc, char *argv[])
     step_6 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_6"));
     step_7 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_7"));
     
-    g_signal_connect(step_0, "toggled", G_CALLBACK(on_step_0_toggled), NULL);
-    g_signal_connect(step_1, "toggled", G_CALLBACK(on_step_1_toggled), NULL);
-    g_signal_connect(step_2, "toggled", G_CALLBACK(on_step_2_toggled), NULL);
-    g_signal_connect(step_3, "toggled", G_CALLBACK(on_step_3_toggled), NULL);
-    g_signal_connect(step_4, "toggled", G_CALLBACK(on_step_4_toggled), NULL);
-    g_signal_connect(step_5, "toggled", G_CALLBACK(on_step_5_toggled), NULL);
-    g_signal_connect(step_6, "toggled", G_CALLBACK(on_step_6_toggled), NULL);
-    g_signal_connect(step_7, "toggled", G_CALLBACK(on_step_7_toggled), NULL);
-    
     imageTMP = NULL;
     
     gtk_widget_show(window);
@@ -110,21 +105,9 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void on_button_import_file_set()
+void load_image(char *filename)
 {
-    //Shows next buttons
-    on_button_import_clicked();
-
-    //Gets filename into a char array
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
-    gchar *name = gtk_file_chooser_get_filename(chooser);
-    if (name == NULL)
-    {
-        return;
-    }
-    char *filename = g_strdup(name);
-
-    //Clear the previous image
+    // Clear the previous image
     if (image)
     {
         gtk_widget_destroy(image); 
@@ -135,28 +118,28 @@ void on_button_import_file_set()
         imageTMP = NULL;
     }
 
-    //Gets GTK window size to adjust the image height
+    // Get GTK window size to adjust the image height
     int window_width, window_height;
     gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
     int height = window_height;
 
-    //Resizing the image with ImageMagick
+    // Resize the image with ImageMagick
     char cmd[2048];
     sprintf(cmd, "magick \"%s\" -resize x%d tmp.jpg", filename, height);
     system(cmd);
 
-    //Maintain the right ratio
+    // Maintain the right ratio
     sprintf(cmd, "identify -format %%wx%%h \"tmp.jpg\"\n");
     FILE *f1 = popen(cmd, "r");
     if (f1 == NULL)
     {
         g_print("Error reading image dimensions\n");
-        g_free(filename);
         return;
     }
     char dimensions[512];
     fgets(dimensions, sizeof(dimensions), f1);
     pclose(f1);
+    
     int resized_width = 1;
     int resized_height = 1;
     sscanf(dimensions, "%dx%d", &resized_width, &resized_height);
@@ -168,8 +151,28 @@ void on_button_import_file_set()
     gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
     gtk_widget_show(imageTMP);
 
+    // Remove temporary image
     system("rm tmp.jpg");
-    g_free(filename);
+}
+
+void on_button_import_file_set()
+{
+    // Shows next buttons
+    on_button_import_clicked();
+
+    // Gets filename into a char array
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
+    gchar *name = gtk_file_chooser_get_filename(chooser);
+    if (name == NULL)
+    {
+        return;
+    }
+
+    // Call load_image with the selected filename
+    load_image(name);
+
+    // Free the memory allocated for the file name
+    g_free(name);
 }
 
 void on_button_import_clicked()
@@ -182,6 +185,8 @@ void on_button_import_clicked()
     gtk_widget_show(button_process);
 
     gtk_widget_hide(sep_4);
+    gtk_widget_hide(sep_6);
+    gtk_widget_hide(button_export);
     gtk_widget_hide(label_steps);
     gtk_widget_hide(GTK_WIDGET(step_0));
     gtk_widget_hide(GTK_WIDGET(step_1));
@@ -196,7 +201,16 @@ void on_button_import_clicked()
 
 void on_button_process_clicked()
 {
+    GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
+    on_steps_toggled(buttons);
+    if (!gtk_toggle_button_get_active(step_7))
+    {
+        gtk_toggle_button_set_active(step_7, TRUE);
+    }
+    
     gtk_widget_show(sep_4);
+    gtk_widget_show(sep_6);
+    gtk_widget_show(button_export);
     gtk_widget_show(label_steps);
     gtk_widget_show(GTK_WIDGET(step_0));
     gtk_widget_show(GTK_WIDGET(step_1));
@@ -206,55 +220,92 @@ void on_button_process_clicked()
     gtk_widget_show(GTK_WIDGET(step_5));
     gtk_widget_show(GTK_WIDGET(step_6));
     gtk_widget_show(GTK_WIDGET(step_7));
+    
+    gtk_widget_hide(sep_2);
+    gtk_widget_hide(label_rotation);
+    gtk_widget_hide(scale_rotation);
+    gtk_widget_hide(sep_3);
+    gtk_widget_hide(label_process);
+    gtk_widget_hide(button_process);
 }
 
-void toggle_buttons_clicked(GtkToggleButton *active_button) {
-    GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
-
-    // Check if the clicked button is already active
-    if (gtk_toggle_button_get_active(active_button)) {
-        return; // Exit if the active button is already checked
+void on_step_0_toggled()
+{
+    if (gtk_toggle_button_get_active(step_0))
+    {
+        GtkToggleButton *buttons[] = {step_1, step_2, step_3, step_4, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
     }
+}
 
-    // Deactivate all buttons except the active one
-    for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        if (buttons[i] != active_button) {
-            gtk_toggle_button_set_active(buttons[i], FALSE);
-        }
+void on_step_1_toggled()
+{
+    if (gtk_toggle_button_get_active(step_1))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_2, step_3, step_4, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
     }
-    // Activate the clicked button
-    gtk_toggle_button_set_active(active_button, TRUE);
 }
 
-
-void on_step_0_toggled() {
-    toggle_buttons_clicked(step_0);
+void on_step_2_toggled()
+{
+    if (gtk_toggle_button_get_active(step_2))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_3, step_4, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_1_toggled() {
-    toggle_buttons_clicked(step_1);
+void on_step_3_toggled()
+{
+    if (gtk_toggle_button_get_active(step_3))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_4, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_2_toggled() {
-    toggle_buttons_clicked(step_2);
+void on_step_4_toggled()
+{
+    if (gtk_toggle_button_get_active(step_4))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_3_toggled() {
-    toggle_buttons_clicked(step_3);
+void on_step_5_toggled()
+{
+    if (gtk_toggle_button_get_active(step_5))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_6, step_7};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_4_toggled() {
-    toggle_buttons_clicked(step_4);
+void on_step_6_toggled()
+{
+    if (gtk_toggle_button_get_active(step_6))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_7};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_5_toggled() {
-    toggle_buttons_clicked(step_5);
+void on_step_7_toggled()
+{
+    if (gtk_toggle_button_get_active(step_7))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6};
+        on_steps_toggled(buttons);
+    }
 }
 
-void on_step_6_toggled() {
-    toggle_buttons_clicked(step_6);
+void on_steps_toggled(GtkToggleButton *buttons[])
+{
+    for (size_t i = 0; i < 7; i++)
+    {
+        gtk_toggle_button_set_active(buttons[i], FALSE);
+    }
 }
 
-void on_step_7_toggled() {
-    toggle_buttons_clicked(step_7);
-}

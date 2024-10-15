@@ -9,7 +9,8 @@
 void on_button_import_clicked();
 void on_button_process_clicked();
 void on_button_import_file_set();
-void toggle_button_clicked(GtkToggleButton *active_button);
+void load_image(char *filename);
+void on_steps_toggled(GtkToggleButton **buttons);
 void on_step_0_toggled();
 void on_step_1_toggled();
 void on_step_2_toggled();
