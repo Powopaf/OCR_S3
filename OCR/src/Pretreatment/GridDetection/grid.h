@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "../crop/crop.h"
+
 void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth);
 void AdjustList(Node** lst);
 void ShapeFilter(Node** shapeList);

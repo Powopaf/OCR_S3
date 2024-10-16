@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <err.h>
 #include <unistd.h>
-
+#include "crop.h"
 //comment to run project uncomment to run crop()
 //#include "../Utils/convert.h"
 //#include "../Utils/sdl_utils.h"
@@ -38,6 +38,41 @@ SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
     SDL_UnlockSurface(surface);
     SDL_UnlockSurface(cropImage);
     return cropImage;
+}
+
+void cropLetter(char* dirname, Shape* shape, int** Map)
+{
+    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, shape->w, shape->h, 24,SDL_PIXELFORMAT_RGB24);
+    
+    SDL_LockSurface(surface);
+    Uint8* pix = (Uint8*)surface->pixels;
+    SDL_PixelFormat* format = surface->format;
+    int bpp = format->BytesPerPixel;
+    int p = surface->pitch;
+
+    int id = shape->id;
+    for(int j = shape->Minj; j<=shape->Maxj; j++)
+    {
+        for(int i = shape->Mini; i<=shape->Maxi; i++)
+        {
+            if(Map[j][i]==id)
+            {
+                int cropj = j-shape->Minj;
+                int cropi = i-shape->Mini;
+                Uint8* pixel = pix + cropj * p + cropi * bpp;
+                pixel[0] = 255;
+                pixel[1] = 255;
+                pixel[2] = 255;
+            }
+        }
+    }
+    SDL_UnlockSurface(surface);
+    char s[2048];
+    sprintf(s,"%s/letter%i.bmp",dirname,shape->id);
+
+    SDL_SaveBMP(surface,s);
+
+    SDL_FreeSurface(surface);
 }
 
 

@@ -39,16 +39,3 @@ void Process(char* filename)
 }
 
 
-/*
-int main(int argc, char* argv[]) {
-    
-    if(argc==1)
-    {
-        err(1,"ERROR: too few argument\n");
-    }
-    Process(argv[1]);
-
-    return EXIT_SUCCESS;
-}
-
-*/

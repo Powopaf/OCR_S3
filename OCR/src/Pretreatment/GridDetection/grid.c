@@ -245,7 +245,7 @@ void ProcessGrid(SDL_Surface *surface)
         }
     }
 
-    FreeMatrix(Map, height);
+    //FreeMatrix(Map, height);
     FreeMatrix(surf, height);
     
     SDL_Surface* temp_surface = DuplicateSurface(surface);
@@ -281,8 +281,19 @@ void ProcessGrid(SDL_Surface *surface)
     for(int i = 0; i<size; i++)
     {
         //PrintNodeList(clusterList[i]," Cluster");
+        
+        Node* c = clusterList[i];
+        while(c!=NULL)
+        {
+            cropLetter("output/letter/",c->data,Map);
+            c = c->next;
+        }
+        
         FreeNodeList(&clusterList[i],0);
     }
+
+    FreeMatrix(Map, height);
+
     free(clusterList);
     FreeNodeList(&shapeList,1);
 
