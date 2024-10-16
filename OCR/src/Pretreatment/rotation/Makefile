@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -fsanitize=address èg
+CFLAGS=-Wall -fsanitize=address -g
 
 LD=gcc
 LDFLAGS=-g
