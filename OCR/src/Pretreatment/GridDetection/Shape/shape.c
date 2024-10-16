@@ -30,8 +30,8 @@ Shape* CreateShape(int id, int j, int i) {
 
 void ComputeShape(Shape* s)
 {
-    s->h = s->Maxj - s->Minj;
-    s->w = s->Maxi - s->Mini;
+    s->h = s->Maxj - s->Minj + 1;
+    s->w = s->Maxi - s->Mini + 1;
     s->Cx = s->Minj + (s->h)/2;
     s->Cy = s->Mini + (s->w)/2;
 
