@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../crop/crop.h"
 
+#include "../crop/crop.h"
 
 void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth);
 void AdjustList(Node** lst);

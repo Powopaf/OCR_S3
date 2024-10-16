@@ -134,7 +134,7 @@ SDL_Surface *rotation(SDL_Surface* image, double angle)
                 newp[1] = pixel[1];
                 newp[2] = pixel[2];
             }
-		}
+	}
     }
 	return rotated_image;		
 }

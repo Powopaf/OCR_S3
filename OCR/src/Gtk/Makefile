@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99
+CFLAGS=`pkg-config --cflags gtk+-3.0` `sdl2-config --cflags` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99
 
 LD=gcc
 LDFLAGS=-g '-export-dynamic'
-LIB=`pkg-config --libs gtk+-3.0` -lSDL2_image
+LIB=`pkg-config --libs gtk+-3.0` `sdl2-config --libs` -lSDL2_image
 
 SRC=\
 	interface.c

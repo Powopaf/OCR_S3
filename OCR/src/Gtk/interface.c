@@ -1,6 +1,7 @@
 // GTK interface using Glade and gtk3
 
 #include "interface.h"
+#include "../../main.h"
 #include <gtk/gtk.h>
 
 // Initialize object pointers
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
     gtk_init(&argc, &argv);
     
     // Reads the XML glade file
-    builder = gtk_builder_new_from_file("interface.glade");
+    builder = gtk_builder_new_from_file("src/Gtk/interface.glade");
     
     // Builds the GTK window
     window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
@@ -100,13 +101,17 @@ int main(int argc, char *argv[])
     step_8 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_8"));
     
     imageTMP = NULL;
+    size_t CurrentState = 0;
     
     gtk_widget_show(window);
     gtk_main();
     g_object_unref(builder);
+    
+    system("rm output/*.bmp");
     return EXIT_SUCCESS;
 }
 
+/*
 void load_image(char *filename)
 {
     // Clear the previous image
@@ -127,15 +132,14 @@ void load_image(char *filename)
 
     // Resize the image with ImageMagick
     char cmd[2048];
-    sprintf(cmd, "magick \"%s\" -resize x%d tmp.jpg", filename, height);
+    sprintf(cmd, "magick \"%s\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 tmp.bmp", filename, height);
     system(cmd);
 
     // Maintain the right ratio
-    sprintf(cmd, "identify -format %%wx%%h \"tmp.jpg\"\n");
+    sprintf(cmd, "identify -format %%wx%%h \"tmp.bmp\"\n");
     FILE *f1 = popen(cmd, "r");
     if (f1 == NULL)
     {
-        g_print("Error reading image dimensions\n");
         return;
     }
     char dimensions[512];
@@ -147,18 +151,78 @@ void load_image(char *filename)
     sscanf(dimensions, "%dx%d", &resized_width, &resized_height);
 
     // Load the resized image
-    imageTMP = gtk_image_new_from_file("tmp.jpg");
+    imageTMP = gtk_image_new_from_file("tmp.bmp");
     gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
     gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
     gtk_widget_show(imageTMP);
 
     // Remove temporary image
-    system("rm tmp.jpg");
+    system("rm tmp.bmp");
     
     // Copy the loaded image
-    sprintf(cmd, "cp \"%s\" output/tmp.jpg", filename);
+    sprintf(cmd, "cp \"%s\" output/tmp.bmp", filename);
     system(cmd);
+}
+*/
+
+void load_image(char *filename)
+{
+    // Clear the previous image
+    if (image)
+    {
+        gtk_widget_destroy(image); 
+        image = NULL;
+    }
+    if (imageTMP)
+    {
+        gtk_widget_destroy(imageTMP);
+        imageTMP = NULL;
+    }
+
+    // Load the image
+    imageTMP = gtk_image_new_from_file(filename);
+    gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
+    gtk_widget_show(imageTMP);
+
+    // Copy the loaded image to output directory
+    //char cmd[2048];
+    //sprintf(cmd, "cp \"%s\" output/tmp.bmp", filename);
+    //system(cmd);
+}
+
+void resize_images()
+{
+    const char *image_files[] =
+    {
+        "output/img.bmp",
+        "output/imgGreyScale.bmp",
+        "output/imgNoiseReduction.bmp",
+        "output/imgBinarisation.bmp",
+        "output/imgFindShape.bmp",
+        "output/imgShapeFilter.bmp",
+        "output/imgFindCluster.bmp",
+        "output/imgClusterFilter.bmp",
+        "output/imgFinal.bmp"
+    };
+
+    // Get window size to adjust the image height
+    int window_width, window_height;
+    gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
+    int height = window_height;
+    
+    char cmd[2048];
+    char resized_image_path[1024];
+    for (int i = 0; i < sizeof(image_files) / sizeof(image_files[0]); i++)
+    {
+        sprintf(resized_image_path, "output/R%s", strrchr(image_files[i], '/') + 1);
+        sprintf(cmd,
+        "magick \"%s\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 \"%s\"", 
+        image_files[i], height, resized_image_path);
+        system(cmd);
+    }
 }
 
 void on_button_import_file_set()
@@ -173,10 +237,20 @@ void on_button_import_file_set()
     {
         return;
     }
-
+    char cmd[2048];
+    sprintf(cmd, "cp \"%s\" output/tmp.bmp", name);
+    system(cmd);
+    
+    int window_width, window_height;
+    gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
+    int height = window_height;
+    char cmd2[2048];
+    snprintf(cmd, sizeof(cmd), "magick \"output/tmp.bmp\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 \"output/Rimg.bmp\"", height);
+    system(cmd);
+    
     // Call load_image with the selected filename
-    load_image(name);
-
+    load_image("output/Rimg.bmp");
+    
     // Free the memory allocated for the file name
     g_free(name);
 }
@@ -203,11 +277,15 @@ void on_button_import_clicked()
     gtk_widget_hide(GTK_WIDGET(step_6));
     gtk_widget_hide(GTK_WIDGET(step_7));
     gtk_widget_hide(GTK_WIDGET(step_8));
-
 }
 
 void on_button_process_clicked()
 {
+    // Process the image
+    Process("output/tmp.bmp");
+    load_image("output/RimgFinal.bmp");
+    resize_images();
+
     GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
     on_steps_toggled(buttons);
     if (!gtk_toggle_button_get_active(step_8))
@@ -237,11 +315,6 @@ void on_button_process_clicked()
     gtk_widget_hide(label_process);
     gtk_widget_hide(button_process);
     
-    // Process the image
-    //CORENTIN
-    //appel à la fonction : 
-    //fonction(output/tmp.jpg);
-    //qui créer tous les .bmps dans /output/
     
 }
 
@@ -252,7 +325,7 @@ void on_step_0_toggled()
         GtkToggleButton *buttons[] = {step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/img.bmp");
+    load_image("output/Rimg.bmp");
 }
 
 void on_step_1_toggled()
@@ -262,7 +335,7 @@ void on_step_1_toggled()
         GtkToggleButton *buttons[] = {step_0, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgGreyScale.bmp");
+    load_image("output/RimgGreyScale.bmp");
 }
 
 void on_step_2_toggled()
@@ -272,7 +345,7 @@ void on_step_2_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgNoiseReduction.bmp");
+    load_image("output/RimgNoiseReduction.bmp");
 }
 
 void on_step_3_toggled()
@@ -282,7 +355,7 @@ void on_step_3_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgBinarisation.bmp");
+    load_image("output/RimgBinarisation.bmp");
 }
 
 void on_step_4_toggled()
@@ -292,7 +365,7 @@ void on_step_4_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFindShape.bmp");
+    load_image("output/RimgFindShape.bmp");
 }
 
 void on_step_5_toggled()
@@ -302,7 +375,7 @@ void on_step_5_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgShapeFilter.bmp");
+    load_image("output/RimgShapeFilter.bmp");
 }
 
 void on_step_6_toggled()
@@ -312,7 +385,7 @@ void on_step_6_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFindCluster.bmp");
+    load_image("output/RimgFindCluster.bmp");
 }
 
 void on_step_7_toggled()
@@ -322,7 +395,7 @@ void on_step_7_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgClusterFilter.bmp");
+    load_image("output/RimgClusterFilter.bmp");
 }
 
 void on_step_8_toggled()
@@ -332,7 +405,7 @@ void on_step_8_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFinal.bmp");
+    load_image("output/RimgFinal.bmp");
 }
 
 void on_steps_toggled(GtkToggleButton *buttons[])
@@ -349,130 +422,7 @@ void on_adjustment_rotation_value_changed()
     gdouble value = gtk_adjustment_get_value(adjustment_rotation);
     //SOPHIE
     //FONCTION QUI MODIFIE output/tmp.jpg avec une rotation de [value]
-    load_image("output/tmp.jpg");
+    load_image("");
 }
 
 
-=======
-//GTK interface
-
-//#include <stdlib.h>
-#include <gtk/gtk.h>
-
-char *image_file_path = NULL;
-
-// Make objects global variables
-GtkBuilder *builder;
-GtkWidget *window;
-GtkWidget *fixed;
-GtkWidget *label_title;
-GtkWidget *button_import;
-GtkWidget *label_import;
-GtkWidget *image;
-
-int main(int argc, char *argv[]) 
-{
-    //Initialize GTK with arguments
-    gtk_init(&argc, &argv);
-    
-    //Reads the XML glade file
-    builder = gtk_builder_new_from_file("interface.glade");
-    
-    //Builds the GTK window
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-    
-    //Destroys program on application exit
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    
-    //Builds a table to see where does the signals come from
-    gtk_builder_connect_signals(builder, NULL);
-    
-    //Pointers for GTK objects
-    fixed= GTK_WIDGET(gtk_builder_get_object(builder,"fixed"));
-    button_import= GTK_WIDGET(gtk_builder_get_object(builder,"button_import"));
-    label_import= GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
-    label_title= GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
-    image= GTK_WIDGET(gtk_builder_get_object(builder,"image"));
-
-    gtk_widget_show(window);
-    gtk_main();
-    return EXIT_SUCCESS;
-}
-
-/*
-void on_button_import_clicked(GtkButton *b)
-{
-    gtk_label_set_text(GTK_LABEL(label_import),(const gchar*)
-    "Import image from device files");
-    
-    //GtkWidget *dialog;
-    //dialog = gtk_file_chooser_dialog_new("Import image from device files", GTK_WINDOW(window),
-    //GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_OK, GTK_RESPONSE_OK, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
-    //gtk_widget_show_all(dialog);
-    //gint resp = 
-    
-    
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
-    gchar *filename = gtk_file_chooser_get_filename(chooser);
-    
-    //gchar *filename = gtk_file_chooser_get_filename(button_import("Import image from device files"));
-    //gchar *filename = gtk_file_chooser_get_current_name(button_import);
-    gtk_image_set_from_file(GTK_IMAGE(image),filename);
-    g_free(filename);
-}
-*/
-
-
-void on_button_import_clicked(GtkButton *button) {
-    GtkWidget *dialog;
-    GtkFileChooser *chooser;
-    GtkFileFilter *filter;
-
-    // Use the main window as the parent for the dialog
-    GtkWidget *parent_window = gtk_widget_get_toplevel(GTK_WIDGET(button));
-
-    // Create a file chooser dialog
-    dialog = gtk_file_chooser_dialog_new("Choose an image", GTK_WINDOW(parent_window),
-                                         GTK_FILE_CHOOSER_ACTION_OPEN, 
-                                         "_Cancel", GTK_RESPONSE_CANCEL, 
-                                         "_Open", GTK_RESPONSE_ACCEPT, NULL);
-    
-    // Check if dialog is created
-    if (dialog == NULL) 
-    {
-        g_print("Failed to create dialog\n");
-        return;
-    }
-
-    chooser = GTK_FILE_CHOOSER(dialog);
-
-    // Add file filters
-    filter = gtk_file_filter_new();
-    gtk_file_filter_add_pattern(filter, "*.jpg");
-    gtk_file_filter_add_pattern(filter, "*.jpeg");
-    gtk_file_filter_add_pattern(filter, "*.png");
-    gtk_file_filter_add_pattern(filter, "*.bmp");
-    gtk_file_chooser_add_filter(chooser, filter);
-
-    // Show the dialog and wait for a response
-    int response = gtk_dialog_run(GTK_DIALOG(dialog));
-    if (response == GTK_RESPONSE_ACCEPT) {
-        // Free the previous file path, if any
-        if (image_file_path) 
-        {
-            g_free(image_file_path);
-        }
-
-        image_file_path = gtk_file_chooser_get_filename(chooser);
-        g_print("Selected file: %s\n", image_file_path);  // Debug output
-        gtk_button_set_label(button, image_file_path);
-        load_image(image_file_path);
-    } 
-    else 
-    {
-        g_print("Dialog closed without selecting a file\n");  // Debug output
-    }
-
-    // Destroy the dialog
-    gtk_widget_destroy(dialog);
-}

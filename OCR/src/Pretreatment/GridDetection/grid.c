@@ -293,6 +293,7 @@ void ProcessGrid(SDL_Surface *surface)
     }
 
     FreeMatrix(Map, height);
+
     free(clusterList);
     FreeNodeList(&shapeList,1);
 

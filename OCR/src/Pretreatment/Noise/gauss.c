@@ -11,6 +11,8 @@
 //#include "median.h"
 //////////////////////////////////////////////////////////////////////
 
+# define M_PI           3.14159265358979323846
+
 double gFunc(int x, int y) {
     /*
      * gaussian funtion see gaussian blur for definition
