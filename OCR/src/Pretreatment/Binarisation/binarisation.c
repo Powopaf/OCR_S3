@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "binarisation.h"
 
 void binarisation(SDL_Surface *surface, int window_size, double k) 
 {
@@ -24,7 +25,8 @@ void binarisation(SDL_Surface *surface, int window_size, double k)
     int half_window = window_size / 2;
     double R = 128.0;
     
-    int Map[height][width];//Matrix for store the binarized_value
+    int** Map = NULL;//Matrix for store the binarized_value
+    MallocMatrix(&Map, height, width);
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -79,7 +81,7 @@ void binarisation(SDL_Surface *surface, int window_size, double k)
             pixel[2] = color;
         }
     }
-
+    FreeMatrix(Map, height);
     SDL_UnlockSurface(surface);
 }
 //comment to run project uncomment to test greyscale

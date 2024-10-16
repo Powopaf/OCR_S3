@@ -14,7 +14,7 @@ void contrast(SDL_Surface* surface) {
     for (int i = 1; i < height - 1; i++) {
         for (int j = 1; j < width - 1; j++) {
             //current pixel
-            Uint8* pixel = surface->pixels + i * surface->pitch + j * bpp;
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * bpp;
             Uint8 side_pixel[8];
             side_pixel[0] = *(pixel - width * bpp - 3);    // 0 1 2
             side_pixel[1] = *(pixel - width * bpp);        // 3 c 4
@@ -33,7 +33,7 @@ void contrast(SDL_Surface* surface) {
     }
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            Uint8* pixel = surface->pixels + i * surface->pitch + j * bpp;
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * bpp;
             pixel[0] = pixel[2];
             pixel[1] = pixel[2];
         }

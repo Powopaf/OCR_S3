@@ -18,7 +18,7 @@ void median(SDL_Surface* surface) {
     SDL_LockSurface(surface);
     for (int i = 2; i < surface->h - 2; i++) {
         for (int j = 2; j < surface->w - 2; j++) {
-            Uint8* pixel = surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
             Uint8 k_value[9] = { 0 };
             int p1 = -1; //change p1 and p2 in function of the kernel_size
             int p2 = 1;

@@ -16,6 +16,7 @@ SRC=\
 	src/Pretreatment/GridDetection/Lib/Lib.c \
 	src/Pretreatment/GridDetection/Shape/shape.c \
 	src/Pretreatment/GridDetection/List/Node.c \
+	src/Pretreatment/crop/crop.c \
 	./main.c \
 	src/Gtk/interface.c
 
@@ -28,4 +29,4 @@ main: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm $(OBJ) main.out output/*.bmp
+	rm $(OBJ) main.out output/*.bmp output/letter/*.bmp
