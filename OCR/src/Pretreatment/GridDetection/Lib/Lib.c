@@ -135,7 +135,7 @@ Node** ReduceArray(Node** lst, int* size, int nsize)
     free(lst);
     return res;
 }
-
+/*
 void FindShapePosMatrix(Node* shapeList, int* j, int* i)
 {
     // find for each Shape the position in the matrix, store the result in
@@ -143,7 +143,7 @@ void FindShapePosMatrix(Node* shapeList, int* j, int* i)
     // and i
     return;
 }
-
+*/
 void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 {
     SDL_PixelFormat* format = surface->format;

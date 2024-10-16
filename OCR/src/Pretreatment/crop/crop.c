@@ -28,8 +28,8 @@ SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
     }
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            Uint8* pix_crop = cropImage->pixels + i * cropImage->pitch + j * cropImage->format->BytesPerPixel;
-            Uint8* pix_base = pixel + i * surface->pitch + j * surface->format->BytesPerPixel;
+            Uint8* pix_crop = (Uint8*)cropImage->pixels + i * cropImage->pitch + j * cropImage->format->BytesPerPixel;
+            Uint8* pix_base = (Uint8*)pixel + i * surface->pitch + j * surface->format->BytesPerPixel;
             pix_crop[0] = pix_base[0];
             pix_crop[1] = pix_base[1];
             pix_crop[2] = pix_base[2];

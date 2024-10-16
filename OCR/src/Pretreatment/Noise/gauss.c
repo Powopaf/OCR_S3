@@ -57,7 +57,7 @@ void gauss(SDL_Surface* surface) {
     for (int i = 1; i < surface->h - 1; i++) {
         for (int j = 1; j < surface->w - 1; j++) {
             //curent pixel
-            Uint8* pixel = surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
             
             double sum_color = 0.0;
             int p1 = -1;
