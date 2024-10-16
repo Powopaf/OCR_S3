@@ -1,8 +1,7 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -fsanitize=address -g
 
-DEBUG=-g
-LIB=-lSDL2 -lm
+LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -fsanitize=address -g
 
 SRC=\
 	src/Pretreatment/Utils/convert.c \
@@ -17,12 +16,13 @@ SRC=\
 	src/Pretreatment/GridDetection/Lib/Lib.c \
 	src/Pretreatment/GridDetection/Shape/shape.c \
 	src/Pretreatment/GridDetection/List/Node.c \
-	./main.c
+	./main.c \
+	src/Gtk/interface.c
 
-OBJ= $(SRC:.c=.o)
+OBJ=$(SRC:.c=.o)
 
 main: $(OBJ)
-	$(CC) -o main.out $+ $(LIB)
+	$(CC) -o main.out $+ $(LIB) -export-dynamic
 
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
