@@ -7,6 +7,6 @@
 #include <math.h>
 #include "../Utils/sdl_utils.h"
 
-SDL_Surface *rotation1(SDL_Surface *image, double angle);
-void rotation(char* filename,double angle);
+SDL_Surface* rotation3(SDL_Surface* image, double angle);
+void rotation(char* filename, double angle, char* outputPath);
 #endif

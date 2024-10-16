@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -fsanitize=address -g
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -g
 
-LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -fsanitize=address -g
+LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -g
 
 SRC=\
 	src/Pretreatment/Utils/convert.c \
@@ -17,6 +17,7 @@ SRC=\
 	src/Pretreatment/GridDetection/Shape/shape.c \
 	src/Pretreatment/GridDetection/List/Node.c \
 	src/Pretreatment/crop/crop.c \
+	src/Pretreatment/rotation/rotate.c \
 	./main.c \
 	src/Gtk/interface.c
 
