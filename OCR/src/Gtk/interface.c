@@ -1,6 +1,7 @@
 // GTK interface using Glade and gtk3
 
 #include "interface.h"
+#include "../../main.h"
 #include <gtk/gtk.h>
 
 // Initialize object pointers
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
     gtk_init(&argc, &argv);
     
     // Reads the XML glade file
-    builder = gtk_builder_new_from_file("interface.glade");
+    builder = gtk_builder_new_from_file("src/Gtk/interface.glade");
     
     // Builds the GTK window
     window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
@@ -100,13 +101,17 @@ int main(int argc, char *argv[])
     step_8 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_8"));
     
     imageTMP = NULL;
+    size_t CurrentState = 0;
     
     gtk_widget_show(window);
     gtk_main();
     g_object_unref(builder);
+    
+    system("rm output/*.bmp");
     return EXIT_SUCCESS;
 }
 
+/*
 void load_image(char *filename)
 {
     // Clear the previous image
@@ -127,15 +132,14 @@ void load_image(char *filename)
 
     // Resize the image with ImageMagick
     char cmd[2048];
-    sprintf(cmd, "magick \"%s\" -resize x%d tmp.jpg", filename, height);
+    sprintf(cmd, "magick \"%s\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 tmp.bmp", filename, height);
     system(cmd);
 
     // Maintain the right ratio
-    sprintf(cmd, "identify -format %%wx%%h \"tmp.jpg\"\n");
+    sprintf(cmd, "identify -format %%wx%%h \"tmp.bmp\"\n");
     FILE *f1 = popen(cmd, "r");
     if (f1 == NULL)
     {
-        g_print("Error reading image dimensions\n");
         return;
     }
     char dimensions[512];
@@ -147,18 +151,78 @@ void load_image(char *filename)
     sscanf(dimensions, "%dx%d", &resized_width, &resized_height);
 
     // Load the resized image
-    imageTMP = gtk_image_new_from_file("tmp.jpg");
+    imageTMP = gtk_image_new_from_file("tmp.bmp");
     gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
     gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
     gtk_widget_show(imageTMP);
 
     // Remove temporary image
-    system("rm tmp.jpg");
+    system("rm tmp.bmp");
     
     // Copy the loaded image
-    sprintf(cmd, "cp \"%s\" output/tmp.jpg", filename);
+    sprintf(cmd, "cp \"%s\" output/tmp.bmp", filename);
     system(cmd);
+}
+*/
+
+void load_image(char *filename)
+{
+    // Clear the previous image
+    if (image)
+    {
+        gtk_widget_destroy(image); 
+        image = NULL;
+    }
+    if (imageTMP)
+    {
+        gtk_widget_destroy(imageTMP);
+        imageTMP = NULL;
+    }
+
+    // Load the image
+    imageTMP = gtk_image_new_from_file(filename);
+    gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
+    gtk_widget_show(imageTMP);
+
+    // Copy the loaded image to output directory
+    //char cmd[2048];
+    //sprintf(cmd, "cp \"%s\" output/tmp.bmp", filename);
+    //system(cmd);
+}
+
+void resize_images()
+{
+    const char *image_files[] =
+    {
+        "output/img.bmp",
+        "output/imgGreyScale.bmp",
+        "output/imgNoiseReduction.bmp",
+        "output/imgBinarisation.bmp",
+        "output/imgFindShape.bmp",
+        "output/imgShapeFilter.bmp",
+        "output/imgFindCluster.bmp",
+        "output/imgClusterFilter.bmp",
+        "output/imgFinal.bmp"
+    };
+
+    // Get window size to adjust the image height
+    int window_width, window_height;
+    gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
+    int height = window_height;
+    
+    char cmd[2048];
+    char resized_image_path[1024];
+    for (int i = 0; i < sizeof(image_files) / sizeof(image_files[0]); i++)
+    {
+        sprintf(resized_image_path, "output/R%s", strrchr(image_files[i], '/') + 1);
+        sprintf(cmd,
+        "magick \"%s\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 \"%s\"", 
+        image_files[i], height, resized_image_path);
+        system(cmd);
+    }
 }
 
 void on_button_import_file_set()
@@ -173,10 +237,20 @@ void on_button_import_file_set()
     {
         return;
     }
-
+    char cmd[2048];
+    sprintf(cmd, "cp \"%s\" output/tmp.bmp", name);
+    system(cmd);
+    
+    int window_width, window_height;
+    gtk_window_get_size(GTK_WINDOW(window), &window_width, &window_height);
+    int height = window_height;
+    char cmd2[2048];
+    snprintf(cmd, sizeof(cmd), "magick \"output/tmp.bmp\" -resize x%d -filter Lanczos -sharpen 0x1.0 -quality 100 \"output/Rimg.bmp\"", height);
+    system(cmd);
+    
     // Call load_image with the selected filename
-    load_image(name);
-
+    load_image("output/Rimg.bmp");
+    
     // Free the memory allocated for the file name
     g_free(name);
 }
@@ -203,11 +277,15 @@ void on_button_import_clicked()
     gtk_widget_hide(GTK_WIDGET(step_6));
     gtk_widget_hide(GTK_WIDGET(step_7));
     gtk_widget_hide(GTK_WIDGET(step_8));
-
 }
 
 void on_button_process_clicked()
 {
+    // Process the image
+    Process("output/tmp.bmp");
+    load_image("output/RimgFinal.bmp");
+    resize_images();
+
     GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
     on_steps_toggled(buttons);
     if (!gtk_toggle_button_get_active(step_8))
@@ -237,11 +315,6 @@ void on_button_process_clicked()
     gtk_widget_hide(label_process);
     gtk_widget_hide(button_process);
     
-    // Process the image
-    //CORENTIN
-    //appel à la fonction : 
-    //fonction(output/tmp.jpg);
-    //qui créer tous les .bmps dans /output/
     
 }
 
@@ -252,7 +325,7 @@ void on_step_0_toggled()
         GtkToggleButton *buttons[] = {step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/img.bmp");
+    load_image("output/Rimg.bmp");
 }
 
 void on_step_1_toggled()
@@ -262,7 +335,7 @@ void on_step_1_toggled()
         GtkToggleButton *buttons[] = {step_0, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgGreyScale.bmp");
+    load_image("output/RimgGreyScale.bmp");
 }
 
 void on_step_2_toggled()
@@ -272,7 +345,7 @@ void on_step_2_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgNoiseReduction.bmp");
+    load_image("output/RimgNoiseReduction.bmp");
 }
 
 void on_step_3_toggled()
@@ -282,7 +355,7 @@ void on_step_3_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgBinarisation.bmp");
+    load_image("output/RimgBinarisation.bmp");
 }
 
 void on_step_4_toggled()
@@ -292,7 +365,7 @@ void on_step_4_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFindShape.bmp");
+    load_image("output/RimgFindShape.bmp");
 }
 
 void on_step_5_toggled()
@@ -302,7 +375,7 @@ void on_step_5_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgShapeFilter.bmp");
+    load_image("output/RimgShapeFilter.bmp");
 }
 
 void on_step_6_toggled()
@@ -312,7 +385,7 @@ void on_step_6_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_7, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFindCluster.bmp");
+    load_image("output/RimgFindCluster.bmp");
 }
 
 void on_step_7_toggled()
@@ -322,7 +395,7 @@ void on_step_7_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_8};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgClusterFilter.bmp");
+    load_image("output/RimgClusterFilter.bmp");
 }
 
 void on_step_8_toggled()
@@ -332,7 +405,7 @@ void on_step_8_toggled()
         GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
         on_steps_toggled(buttons);
     }
-    load_image("output/imgFinal.bmp");
+    load_image("output/RimgFinal.bmp");
 }
 
 void on_steps_toggled(GtkToggleButton *buttons[])
@@ -349,7 +422,7 @@ void on_adjustment_rotation_value_changed()
     gdouble value = gtk_adjustment_get_value(adjustment_rotation);
     //SOPHIE
     //FONCTION QUI MODIFIE output/tmp.jpg avec une rotation de [value]
-    load_image("output/tmp.jpg");
+    load_image("");
 }
 
 
