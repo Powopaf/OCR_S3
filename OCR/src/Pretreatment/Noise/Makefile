@@ -1,25 +1,25 @@
 CC=gcc
 CFLAGS=-Wall
 
-LD=gcc
-LDFLAGS=-g
-LIB=-lSDL2
+LIB=-lSDL2 -lm
 
 SRC=\
-	../Utils/sdl_utils.c \
-	noise.c
+	 ../Utils/convert.c \
+	 ../Utils/sdl_utils.c \
+	 ../GreyScale/greyscale.c \
+	 ../blur/blur.c \
+	gauss.c \
+	median.c
 
-OBJ= $(SRC:.c=.o)
+OBJ=$(SRC:.c=.o)
 
-BIN=\
-	noise.out
+BIN=noise.out \
 
 noise: $(OBJ)
-	$(LD) $(LDFLAGS) -o noise.out $+ $(LIB)
+	$(CC) -g -o $(BIN) $+ $(LIB)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -c $<
+	$(CC) -g $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm $(OBJ) $(BIN) *.bmp
-

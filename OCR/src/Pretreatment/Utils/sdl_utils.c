@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+#include <unistd.h>
 
 void sdl_setup() {
     // we can add arguements if needed
@@ -12,13 +13,13 @@ void sdl_close() {
     // we can add arguements if needed
     SDL_Quit();
 }
-
+/*
 void drawline(SDL_Renderer *renderer, 
         int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
-    /*
-     * x1,y1,x2,y2 -> coordinate to draw between
-     * r,g,b -> the color of the line
-     */
+    
+     // x1,y1,x2,y2 -> coordinate to draw between
+     // r,g,b -> the color of the line
+     
     SDL_SetRenderDrawColor(renderer, r, g, b, 255);
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-}
+}*/
