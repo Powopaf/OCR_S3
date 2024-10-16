@@ -22,6 +22,9 @@ void on_step_7_toggled();
 void on_step_8_toggled();
 void on_adjustment_rotation_value_changed();
 void resize_images();
+void resize(char *input, char *output);
+gboolean on_window_resize();
+void on_window_destroy();
 
 #endif
 

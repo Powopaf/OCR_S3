@@ -344,6 +344,7 @@
                 <property name="label">Export Current Image</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
+                <signal name="clicked" handler="on_button_export_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
