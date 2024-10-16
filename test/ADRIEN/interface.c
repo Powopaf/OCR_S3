@@ -40,6 +40,7 @@ GtkToggleButton *step_4;
 GtkToggleButton *step_5;
 GtkToggleButton *step_6;
 GtkToggleButton *step_7;
+GtkToggleButton *step_8;
 
 GtkWidget *image;
 GtkWidget *imageTMP;
@@ -96,6 +97,7 @@ int main(int argc, char *argv[])
     step_5 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_5"));
     step_6 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_6"));
     step_7 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_7"));
+    step_8 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_8"));
     
     imageTMP = NULL;
     
@@ -153,6 +155,10 @@ void load_image(char *filename)
 
     // Remove temporary image
     system("rm tmp.jpg");
+    
+    // Copy the loaded image
+    sprintf(cmd, "cp \"%s\" output/tmp.jpg", filename);
+    system(cmd);
 }
 
 void on_button_import_file_set()
@@ -196,18 +202,19 @@ void on_button_import_clicked()
     gtk_widget_hide(GTK_WIDGET(step_5));
     gtk_widget_hide(GTK_WIDGET(step_6));
     gtk_widget_hide(GTK_WIDGET(step_7));
+    gtk_widget_hide(GTK_WIDGET(step_8));
 
 }
 
 void on_button_process_clicked()
 {
-    GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
+    GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
     on_steps_toggled(buttons);
-    if (!gtk_toggle_button_get_active(step_7))
+    if (!gtk_toggle_button_get_active(step_8))
     {
-        gtk_toggle_button_set_active(step_7, TRUE);
+        gtk_toggle_button_set_active(step_8, TRUE);
     }
-    
+    // Shows process steps and export button
     gtk_widget_show(sep_4);
     gtk_widget_show(sep_6);
     gtk_widget_show(button_export);
@@ -220,92 +227,128 @@ void on_button_process_clicked()
     gtk_widget_show(GTK_WIDGET(step_5));
     gtk_widget_show(GTK_WIDGET(step_6));
     gtk_widget_show(GTK_WIDGET(step_7));
+    gtk_widget_show(GTK_WIDGET(step_8));
     
+    // Hide rotation and process button
     gtk_widget_hide(sep_2);
     gtk_widget_hide(label_rotation);
     gtk_widget_hide(scale_rotation);
     gtk_widget_hide(sep_3);
     gtk_widget_hide(label_process);
     gtk_widget_hide(button_process);
+    
+    // Process the image
+    //CORENTIN
+    //appel à la fonction : 
+    //fonction(output/tmp.jpg);
+    //qui créer tous les .bmps dans /output/
 }
 
 void on_step_0_toggled()
 {
     if (gtk_toggle_button_get_active(step_0))
     {
-        GtkToggleButton *buttons[] = {step_1, step_2, step_3, step_4, step_5, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/img.bmp");
 }
 
 void on_step_1_toggled()
 {
     if (gtk_toggle_button_get_active(step_1))
     {
-        GtkToggleButton *buttons[] = {step_0, step_2, step_3, step_4, step_5, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgGreyScale.bmp");
 }
 
 void on_step_2_toggled()
 {
     if (gtk_toggle_button_get_active(step_2))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_3, step_4, step_5, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_3, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgNoiseReduction.bmp");
 }
 
 void on_step_3_toggled()
 {
     if (gtk_toggle_button_get_active(step_3))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_4, step_5, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_4, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgBinarisation.bmp");
 }
 
 void on_step_4_toggled()
 {
     if (gtk_toggle_button_get_active(step_4))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_5, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_5, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgFindShape.bmp");
 }
 
 void on_step_5_toggled()
 {
     if (gtk_toggle_button_get_active(step_5))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_6, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_6, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgShapeFilter.bmp");
 }
 
 void on_step_6_toggled()
 {
     if (gtk_toggle_button_get_active(step_6))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_7};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_7, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgFindCluster.bmp");
 }
 
 void on_step_7_toggled()
 {
     if (gtk_toggle_button_get_active(step_7))
     {
-        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6};
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_8};
         on_steps_toggled(buttons);
     }
+    load_image("output/imgClusterFilter.bmp");
+}
+
+void on_step_8_toggled()
+{
+    if (gtk_toggle_button_get_active(step_8))
+    {
+        GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7};
+        on_steps_toggled(buttons);
+    }
+    load_image("output/imgFinal.bmp");
 }
 
 void on_steps_toggled(GtkToggleButton *buttons[])
 {
-    for (size_t i = 0; i < 7; i++)
+    for (size_t i = 0; i < 8; i++)
     {
         gtk_toggle_button_set_active(buttons[i], FALSE);
     }
 }
+
+
+void on_adjustment_rotation_value_changed()
+{
+    gdouble value = gtk_adjustment_get_value(adjustment_rotation);
+    //SOPHIE
+    //FONCTION QUI MODIFIE output/tmp.jpg avec une rotation de [value]
+    load_image("output/tmp.jpg");
+}
+
 

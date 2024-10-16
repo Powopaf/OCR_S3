@@ -19,6 +19,8 @@ void on_step_4_toggled();
 void on_step_5_toggled();
 void on_step_6_toggled();
 void on_step_7_toggled();
+void on_step_8_toggled();
+void on_adjustment_rotation_value_changed();
 
 #endif
 

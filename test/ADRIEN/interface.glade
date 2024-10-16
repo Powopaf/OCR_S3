@@ -7,6 +7,7 @@
     <property name="upper">180</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_adjustment_rotation_value_changed" swapped="no"/>
   </object>
   <object class="GtkFileFilter" id="filter">
     <patterns>
@@ -231,7 +232,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_2">
-                <property name="label">3 - Binarization</property>
+                <property name="label">3 - Noise Reduction</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -245,7 +246,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_3">
-                <property name="label">4 - Shape Detection</property>
+                <property name="label">4 - Binarization</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -259,7 +260,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_4">
-                <property name="label">5 - Shape Filter</property>
+                <property name="label">5 - Shape Detection</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -273,7 +274,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_5">
-                <property name="label">6 - Cluster Detection</property>
+                <property name="label">6 - Shape Filter</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -287,7 +288,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_6">
-                <property name="label">7 - Cluster filter</property>
+                <property name="label">7 - Cluster Detection</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -301,7 +302,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="step_7">
-                <property name="label">8 - Solution</property>
+                <property name="label">8 - Cluster Filter</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
@@ -314,6 +315,20 @@
               </packing>
             </child>
             <child>
+              <object class="GtkToggleButton" id="step_8">
+                <property name="label">9 - Solution</property>
+                <property name="can-focus">True</property>
+                <property name="focus-on-click">False</property>
+                <property name="receives-default">True</property>
+                <signal name="toggled" handler="on_step_8_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">21</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkSeparator" id="sep_6">
                 <property name="can-focus">False</property>
               </object>
@@ -321,7 +336,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
-                <property name="position">21</property>
+                <property name="position">22</property>
               </packing>
             </child>
             <child>
@@ -333,7 +348,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">22</property>
+                <property name="position">23</property>
               </packing>
             </child>
           </object>
