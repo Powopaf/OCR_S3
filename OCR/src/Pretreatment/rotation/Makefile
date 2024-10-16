@@ -1,14 +1,15 @@
 CC=gcc
-CFLAGS=-Wall -Iinclude
+CFLAGS=-Wall -fsanitize=address -g
 
 LD=gcc
 LDFLAGS=-g
-LIB=-lSDL2 -lm
+LIB=-lSDL2 -lm -fsanitize=address -g
 
 
 SRC= rotate.c \
 	../Utils/convert.c \
-	../Utils/sdl_utils.c
+	../Utils/sdl_utils.c \
+	main.c
 
 OBJ= $(SRC:.c=.o)
 
