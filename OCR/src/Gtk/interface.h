@@ -3,9 +3,8 @@
 
 #include <gtk/gtk.h>
 
-// Global variables
-
 // Functions prototypes
+void get_gtk_widgets();
 void on_button_import_clicked();
 void on_button_process_clicked();
 void on_button_import_file_set();
