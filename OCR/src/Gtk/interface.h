@@ -3,10 +3,10 @@
 
 #include <gtk/gtk.h>
 
-// Global variables
-
 // Functions prototypes
+void get_gtk_widgets();
 void on_button_import_clicked();
+void on_button_reset_clicked();
 void on_button_process_clicked();
 void on_button_import_file_set();
 void load_image(char *filename);
@@ -20,11 +20,10 @@ void on_step_5_toggled();
 void on_step_6_toggled();
 void on_step_7_toggled();
 void on_step_8_toggled();
-void on_adjustment_rotation_value_changed();
+void on_scale_rotation_button_release_event();
 void resize_images();
 void resize(char *input, char *output);
 gboolean on_window_resize();
 void on_window_destroy();
 
 #endif
-

@@ -4,6 +4,10 @@
 #include "../../src/Pretreatment/rotation/rotate.h"
 #include <gtk/gtk.h>
 
+// Global variables
+size_t CurrentState = 0;
+int height = 1080;
+
 // Initialize object pointers
 GtkBuilder *builder;
 GtkAdjustment *adjustment_rotation;
@@ -11,9 +15,11 @@ GtkFileFilter *filter;
 GtkWidget *window;
 GtkWidget *box_vertical;
 GtkWidget *box_horizontal;
+GtkWidget *box_rotation;
 GtkWidget *image_logo;
 GtkWidget *scale_rotation;
 GtkWidget *button_import;
+GtkWidget * button_reset;
 GtkWidget *button_process;
 GtkWidget *button_export;
 GtkWidget *label_title;
@@ -39,45 +45,24 @@ GtkToggleButton *step_8;
 GtkWidget *image;
 GtkWidget *imageTMP;
 
-size_t CurrentState = 0;
-int height = 1080;
-
-int main(int argc, char *argv[]) 
+// Builds objects
+void get_gtk_widgets()
 {
-    // Initialize GTK
-    gtk_disable_setlocale();
-    gtk_init(&argc, &argv);
-    
-    // Reads the XML glade file
-    builder = gtk_builder_new_from_file("src/Gtk/interface.glade");
-    
-    // Builds the GTK window
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-    
-    // Set the window title
-    gtk_window_set_title(GTK_WINDOW(window), "CLAPS Word Search OCR");
-    
-    // Destroys program on application exit
-    g_signal_connect(window, "destroy", G_CALLBACK(on_window_destroy), NULL);
-    
-    // Builds a table to see where does the signals come from
-    gtk_builder_connect_signals(builder, NULL);
-    
-    // Pointers for GTK objects
     button_import = GTK_WIDGET(gtk_builder_get_object(builder,"button_import"));
+    button_reset = GTK_WIDGET(gtk_builder_get_object(builder,"button_reset"));
     label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
     label_title = GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
     image = GTK_WIDGET(gtk_builder_get_object(builder,"image"));
     window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     box_vertical = GTK_WIDGET(gtk_builder_get_object(builder, "box_vertical"));
     box_horizontal = GTK_WIDGET(gtk_builder_get_object(builder, "box_horizontal"));
+    box_rotation = GTK_WIDGET(gtk_builder_get_object(builder,"box_rotation"));
     image_logo = GTK_WIDGET(gtk_builder_get_object(builder, "image_logo"));
     scale_rotation = GTK_WIDGET(gtk_builder_get_object(builder, "scale_rotation"));
     adjustment_rotation = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_rotation"));
     filter = GTK_FILE_FILTER(gtk_builder_get_object(builder, "filter"));
     button_process = GTK_WIDGET(gtk_builder_get_object(builder, "button_process"));
     button_export = GTK_WIDGET(gtk_builder_get_object(builder, "button_export"));
-    label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
     label_rotation = GTK_WIDGET(gtk_builder_get_object(builder, "label_rotation"));
     label_process = GTK_WIDGET(gtk_builder_get_object(builder, "label_process"));
     label_steps = GTK_WIDGET(gtk_builder_get_object(builder, "label_steps"));
@@ -96,11 +81,33 @@ int main(int argc, char *argv[])
     step_6 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_6"));
     step_7 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_7"));
     step_8 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "step_8"));
-    
+}
+
+int main(int argc, char *argv[]) 
+{
+    // Initialize GTK
+    gtk_disable_setlocale();
+    gtk_init(&argc, &argv);
+
+    // Reads the XML glade file
+    builder = gtk_builder_new_from_file("src/Gtk/interface.glade");
+
+    // Builds the GTK window
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+    gtk_window_set_title(GTK_WINDOW(window), "CLAPS Word Search OCR");
+
+    // Modify height on window resize
     g_signal_connect(window, "configure-event", G_CALLBACK(on_window_resize), NULL);
+
+    // Destroys program on application exit
+    g_signal_connect(window, "destroy", G_CALLBACK(on_window_destroy), NULL);
     
-    imageTMP = NULL;
+    // Builds a table to see where does the signals come from
+    gtk_builder_connect_signals(builder, NULL);
     
+    // Building GTK objects
+    get_gtk_widgets();
+
     gtk_widget_show(window);
     gtk_main();
     g_object_unref(builder);
@@ -124,31 +131,20 @@ void on_window_destroy()
     gtk_main_quit();
 }
 
-void load_image(char *filename)
-{
+void load_image(char *filename) {
     // Clear the previous image
     if (image)
     {
         gtk_widget_destroy(image);
         image = NULL;
     }
-    if (imageTMP)
-    {
-        gtk_widget_destroy(imageTMP);
-        imageTMP = NULL;
-    }
 
     // Load the image
-    imageTMP = gtk_image_new_from_file(filename);
-    gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
-    gtk_widget_show(imageTMP);
-
-    // Copy the loaded image to output directory
-    //char cmd[2048];
-    //sprintf(cmd, "cp \"%s\" output/tmp.bmp", filename);
-    //system(cmd);
+    image = gtk_image_new_from_file(filename);
+    gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box_vertical), image, TRUE, TRUE, 0);
+    gtk_widget_show(image);
 }
 
 void resize_images()
@@ -166,7 +162,7 @@ void resize_images()
 
 void resize(char *input, char *output)
 {
-    // Convert and resize with ImageMagick (only for the interface)
+    // Convert and resize with ImageMagick
     char cmd[2048];
     sprintf(cmd, "magick \"%s\" -resize x%d -sharpen 0x1.0 -quality 100 \"%s\"",
         input, height, output);
@@ -177,7 +173,10 @@ void on_button_import_file_set()
 {
     // Shows next buttons
     on_button_import_clicked();
-
+    
+    // Resets rotation
+    gtk_adjustment_set_value(adjustment_rotation,0);
+    
     // Gets filename into a char*
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
     gchar *name = gtk_file_chooser_get_filename(chooser);
@@ -187,15 +186,13 @@ void on_button_import_file_set()
     }
     
     char cmd[2048];
-    sprintf(cmd, "cp \"%s\" output/img.bmp", name);
+    sprintf(cmd, "magick \"%s\" output/img.bmp", name);
+    system(cmd);
+    
+    sprintf(cmd, "magick \"%s\" output/original.bmp", name);
     system(cmd);
     
     resize("output/img.bmp","output/Rimg.bmp");
-    
-    char cmd2[2048];
-    sprintf(cmd2, "cp \"%s\" output/original.bmp", name);
-    system(cmd2);
-    
     CurrentState = 0;
     load_image("output/Rimg.bmp");
     
@@ -205,7 +202,9 @@ void on_button_import_file_set()
 void on_button_import_clicked()
 {
     gtk_widget_show(sep_2);
+    gtk_widget_show(box_rotation);
     gtk_widget_show(label_rotation);
+    gtk_widget_show(button_reset);
     gtk_widget_show(scale_rotation);
     gtk_widget_show(sep_3);
     gtk_widget_show(label_process);
@@ -256,7 +255,9 @@ void on_button_process_clicked()
     
     // Hide rotation and process button
     gtk_widget_hide(sep_2);
+    gtk_widget_hide(box_rotation);
     gtk_widget_hide(label_rotation);
+    gtk_widget_hide(button_reset);
     gtk_widget_hide(scale_rotation);
     gtk_widget_hide(sep_3);
     gtk_widget_hide(label_process);
@@ -371,18 +372,73 @@ void on_steps_toggled(GtkToggleButton *buttons[])
 }
 
 
-void on_adjustment_rotation_value_changed()
+void on_scale_rotation_button_release_event()
 {
     gdouble value = gtk_adjustment_get_value(adjustment_rotation);
     rotation("output/original.bmp",value,"output/img.bmp");
+    resize("output/img.bmp","output/Rimg.bmp");
+    
+    CurrentState = 0;
+    load_image("output/Rimg.bmp");
+}
+
+void on_button_reset_clicked()
+{
+    gtk_adjustment_set_value(adjustment_rotation,0);
+    char cmd[2048];
+    sprintf(cmd, "cp output/original.bmp output/img.bmp");
+    system(cmd);
     
     resize("output/img.bmp","output/Rimg.bmp");
     
     CurrentState = 0;
-    load_image("output/img.bmp");
+    load_image("output/Rimg.bmp");
 }
 
 void on_button_export_clicked()
 {
-    //EXPORT FUNCTION
+    // Create a file chooser dialog to save the current image
+    GtkWidget *dialog;
+    GtkFileChooser *chooser;
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+    gint res;
+    dialog = gtk_file_chooser_dialog_new("Save Image", GTK_WINDOW(window),
+                                         action,
+                                         "Cancel", GTK_RESPONSE_CANCEL,
+                                         "Save", GTK_RESPONSE_ACCEPT,
+                                         NULL);
+                                         
+    // Enable overwrite confirmation
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
+    // Default filename
+    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "solution.png");
+
+    // Wait for user response
+    res = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (res == GTK_RESPONSE_ACCEPT)
+    {
+        chooser = GTK_FILE_CHOOSER(dialog);
+        gchar *export_filename = gtk_file_chooser_get_filename(chooser);
+        const char* image_paths[] =
+        {
+            "output/img.bmp",               // State 0: Original image
+            "output/imgGreyScale.bmp",      // State 1: Greyscale image
+            "output/imgNoiseReduction.bmp", // State 2: Noise Reduction image
+            "output/imgBinarisation.bmp",   // State 3: Binarisation image
+            "output/imgFindShape.bmp",      // State 4: Find Shape image
+            "output/imgShapeFilter.bmp",    // State 5: Shape Filter image
+            "output/imgFindCluster.bmp",    // State 6: Find Cluster image
+            "output/imgClusterFilter.bmp",  // State 7: Cluster Filter image
+            "output/imgFinal.bmp"           // State 8: Final image
+        };
+        
+        char cmd[2048];
+        sprintf(cmd, "magick \"%s\" \"%s\"", image_paths[CurrentState], export_filename);
+        system(cmd);
+
+        g_free(export_filename);
+    }
+    gtk_widget_destroy(dialog);
 }
+

@@ -7,7 +7,7 @@
 #define M_PI       3.14159265358979323846
 
 // Rotation by rotation matrix (Best result)
-SDL_Surface* rotation3(SDL_Surface* image, double angle) {
+SDL_Surface* rotation3(SDL_Surface *image, double angle) {
     SDL_LockSurface(image);
     int width = image->w;
     int height = image->h;
