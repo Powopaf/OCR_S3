@@ -43,6 +43,7 @@ GtkToggleButton *step_8;
 GtkWidget *image;
 GtkWidget *imageTMP;
 
+// Builds objects
 void get_gtk_widgets()
 {
     button_import = GTK_WIDGET(gtk_builder_get_object(builder,"button_import"));
