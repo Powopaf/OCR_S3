@@ -6,7 +6,7 @@ int main(int argc, char* argv[])
     
     if(argc!=1)
     {
-        rotation(argv[1],45.0);
+        rotation(argv[1],45.0,argv[1]);
     }
     
     sdl_close();

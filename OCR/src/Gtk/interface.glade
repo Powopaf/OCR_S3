@@ -7,7 +7,6 @@
     <property name="upper">180</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
-    <signal name="value-changed" handler="on_adjustment_rotation_value_changed" swapped="no"/>
   </object>
   <object class="GtkFileFilter" id="filter">
     <patterns>
@@ -118,15 +117,38 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label_rotation">
+              <object class="GtkBox" id="box_rotation">
                 <property name="can-focus">False</property>
-                <property name="label">Manual Rotation</property>
+                <child>
+                  <object class="GtkLabel" id="label_rotation">
+                    <property name="can-focus">False</property>
+                    <property name="label">Manual Rotation</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">14</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button_reset">
+                    <property name="label">Reset</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_button_reset_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="padding">2</property>
-                <property name="position">6</property>
+                <property name="position">7</property>
               </packing>
             </child>
             <child>
@@ -136,11 +158,13 @@
                 <property name="fill-level">180</property>
                 <property name="round-digits">0</property>
                 <property name="digits">0</property>
+                <property name="has-origin">False</property>
+                <signal name="button-release-event" handler="on_scale_rotation_button_release_event" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">7</property>
+                <property name="position">8</property>
               </packing>
             </child>
             <child>
@@ -151,7 +175,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
-                <property name="position">8</property>
+                <property name="position">9</property>
               </packing>
             </child>
             <child>
@@ -163,7 +187,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">2</property>
-                <property name="position">9</property>
+                <property name="position">10</property>
               </packing>
             </child>
             <child>
@@ -176,7 +200,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">10</property>
+                <property name="position">11</property>
               </packing>
             </child>
             <child>
@@ -187,7 +211,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
-                <property name="position">11</property>
+                <property name="position">12</property>
               </packing>
             </child>
             <child>
@@ -199,7 +223,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">2</property>
-                <property name="position">12</property>
+                <property name="position">13</property>
               </packing>
             </child>
             <child>
@@ -213,7 +237,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">13</property>
+                <property name="position">14</property>
               </packing>
             </child>
             <child>
@@ -227,7 +251,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">14</property>
+                <property name="position">15</property>
               </packing>
             </child>
             <child>
@@ -241,7 +265,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">15</property>
+                <property name="position">16</property>
               </packing>
             </child>
             <child>
@@ -255,7 +279,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">16</property>
+                <property name="position">17</property>
               </packing>
             </child>
             <child>
@@ -269,7 +293,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">17</property>
+                <property name="position">18</property>
               </packing>
             </child>
             <child>
@@ -283,7 +307,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">18</property>
+                <property name="position">19</property>
               </packing>
             </child>
             <child>
@@ -297,7 +321,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">19</property>
+                <property name="position">20</property>
               </packing>
             </child>
             <child>
@@ -311,7 +335,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">20</property>
+                <property name="position">21</property>
               </packing>
             </child>
             <child>
@@ -325,7 +349,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">21</property>
+                <property name="position">22</property>
               </packing>
             </child>
             <child>
@@ -336,7 +360,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
-                <property name="position">22</property>
+                <property name="position">23</property>
               </packing>
             </child>
             <child>
@@ -344,11 +368,12 @@
                 <property name="label">Export Current Image</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
+                <signal name="clicked" handler="on_button_export_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">23</property>
+                <property name="position">24</property>
               </packing>
             </child>
           </object>
