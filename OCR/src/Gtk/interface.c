@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     // Building GTK objects
     get_gtk_widgets();
 
-    imageTMP = NULL;
+    // image = NULL;
 
     gtk_widget_show(window);
     gtk_main();
@@ -129,26 +129,20 @@ void on_window_destroy()
     gtk_main_quit();
 }
 
-void load_image(char *filename)
-{
+void load_image(char *filename) {
     // Clear the previous image
     if (image)
     {
         gtk_widget_destroy(image);
         image = NULL;
     }
-    if (imageTMP)
-    {
-        gtk_widget_destroy(imageTMP);
-        imageTMP = NULL;
-    }
 
     // Load the image
-    imageTMP = gtk_image_new_from_file(filename);
-    gtk_widget_set_halign(imageTMP, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(imageTMP, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(box_vertical), imageTMP, TRUE, TRUE, 0);
-    gtk_widget_show(imageTMP);
+    image = gtk_image_new_from_file(filename);
+    gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box_vertical), image, TRUE, TRUE, 0);
+    gtk_widget_show(image);
 
     // Copy the loaded image to output directory
     //char cmd[2048];
