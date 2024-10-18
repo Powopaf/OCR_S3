@@ -23,7 +23,7 @@ SDL_Surface* rotation3(SDL_Surface *image, double angle) {
     int new_w = sqrt((width*width)+(height*height))+1;
     int new_h = new_w;
 
-    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, SDL_PIXELFORMAT_RGB24);
+    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
     Uint8* rotated_pixels = (Uint8*)rotated_image->pixels;
     
     // Fill the entire surface with white (RGB: 255, 255, 255)
@@ -79,7 +79,7 @@ SDL_Surface *rotation2(SDL_Surface* image, double angle) {
     int center_x = new_w / 2;
     int center_y = new_h / 2;
 
-    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, SDL_PIXELFORMAT_RGB24);
+    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
     if (!rotated_image) {
         fprintf(stderr, "Error creating rotated surface: %s\n", SDL_GetError());
         SDL_UnlockSurface(image);
@@ -150,7 +150,7 @@ SDL_Surface *rotation1(SDL_Surface* image, double angle) {
     int center_x = new_w / 2;
     int center_y = new_h / 2;
 
-    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, SDL_PIXELFORMAT_RGB24);
+    SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
     if (!rotated_image) {
         fprintf(stderr, "Error creating rotated surface: %s\n", SDL_GetError());
         SDL_UnlockSurface(image);
