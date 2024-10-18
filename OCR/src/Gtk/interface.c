@@ -180,10 +180,7 @@ void on_button_import_file_set()
     // Gets filename into a char*
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(button_import);
     gchar *name = gtk_file_chooser_get_filename(chooser);
-    if (name == NULL)
-    {
-        return;
-    }
+    if (name == NULL) return;
     
     char cmd[2048];
     sprintf(cmd, "magick \"%s\" output/img.bmp", name);
@@ -229,8 +226,8 @@ void on_button_process_clicked()
 {
     // Process the image
     Process("output/img.bmp");
-    load_image("output/RimgFinal.bmp");
     resize_images();
+    load_image("output/RimgFinal.bmp");
 
     GtkToggleButton *buttons[] = {step_0, step_1, step_2, step_3, step_4, step_5, step_6, step_7, step_8};
     on_steps_toggled(buttons);
