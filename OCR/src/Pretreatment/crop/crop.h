@@ -5,7 +5,7 @@
 #include "../GridDetection/Shape/shape.h"
 
 
-void cropLetter(char* dirname, Shape* shape, int** Map);
+void cropLetter(char* output, Shape* shape, int** Map);
 
 #endif
 
