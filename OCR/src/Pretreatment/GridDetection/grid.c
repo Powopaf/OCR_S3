@@ -1,4 +1,5 @@
 #include "grid.h"
+#include <unistd.h>
 
 void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth)
 {
@@ -285,7 +286,13 @@ void ProcessGrid(SDL_Surface *surface)
         Node* c = clusterList[i];
         while(c!=NULL)
         {
-            cropLetter("output/letter/",c->data,Map);
+            char d[2048];
+            sprintf(d,"mkdir output/letter/Cluster_%i",i);
+            system(d);
+
+            char s[2048];
+            sprintf(s,"output/letter/Cluster_%i/Letter_%i.bmp",i,c->data->id);
+            cropLetter(s,c->data,Map);
             c = c->next;
         }
         

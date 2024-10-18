@@ -40,7 +40,7 @@ SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
     return cropImage;
 }
 
-void cropLetter(char* dirname, Shape* shape, int** Map)
+void cropLetter(char* output, Shape* shape, int** Map)
 {
     SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, shape->w, shape->h, 24,SDL_PIXELFORMAT_RGB24);
     
@@ -67,10 +67,8 @@ void cropLetter(char* dirname, Shape* shape, int** Map)
         }
     }
     SDL_UnlockSurface(surface);
-    char s[2048];
-    sprintf(s,"%s/letter%i.bmp",dirname,shape->id);
 
-    SDL_SaveBMP(surface,s);
+    SDL_SaveBMP(surface,output);
 
     SDL_FreeSurface(surface);
 }
