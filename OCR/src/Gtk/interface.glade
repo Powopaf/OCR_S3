@@ -3,8 +3,8 @@
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="adjustment_rotation">
-    <property name="lower">-180</property>
-    <property name="upper">180</property>
+    <property name="lower">-90</property>
+    <property name="upper">90</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
