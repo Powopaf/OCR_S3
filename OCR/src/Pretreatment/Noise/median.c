@@ -55,7 +55,8 @@ void median(SDL_Surface* surface) {
     }
     for (int i = 2; i < surface->h - 2; i++) {
         for (int j = 2; j < surface->w - 2; j++) {
-        Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel
+        Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
+        pixel[0] = pixel[1];
         }
     }
     SDL_UnlockSurface(surface);

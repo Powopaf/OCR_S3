@@ -7,7 +7,7 @@ SRC=\
 	 ../Utils/convert.c \
 	 ../Utils/sdl_utils.c \
 	 ../GreyScale/greyscale.c \
-	 ../blur/blur.c \
+	 ../Contrast/contrast.c \
 	gauss.c \
 	median.c
 

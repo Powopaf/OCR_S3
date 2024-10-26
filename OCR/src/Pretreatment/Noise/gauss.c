@@ -4,10 +4,9 @@
 #include <math.h>
 
 //comment to run project uncomment to run noise reduction functions
-//#include "../Utils/convert.h"
 //#include "../Utils/sdl_utils.h"
 //#include "../GreyScale/greyscale.h"
-//#include "../blur/blur.h"
+//#include "../Contrast/contrast.h"
 //#include "median.h"
 //////////////////////////////////////////////////////////////////////
 
@@ -17,7 +16,7 @@ double gFunc(int x, int y) {
     /*
      * gaussian funtion see gaussian blur for definition
     */
-    const double sig = 2.0;
+    const double sig = 0.5;
     double part1 = 1 / (2 * M_PI * sig * sig);
     double power = -(x * x + y * y) / (2 * sig * sig);
     double part2 = exp(power);
@@ -82,27 +81,25 @@ void gauss(SDL_Surface* surface) {
 
     sdl_setup();
     
-    convert(argv[1]);
     SDL_Surface* surface = SDL_LoadBMP("img.bmp");
     greyscale(surface);
+    //contrast(surface);
     SDL_SaveBMP(surface, "img.bmp");
     SDL_FreeSurface(surface);
     
-    SDL_Surface* s0 = SDL_LoadBMP("img.bmp");
-    contrast(s0);
-    SDL_SaveBMP(s0, "img.bmp");
-    SDL_FreeSurface(s0);
-    
     SDL_Surface* s = SDL_LoadBMP("img.bmp");
-    gaussianBlur(s);
+    gauss(s);
     SDL_SaveBMP(s, "gauss1.bmp");
     SDL_FreeSurface(s);
     
     SDL_Surface* s2 = SDL_LoadBMP("gauss1.bmp");
     median(s2);
+    contrast(s2);
     SDL_SaveBMP(s2, "gauss2.bmp");
     SDL_FreeSurface(s2);
     
+    
+
     //SDL_Surface* s3 = SDL_LoadBMP("gauss2.bmp");
     //blurring(s3);
     //SDL_SaveBMP(s3, "gauss3.bmp");
