@@ -78,13 +78,18 @@ int find_second_letter(char word[], int End[2], int x, int y) {
 
 // solve the grid by finding the first letter of the word and 
 // calling the other functions to find the rest of the word
-int solve_grid(char word[], int Start[2],int End[2]) {
-	for (size_t x = 0; x < grid_len_x; x++) {
-		for(size_t y = 0; y < grid_len_y; y++) {
-			if(grid[x][y] == word[0]) {
+int solve_grid(char word[], int Start[2],int End[2]) 
+{
+	for (size_t x = 0; x < (size_t)grid_len_x; x++) 
+    {
+		for(size_t y = 0; y < (size_t)grid_len_y; y++) 
+        {
+			if(grid[x][y] == word[0]) 
+            {
 				Start[0] = y;
 				Start[1] = x;
-				if(find_second_letter(word, End, x, y) == 0) {
+				if(find_second_letter(word, End, x, y) == 0) 
+                {
 					return 0;
                 }
 			}
@@ -119,10 +124,24 @@ int read_grid(char filename[]) {
 
 	return 0;
 }
+
+void toUpperCase(char str[]) 
+{
+    for (int i = 0; str[i] != '\0'; i++) 
+    {
+        // Check if the character is a lowercase letter (between 'a' and 'z')
+        if (str[i] >= 'a' && str[i] <= 'z') 
+        {
+            // Convert to uppercase by subtracting the difference between 'a' and 'A'
+            str[i] = str[i] - ('a' - 'A');
+        }
+    }
+}
+
 // main function, read the grid file and resolve the grid with the input word
 int solver(char word[])
 {
-	
+    toUpperCase(word);	
 	read_grid(filename);
 
 	int Start[2] = {};
@@ -136,9 +155,9 @@ int solver(char word[])
 	else
 	{
 		print_grid(Start,End);
-		printf("Word: %s\n", word);
-		printf("Start = (%i, %i)\n", Start[0], Start[1]);
-		printf("End = (%i, %i)\n", End[0], End[1]);
+		//printf("Word: %s\n", word);
+		//printf("Start = (%i, %i)\n", Start[0], Start[1]);
+		//printf("End = (%i, %i)\n", End[0], End[1]);
 		printf("(%i, %i)(%i, %i)\n", Start[0], Start[1], End[0], End[1]);
 	}
 	return 0;
