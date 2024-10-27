@@ -30,4 +30,4 @@ main: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm $(OBJ) main.out output/*.bmp output/letter/*.bmp
+	rm -rf $(OBJ) main.out output/*.bmp output/letter/*.bmp output/letter/*/
