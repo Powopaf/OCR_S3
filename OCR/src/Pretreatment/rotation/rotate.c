@@ -30,7 +30,13 @@ SDL_Surface* rotation3(SDL_Surface *image, double angle) {
     // Create a new surface for the rotated image
     SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
     Uint8* rotated_pixels = (Uint8*)rotated_image->pixels; // Pointer to the new image's pixels
-    
+    if (rotated_image == NULL)
+    {
+        fprintf(stderr, "Error creating rotated surface: %s\n", SDL_GetError());
+        SDL_UnlockSurface(image);
+        return NULL;
+    }
+
     // Fill the entire surface with white (RGB: 255, 255, 255)
     SDL_FillRect(rotated_image, NULL, SDL_MapRGB(rotated_image->format, 255, 255, 255));
 
