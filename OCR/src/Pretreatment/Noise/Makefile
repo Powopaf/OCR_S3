@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -Wextra -fsanitize=address -g
 
-LIB=-lSDL2 -lm
+LIB=-lSDL2 -lm -fsanitize=address
 
 SRC=\
 	 ../Utils/convert.c \
