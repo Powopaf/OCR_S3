@@ -4,27 +4,32 @@
 //#include "../Utils/convert.h"
 //#include "../Utils/sdl_utils.h"
 ////////////
+
 #define M_PI       3.14159265358979323846
 
-// Rotation by rotation matrix (Best result)
+// Rotation using a rotation matrix (Best result)
 SDL_Surface* rotation3(SDL_Surface *image, double angle) {
-    SDL_LockSurface(image);
-    int width = image->w;
-    int height = image->h;
-    int bpp = image->format->BytesPerPixel;
+    SDL_LockSurface(image); //Lock the surface to directly access the pixel data
+    
+    //Get the image dimensions
+    int width = image->w; // Get the with in pixel
+    int height = image->h; // Get the height in pixel
+    int bpp = image->format->BytesPerPixel; 
     int p = image->pitch;
-    Uint8* pixels = (Uint8*)image->pixels;
+    Uint8* pixels = (Uint8*)image->pixels; // Pointer to the pixel data
 
-    double angle_radian = angle * M_PI / 180.0;
+    double angle_radian = angle * M_PI / 180.0; //Convert the angle from degrees to radians
 
     double cos_angle = cos(angle_radian);
     double sin_angle = sin(angle_radian);
 
+    // Calculate the size of the new image after rotation (diagonal length of the original image)
     int new_w = sqrt((width*width)+(height*height))+1;
     int new_h = new_w;
 
+     // Create a new surface for the rotated image
     SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
-    Uint8* rotated_pixels = (Uint8*)rotated_image->pixels;
+    Uint8* rotated_pixels = (Uint8*)rotated_image->pixels; // Pointer to the new image's pixels
     
     // Fill the entire surface with white (RGB: 255, 255, 255)
     SDL_FillRect(rotated_image, NULL, SDL_MapRGB(rotated_image->format, 255, 255, 255));
@@ -52,7 +57,7 @@ SDL_Surface* rotation3(SDL_Surface *image, double angle) {
             }
         }
     }
-    SDL_UnlockSurface(image);
+    SDL_UnlockSurface(image); // Unlock when finish
     SDL_FreeSurface(image);  // Free the original surface if it's no longer needed
 
     return rotated_image;
@@ -169,7 +174,6 @@ SDL_Surface *rotation1(SDL_Surface* image, double angle) {
             // Current pixel in the original image
             Uint8* pixel = pix + i * p + j * bpp;
 
-            // Offset from the center of the original image
             int x_off = j - width / 2;
             int y_off = i - height / 2;
 
