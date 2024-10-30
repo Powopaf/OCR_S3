@@ -50,7 +50,7 @@ GtkWidget *imageTMP;
 // Build objects
 void get_gtk_widgets()
 {
-    button_import = GTK_WIDGET(gtk_builder_get_object(builder"button_import"));
+    button_import = GTK_WIDGET(gtk_builder_get_object(builder,"button_import"));
     button_reset = GTK_WIDGET(gtk_builder_get_object(builder,"button_reset"));
     label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
     label_title = GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
