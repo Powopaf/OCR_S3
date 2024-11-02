@@ -57,7 +57,7 @@ void gauss(SDL_Surface* surface, double sig) {
     for (int y = 2; y >= -2; y--) {
         j = 0;
         for (int x = -2; x <= 2; x ++) {
-            kernel[i][j] = gFunc(x, y, sig);
+            kernel[i][j] = gFunc(x, y);
         }
     }
 
