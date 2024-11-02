@@ -12,9 +12,9 @@ int height = 1080;
 
 // Initialize object pointers
 GtkBuilder *builder;
+GtkWidget *window;
 GtkAdjustment *adjustment_rotation;
 GtkFileFilter *filter;
-GtkWidget *window;
 GtkWidget *box_vertical;
 GtkWidget *box_horizontal;
 GtkWidget *box_rotation;
@@ -55,7 +55,6 @@ void get_gtk_widgets()
     label_import = GTK_WIDGET(gtk_builder_get_object(builder, "label_import"));
     label_title = GTK_WIDGET(gtk_builder_get_object(builder, "label_title"));
     image = GTK_WIDGET(gtk_builder_get_object(builder,"image"));
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     box_vertical = GTK_WIDGET(gtk_builder_get_object(builder, "box_vertical"));
     box_horizontal = GTK_WIDGET(gtk_builder_get_object(builder,
                                                        "box_horizontal"));
@@ -96,7 +95,6 @@ void get_gtk_widgets()
 int main(int argc, char *argv[]) 
 {
     // Initialize GTK
-    gtk_disable_setlocale();
     gtk_init(&argc, &argv);
 
     // Read the XML glade file
@@ -139,12 +137,13 @@ void on_window_destroy()
 {
     // Remove temporary files and quit
     system("rm output/*.bmp");
-    system("rm output/letter/*.bmp");
+    //METTRE SHELL QUI SUPPRIME TOUTES LES LETTERS
     gtk_main_quit();
 }
 
 // Load the image on the right box of the window
-void load_image(char *filename) {
+void load_image(char *filename)
+{
     // Clear the previous image
     if (image)
     {
