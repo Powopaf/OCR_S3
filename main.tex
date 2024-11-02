@@ -36,7 +36,6 @@
   },
 }
 
-
 \usepackage{minted}
 \usepackage{listings}
 \lstset{language=C, basicstyle=\ttfamily, keywordstyle=\color{blue}, commentstyle=\color{green}}
@@ -100,7 +99,7 @@
 \renewcommand{\footrulewidth}{1pt}
 \section{Introduction}
 \paragraph{}
-Au cours de ce projet, la présence d’un rapport de soutenance est primordial. Il nous  permettra de nous concentrer sur le bilan de ce qui a été fait et la manière dont nous allons traiter le projet sur le temps imparti (du mois de septembre au mois de décembre).
+Tout au long du projet CLAPS Word Search OCR, la présence d’un rapport de soutenance est primordiale. Il nous permettra de nous concentrer sur le bilan de ce qui a été fait et la manière dont nous allons traiter le projet sur le temps imparti (du mois de septembre au mois de décembre).
 Nous présenterons ainsi l’état d’avancement de notre projet, ainsi qu’un compte rendu qui détaillera les tâches prévues dans le cahier des charges.
 \paragraph{}
 L’objectif de ce projet est de nous offrir la possibilité de mettre en oeuvre de manière concrète, les connaissances acquises en cours. Cela nous donnera ainsi l’occasion d’augmenter nos acquis personnels nécessaires au projet.
@@ -524,8 +523,57 @@ Pour détecter si le mot se trouve dans la grille, on suit trois étapes :
     On vérifie d'abord que le mot peut tenir dans la direction trouvée sans dépasser les limites de la grille. Si c'est le cas, on parcourt chaque lettre restante du mot pour vérifier qu'elle correspond à la lettre dans la grille selon la direction identifiée. Une fois arrivé à la fin du mot, on sauvegarde la position finale et on retourne les coordonnées de début et de fin du mot.\\
 \end{description}
 Grâce à cet algorithme, on est certain de trouver le mot s'il existe dans la grille et d'en renvoyer les coordonnées. Ces informations seront très utiles plus tard pour indiquer visuellement l'emplacement de chaque mot dans la grille.
-
+\clearpage
 \section{Interface}
+La création d'une interface cohérente et simple à utiliser est cruciale pour fluidifier l'expérience utilisateur. Elle a constitué une part importante du travail à effectuer sur le projet. L'interface est la liaison entre ce que voit l'utilisateur de notre logiciel et le traitement appliqué pour trouver la solution finale du problème initial.\\
+
+\subsection{Du concept...}
+La première étape a été de conceptualiser l'interface visuelle à l'aide du logiciel \texttt{Glade}. Notre objectif était de concevoir un ensemble simple avec uniquement des boutons à gauche pour modifier les paramètres de traitement, ainsi qu'une image à droite pour visualiser la solution et toutes les étapes qui ont mené à cette solution.\\
+
+L'interface est donc composée d'une colonne de paramètres modifiables à gauche et d'une image dynamiquement modifiée à droite.\\
+
+Dans la colonne de gauche, on retrouve différentes sections :
+\begin{itemize}
+    \item Un titre et un logo créés par notre équipe, montrant à la fois deux mains qui s'entrechoquent pour le nom \texttt{CLAPS} ainsi qu'un petit robot analyseur pour symboliser la partie intelligence artificielle du projet.
+    \item Un bouton pour importer depuis les fichiers de l'ordinateur une image à faire traiter par notre \texttt{OCR}. Celle-ci peut être modifiée à tout moment.
+    \item Un curseur pour ajuster la rotation manuelle de l'image originale entre \texttt{-90} et \texttt{+90} degrés. Un bouton est également présent pour réinitialiser la valeur du curseur à \texttt{0}.
+    \item Un bouton pour lancer le traitement de l'image. Celui-ci fait disparaître la section de rotation ainsi que sa propre section.
+    \item Une série de boutons alternatifs pour sélectionner la visualisation de l'étape actuelle du traitement. Cela modifie dynamiquement l'image affichée à droite.
+    \item Un bouton pour exporter l'image dans le format souhaité, à un emplacement sélectionné par l'utilisateur.\\
+\end{itemize}
+
+Dans la partie droite, on retrouve une image qui est modifiée en temps réel en fonction des actions de l'utilisateur. Par exemple, au lancement, il n'y a pas d'image, pendant la rotation, elle affiche l'image tournée, et lors de l'appui sur le bouton de traitement, elle affiche directement la solution du mot caché.\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.115]{ImgInterface_1.png}
+    \caption{Interface avant le processus de traitement}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.115]{imgInterface_2.png}
+    \caption{Interface après le processus de traitement}
+\end{figure}
+
+\subsection{... Au concret}
+La deuxième étape a été de créer la liaison entre l'interface visuelle réalisée avec \texttt{Glade} et les fonctions codées dans le reste du projet, par l'intermédiaire de \texttt{GTK3}. \texttt{GTK} est par nature difficile à appréhender, car il est composé de dizaines de fonctions indépendantes du langage \texttt{C}.\\
+
+Une fois la liaison créée, il a fallu faire fonctionner l'ensemble des éléments de l'interface.
+
+L'image doit être facilement modifiable et doit conserver une taille adaptée à la hauteur de l'écran. Cela a été rendu possible grâce à \texttt{ImageMagick} et à son argument \texttt{-resize}, ainsi qu'à une implémentation dynamique de l'image.\\
+
+Lors de l'importation d'une image, celle-ci doit être dupliquée et convertie en \texttt{.bmp} en deux exemplaires : l'un pour conserver la photo originale en cas d'exportation, et l'autre pour appliquer de potentielles rotations. Lors de l'appui sur le bouton de traitement, l'image doit être créée en 16 exemplaires différents : 8 pour l'exportation (l'image de l'étape \texttt{X} du traitement) en taille originale, et 8 autres pour l'affichage de l'image en taille redimensionnée, permettant ainsi de basculer rapidement entre les différents états une fois le traitement effectué, afin d'offrir l'expérience la plus fluide possible. Le traitement doit également créer un dossier d'images stockées sous le format \texttt{BMP} par cluster final, pour alimenter le réseau de neurones.\\
+
+Le curseur de rotation, lors du relâchement de la souris après un appui, met à jour l'image stockée en lui appliquant la rotation du degré désiré. Lors de l'appui sur le bouton de réinitialisation, la valeur du curseur est remise à \texttt{0}, et l'image est remplacée par l'image originale.\\
+
+Le bouton de traitement masque la section de rotation ainsi que sa propre section, pour laisser place aux boutons d'étapes et à la section d'exportation. Cependant, il conserve le bouton d'importation, qui reste accessible à tout moment pour changer l'image d'entrée, ce qui a pour effet de réinitialiser la visualisation des boutons.\\
+
+Lorsqu'un bouton de sélection d'étape est activé, il met à jour l'image à droite et désélectionne le bouton actuellement activé, agissant ainsi comme un bouton alternatif parmi les autres boutons de sélection d'étapes.\\
+
+Lors de l'appui sur le bouton d'exportation, une fenêtre de dialogue s'ouvre et permet de choisir un emplacement sur l'ordinateur pour sauvegarder l'image actuellement affichée dans son format original. Le nom par défaut est \texttt{solution.png}, mais il peut être modifié, ainsi que le format, grâce à l'outil \texttt{ImageMagick}, qui convertit automatiquement l'image dans le format souhaité en fonction de l'état actuel du traitement (\texttt{CurrentState}).\\
+
+À la fermeture du programme ou lors de l'importation d'une nouvelle image, le logiciel supprime toutes les images temporaires présentes dans \texttt{/output/} ainsi que toutes les images de lettres présentes dans les sous-dossiers des clusters. Il termine enfin en fermant proprement l'interface \texttt{GTK}.\\
 \newpage
 \section{Conclusion}
 \paragraph{}
