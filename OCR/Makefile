@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -fsanitize=address -g
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -g
 
-LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -fsanitize=address -g
+LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -g
 
 SRC=\
 	src/Pretreatment/Utils/convert.c \
@@ -30,4 +30,5 @@ main: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -rf $(OBJ) main.out output/*.bmp output/letter/*.bmp output/letter/*/
+	rm $(OBJ) main.out output/*.bmp
+	./rmCluster.sh

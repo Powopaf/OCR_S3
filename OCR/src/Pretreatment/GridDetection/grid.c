@@ -300,13 +300,13 @@ void ProcessGrid(SDL_Surface *surface)
 
     for (int i = 0; i < size; i++)
     {
+        char d[2048];
+        sprintf(d, "mkdir -p output/letter/Cluster_%i", i);
+        system(d);
+        
         Node* c = clusterList[i];
         while (c != NULL)
         {
-            char d[2048];
-            sprintf(d, "mkdir output/letter/Cluster_%i", i);
-            system(d);
-
             char s[2048];
             sprintf(s, "output/letter/Cluster_%i/Letter_%i.bmp", i, c->data->id);
             cropLetter(s, c->data, Map);
