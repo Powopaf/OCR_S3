@@ -1,0 +1,550 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[french]{babel} % pour dire que le texte est en fran¸cais
+\usepackage{a4} % pour la taille
+\usepackage[T1]{fontenc} % pour les font postscript
+\usepackage[cyr]{aeguill} % Police vectorielle TrueType, guillemets fran¸cais
+\usepackage{amsmath, amsthm} % tr`es bon mode math´ematique
+\usepackage{float} % pour le placement des figure
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{makecell}
+\usepackage{hyperref}
+\usepackage{amssymb}
+%\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\graphicspath{ {./} }
+\pagestyle{fancy}
+\usepackage{animate}
+\usepackage[utf8]{inputenc}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+%pour drawn le neural network
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\tikzset{%
+  every neuron/.style={
+    circle,
+    draw,
+    minimum size=1cm
+  },
+  neuron missing/.style={
+    draw=none, 
+    scale=4,
+    text height=0.333cm,
+    execute at begin node=\color{black}$\vdots$
+  },
+}
+
+
+\usepackage{minted}
+\usepackage{listings}
+\lstset{language=C, basicstyle=\ttfamily, keywordstyle=\color{blue}, commentstyle=\color{green}}
+\usepackage{xcolor}
+\fancyhf{}
+
+\definecolor{bgcolor}{rgb}{0.7,0.7,0.7}
+\definecolor{stringcolor}{rgb}{0.58,0,0.82}
+\definecolor{keywordcolor}{rgb}{0.10,0.10,0.80}
+\definecolor{commentcolor}{rgb}{0.0,0.6,0.0}
+
+\lstset{
+  backgroundcolor=\color{bgcolor},
+  basicstyle=\ttfamily,
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{black},
+  xleftmargin=3pt,
+  xrightmargin=3pt,
+  breaklines=true,
+  keywordstyle=\color{keywordcolor}\bfseries,
+  stringstyle=\color{stringcolor},
+  commentstyle=\color{commentcolor},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  language=[Sharp]C
+}
+
+\begin{document}
+\title{ \HUGE \textbf{ \includegraphics[scale=0.25]{icon_black.png}}
+		\\ [2.0cm]
+		\Xhline{2pt} \\
+        [0.5cm]
+		\LARGE \uppercase{Projet OCR CLAPS}\\
+        [0.5cm]
+		\Xhline{2pt} \\ 
+        [4cm]
+		\textsc{Rapport de Soutenance 1}}
+  
+\author{
+    Coureau Adrien\\
+    Del-Pozo Corentin\\
+    Fournier Pierre-Antoine\\
+    Lou Sophie\\
+}
+\date{}
+\maketitle
+\newpage
+\large
+\pagestyle{fancy}
+\cfoot{\thepage}
+\tableofcontents
+\pagebreak
+
+\lhead{}
+\rhead{\textbf{Projet OCR}}
+\lfoot{\textbf{Groupe CLAPS}}
+\rfoot{\textbf{EPITA}}
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\section{Introduction}
+\paragraph{}
+Au cours de ce projet, la présence d’un rapport de soutenance est primordial. Il nous  permettra de nous concentrer sur le bilan de ce qui a été fait et la manière dont nous allons traiter le projet sur le temps imparti (du mois de septembre au mois de décembre).
+Nous présenterons ainsi l’état d’avancement de notre projet, ainsi qu’un compte rendu qui détaillera les tâches prévues dans le cahier des charges.
+\paragraph{}
+L’objectif de ce projet est de nous offrir la possibilité de mettre en oeuvre de manière concrète, les connaissances acquises en cours. Cela nous donnera ainsi l’occasion d’augmenter nos acquis personnels nécessaires au projet.
+\paragraph{}
+Le but final de ce projet est de réaliser un logiciel de type OCR qui résout une grille de mots cachés en 4 mois. Notre application prendra donc en entrée une image représentant une grille de mots cachés et affichera en sortie la grille résolue.
+\paragraph{}
+Ainsi, nous avons découpé ce projet en plusieurs parties:\\
+\begin{itemize}
+    \item Reconnaissance de caractère (réseau de neurones)\\
+    \item Résolution d’une grille de mots cachés (solver)\\
+    \item Prétraitement d’image \\
+    \item Interface graphique \\
+\end{itemize}
+\paragraph{}
+Étant donné la variation de la qualité des images à traiter, 4 niveaux seront à surmonter tout le long de notre projet.
+\newpage
+\section{Répartition des Tâches}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+    \hline Tâches & Pierre-Antoine & Corentin &  Adrien & Sophie\\
+    \hline Interface Utilisateur & & &\checkmark & \\
+    \hline Niveau de gris & \checkmark & & & \\
+    \hline Réduction de bruits & \checkmark & & & \\
+    \hline Rotation & & & &\checkmark \\
+    \hline Binarisation & &  & \checkmark & \\
+    \hline Détection de Grille & & \checkmark & & \\
+    \hline Solver & &  & & \checkmark \\
+    \hline Réseaux de Neurones & & \checkmark & & \\
+    \hline
+\end{tabular}
+\end{center}
+\section{Notre Equipe}
+\subsection{Lou Sophie}
+\paragraph{}
+Animée par mon attirance pour les mathématiques, la réalisation de la rotation manuelle d’image, m’a permis de nourrir cette curiosité, par l’application à des choses concrètes et visuelles (ici, des grilles de mots mêlées). Le fait d’avoir l’occasion de mettre en pratique des connaissances mathématiques, pouvant paraître abstraites, en l’associant à de l’informatique, m’a rappelé l’importance de ces deux domaines.
+\paragraph{}
+De plus, en mettant en place un algorithme de Solver, cela m’a permis de comprendre l’implémentation d’un algorithme de résolution de mots cachés. 
+Ensemble, nous avons pu déterminer quel était le plus efficace à implémenter.
+Toujours en quête d’application concrète, le fait de savoir de manière immédiate si un mot a été trouvé ou non, était très encourageant.
+\subsection{Fournier Pierre-Antoine}
+\paragraph{}
+J’ai choisi de faire les niveaux de gris et la réduction de bruit car le traitement d’image m’intéresse. Je me verrai bien faire la majeur sur les images à EPITA. Ce projet est un moyen de découvrir gentiment si ça me plaît vraiment. Pour le moment j’aime bien.
+\subsection{Del-Pozo Corentin}
+
+Pour ce projet, j'ai choisi de m'occuper du réseau de neurones, car c'est un sujet en informatique qui me passionne beaucoup. Avant de commencer le projet, je m'étais déjà renseigné sur son fonctionnement et sur toutes les possibilités qu'il offre. Le développement du réseau de neurones m'a permis d'approfondir mes connaissances en apprentissage supervisé et d'appliquer des concepts théoriques à des problèmes pratiques. Cela m'a également permis de mieux comprendre comment les algorithmes peuvent apprendre et s'adapter à des données variées, ce qui est essentiel dans le contexte de l'intelligence artificielle.
+\\
+
+En ce qui concerne la détection de la grille, j'ai choisi de m'occuper de ce problème parce qu'au début, notre groupe n'avait aucune idée de quelle direction prendre. J'apprécie particulièrement les défis qui consistent à chercher des solutions dans un environnement où nous disposons de peu d'indices et de ressources. Cette contrainte nous pousse à développer nos propres solutions et à faire preuve de créativité, ce qui rend le processus d'apprentissage d'autant plus stimulant.
+
+\subsection{Coureau Adrien}
+\paragraph{}
+Passionné d'informatique depuis petit, l'univers de la création m'attire beaucoup (dessin, dessin digital, production de musique). J'ai choisi de développer l'interface du projet en gtk3 avec l'aide de Glade parce que j'aime créer un produit fini et cohérent à partir de zéro.
+\paragraph{}
+La conception d'une interface facile à prendre en main est cruciale pour fluidifier l'expérience de l'utilisateur ainsi que renforcer la rapidité des tâches et des tests pour les développeurs. Elle est la liaison entre ce que l'on voit, les boutons, et toutes les actions que peut effectuer notre application d'OCR.
+
+\section{Pourquoi le format BMP}
+\paragraph{}
+Nous avons choisi ce format car il rend plus simple le parcours d’une image, nous conservons une bonne qualité de l’image avec ce format. Cependant il est plus volumineux que le format PNG, il est donc important de supprimer toutes les images en BMP que nous avons créé avant le crash. Pour cela un simple script suffit. Nous devons aussi convertir l’image donnée par l’utilisateur avant de faire quoi que ce soit.
+\subsection{Parcourir une image BMP}
+\paragraph{}
+Pour faire un parcours d’une image il nous suffit d’appeler la fonction 
+\begin{lstlisting}
+   SDL_LoadBMP("img.bmp")
+\end{lstlisting}
+qui renvoie une surface la surface est une structure de la librairie SDL qui contient la hauteur, largeur, et le pointeur vers le tout premier pixel de l’image.
+\paragraph{}
+L’image est contenue dans un seul tableau donc les 3 premières valeurs sont les pixel rouge vert bleu du premier pixel, puis les 3 suivantes ceux du second et ainsi de suite. \\
+Pour parcourir une image nous utilisons tous le code suivant :
+\begin{lstlisting}
+for (int i = 0; i < height; i++) 
+{
+    for (int j = 0; j < width; i++) 
+    {
+        Uint8* pixel = pix + j * pitch + i * bpp;
+        // do stuf on the image
+    }
+}
+\end{lstlisting}
+\paragraph{}
+Nous avons une double boucle plutôt classique. Ensuite pour récupérer un pointeur vers la couleur rouge du pixel actuel il nous suffit de faire le calcul suivant :
+\\
+pix est le pointeur du tout premier pixel de l’image accédée en faisant surface→pixels. On lui ajoute i qui correspond à la rangée horizontale actuelle multipliée par le pitch (accédée par surface→pitch). Le pitch est le nombre de bytes entre les lignes. Il n’est pas toujours égal au nombre de pixel fois le nombre de Bytes par pixel(bpp) car il se peut que des Bytes soit rajoutés en bout de ligne pour des raisons de performances. Donc pix + i * pitch nous permet de récupérer la bonne ligne de pixel de l’image. Nous ajoutons donc i qui correspond a i-ème pixel de la j-ème rangée. Il ne faut pas oublier de multiplier i par le nombre de Bytes par pixel (surface→format→BytestPerPixel). Dans notre cas, le Bytes Per Pixel vaut 3.
+\section{Réduction de Bruit}
+\paragraph{}
+Dans les images données dans le cahier des charges nous avons le niveau 2 qui contient des images avec du bruit. Nous avons implémenté 2 algorithmes pour réduire le bruit dans les images. Le flou médian et le flou Gaussien. Pour simplifier les algorithmes nous lançons un "grayscale" car les valeurs des 3 couleurs (RGB) sont égales.
+\subsection{Le flou médian}
+Le flou médian consiste à mettre dans une liste les 8 valeurs des pixels autour puis on prend la valeur du milieu pour y attribuer au pixel actuel. Nous utilisons un tri par insertion pour ranger les valeurs. A noter que il est possible d’élargir le noyaux de 3*3 a un noyaux de 5*5. Cet algorithme permet d’éliminer les pixels qui ont une valeur très différente des pixels proches. Il permet donc de conserver les contours pratiques pour ne pas trop abîmer les lettres.
+\subsection{Le Flou Gaussien}
+Le flou Gaussien utilise aussi un noyau il est par contre prédéfinis. On peut choisir sa taille (3*3, 5*5,…) dans notre cas nous utilisons un noyaux de taille 3*3. Le pour calculer les valeurs du noyaux nous appliquons la Fonctions Gaussienne dont voici la courbe prend une forme similaire à l'image fourni. (elle peut être plus pentu, plus allongé)
+%image courbe gauss
+\paragraph{}
+Les valeurs fournies à la fonction Gaussienne qui prend 3 arguments sont X et Y respectivement les coordonnées (x,y) des pixel autour du milieux du noyaux qui a pour coordonnées (0,0). Le dernier est "sigma" qui permet de rendre la photo plus sombre, claire. Pour trouver le sigma adapté nous avons lancé plein de flou gaussien en augmentant lentement le sigma pour trouver la valeur optimale. La fonction est la suivante :
+$$
+\mathcal{G}(x,y) = \frac{1}{2\pi\sigma^2}\exp^{-\frac{x^2+y^2}{2\sigma^2}} \mbox{~et~} \sigma \in \mathbb{R}
+$$
+Coder de cette façon.
+\begin{lstlisting}
+#define MP_I        3.14159265358979323846
+
+double gFunc(int x, int y) 
+{
+    const double sig = 0.58;
+    double part1 = 1 / (2 * M_PI * sig * sig);
+    double power = -(x * x + y * y) / (2 * sig * sig);
+    double part2 = exp(power);
+    return part1 * part2;
+}
+\end{lstlisting}
+\subsection{Contraste}
+Nous avons aussi utilisé un algorithme de contraste d’image pour accentuer le noir et le blanc sur les images avant de lancer les algorithme pour réduire le bruit. Le contraste marche de la manière suivante :\\
+Ont construit une liste des 8 pixel autour du pixel actuel. On compare ensuite avec la condition suivante :
+\begin{lstlisting}
+// sidepixel is an array containing the 8 pixels around pixel
+if (side_pixel[k] < pixel[0] && pixel[0] < 200) { /*...*/ }
+\end{lstlisting}
+Si elle est validée, on retire 50 à la valeur actuelle du pixel. 
+Voici quelques exemples de avant après l’application de notre algorithme
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img6.png}
+    \caption{Avant}
+    \includegraphics[scale=0.3]{img7.png}
+    \caption{Après}
+\end{figure}
+\section{Rotation de l'image}
+\paragraph{}
+Plusieurs méthodes peuvent être appliquées afin d’effectuer une rotation d’image. Voici 2 différentes techniques, aboutissant à celle conservée, étant la plus performante.
+\subsection{Rotation avec une seul matrice}
+\paragraph{}
+Cette méthode de rotation consiste à utiliser cette formule:
+$$
+x' = \cos(\theta) * x - \sin(\theta) * y
+$$
+$$
+y' = \sin(\theta) * x + \cos(\theta) * y
+$$
+\paragraph{}
+Provenant de la représentation matricielle suivante:\\
+
+$$\left( \begin{array}{cc} x' \\ y'\end{array}\right) = \left( \begin{array}{cc} \cos(\theta) & \sin(\theta) \\ -\sin(\theta) & \cos(\theta) \end{array}\right)\left(\begin{array}{cc} x \\ y\end{array}\right)$$ 
+\\\\
+(avec $\theta$  l’angle en degré)
+\subsubsection{Problème rencontré}
+\paragraph{}
+Malgré la simplicité de cette formule, l’application de celle-ci provoque de manière persistante des problèmes d'aliasing, dû à l’apparition non voulue de points noirs, pouvant nuire à la détection des lettres. La rotation avec une seule matrice affecte donc la qualité de l’image, dû à une mauvaise utilisation. En effet, nous sommes partis des coordonnées des pixels de l'image d'origine et nous avons calculé leur position après rotation dans la nouvelle image. Cette technique s’appelle l'échantillonnage en avant, ayant pour effet de laisser des trous dans l’image.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{img1.png}
+    \caption{Problème 1}
+\end{figure}
+\subsection{Rotation par cisaillement}
+\paragraph{}
+Ne sachant pas que le problème rencontré était dû à une mauvaise utilisation, nous avons ainsi voulu appliquer le principe de rotation par cisaillement (aussi appelé rotation par Shearing), qui utilise l’algorithme de Shearing, prenant chaque pixel de l’image, puis applique 3 multiplications successives, par des matrices avec $\theta$ notre angle en radian. \\
+Elle utilise donc cette représentation matricielle:
+$$
+\left(\begin{array}{cc} x' \\ y' \end{array}\right) = \left(\begin{array}{cc}
+   1  & -\tan(\frac{\theta}{2}) \\
+   0  & 1
+\end{array}\right) \left(\begin{array}{cc}
+   1  &  0\\
+   \sin(\theta)  & 1
+\end{array}\right)\left(\begin{array}{cc}
+    1 &  -\tan(\frac{\theta}{2})\\
+    0 & 1
+\end{array}\right)\left(\begin{array}{cc} x \\ y \end{array}\right)
+$$
+(avec $\theta$ l’angle en degré)
+\paragraph{}
+Afin que la rotation puisse s’effectuer dans le sens horaire et non anti-horaire, nous avons ainsi inverser les signes obtenant les formules suivantes:
+\begin{itemize}
+    \item $1^{er}$ cisaillement :
+    $$
+    x' = x + \tan(\theta) * y
+    y' = y
+    $$
+    \item $2^{eme}$ cisaillement:
+    $$
+    x'' = x'
+    y'' = x'' + \sin(\theta) * (-1) * x' * y'
+    $$
+    \item $3^{eme}$ cisaillement:
+    $$
+    x''' = x'' + \tan(\theta) * y
+    y''' = y''
+    $$
+\end{itemize}\\
+(avec $\theta$ l’angle en degré)\\\\
+Voici un exemple de représentation avec un angle de 20°:
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{img2.png}
+    \caption{Rotation de 20°}
+\end{figure}
+\subsubsection{Problème rencontré}
+\paragraph{}
+Malgré la netteté de l’image, celle-ci affichait des failles, par une perte d’une partie de l’image lors d'angles, comme celui de 35°. En effet, il était difficile de la centrer correctement.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{img3.png}
+    \caption{Problème 2}
+\end{figure}
+\subsection{Rotation avec matrice de rotation}
+\paragraph{}
+Enfin, cette méthode a été privilégiée par son efficacité, utilisant la formule de “matrice de rotation” vu en 3.1:
+$$
+x' = \cos(\theta) * x - \sin(\theta) * y
+$$
+$$
+y' = \sin(\theta) * x + \cos(\theta) * y
+$$
+(avec $\theta$ l’angle en degré)
+\paragraph{}
+Cependant, au lieu de partir des coordonnées des pixels de l'image d'origine et nous avons calculé leur position après rotation dans la nouvelle image. Nous sommes partis des coordonnées de pixels dans la nouvelle image puis nous avons recherché les pixels correspondants dans l'image d'origine (c’est un "échantillonnage inverse"), ce qui garantit que chaque pixel de la nouvelle image est couvert et minimise les pertes de pixels.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{img4.png}
+    \caption{Résultat final}
+\end{figure}
+\section{Binarisation}
+
+Pour effectuer la binarisation de l'image, nous avons appliqué l'algorithme de Sauvola. Cet algorithme est basé sur la méthode de seuil local, qui adapte le seuil de binarisation en fonction des variations d'intensité de l'image. Il est particulièrement efficace pour les images ayant un contraste faible ou des variations d'éclairage.
+\\\\
+La formule de Sauvola pour le calcul du seuil \(T(x, y)\) au pixel \((x, y)\) est donnée par :
+
+$$
+T(x, y) = \mu(x, y) + k \cdot \left( \sigma(x, y) - m \right)
+$$
+\\
+où :
+\begin{itemize}
+    \item \(\mu(x, y)\) est la moyenne des intensités des pixels dans un voisinage local autour du pixel \((x, y)\).
+    \item \(\sigma(x, y)\) est l'écart type des intensités des pixels dans le même voisinage.
+    \item \(k\) est un facteur de sensibilité qui peut être ajusté pour contrôler la binarisation.
+    \item \(m\) est un paramètre constant (souvent pris égal à 128 pour des images en niveaux de gris).
+\end{itemize}
+\vspace{0.5cm}
+Pour chaque pixel de l'image, nous comparons son intensité \(I(x, y)\) avec le seuil calculé \(T(x, y)\). Si \(I(x, y) > T(x, y)\), le pixel est classé comme blanc (valeur 1), sinon il est classé comme noir (valeur 0). Cette approche permet de segmenter efficacement les objets d'intérêt dans l'image, en tenant compte des variations locales.
+
+En utilisant cet algorithme, nous avons réussi à obtenir une binarisation robuste qui améliore la qualité des étapes suivantes dans le traitement de l'image.
+\\\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{imgBinarisation.png}
+    \caption{Image après la binarisation}
+\end{figure}
+
+\section{Détection de la Grille}
+
+Une fois l'image binarisée, nous allons commencer à détecter la grille et la liste de mots. Pour développer une stratégie efficace, nous avons étudié les méthodes de détection de grille et consulté de nombreuses ressources en ligne, notamment sur l'utilisation de Sobel et d'autres algorithmes de détection de grille. 
+\\
+Cependant, dans notre cas, il se peut qu'il n'y ait pas de grille sur l'image, et la liste de mots, quant à elle, n'est jamais encadrée par une grille. Nous avons donc choisi de procéder à l'inverse : au lieu de détecter la grille pour ensuite identifier les lettres, nous allons d'abord détecter les lettres, puis déterminer lesquelles appartiennent à la grille et lesquelles à la liste de mots. 
+\\\\
+Pour cela, nous appliquerons plusieurs étapes afin d'atteindre ce résultat.
+
+\subsection{Détection des formes}
+
+Nous commencerons par détecter tous les amas de pixels blancs connectés entre eux. Pour cela, nous allons utiliser un algorithme similaire à celui du "pot de peinture" des logiciels de dessin, qui parcourt l'image de manière récursive.
+\\\\
+Nous allons créer deux matrices : une matrice pour indiquer si un pixel a été visité et à quelle forme il appartient, et une autre matrice qui stocke l'image sous forme de 1 (pixels noirs) et 0 (pixels blancs), afin de distinguer plus facilement les pixels blancs et noirs dans la fonction récursive.
+\\\\
+L'algorithme parcourt toute l'image ; dès qu'un pixel blanc non visité est trouvé, il initialise une nouvelle forme.
+\\\\
+Structure de la forme :
+\begin{lstlisting}
+typedef struct Shape 
+{
+
+    int id; // identifier of the shape
+    int Cx, Cy; // coordinates of the center of the shape
+    int h, w; // height and width of the shape
+
+    // coordinates of the shape's edges
+    int Maxj, Maxi;
+    int Minj, Mini;
+
+    int Matj, Mati; // coordinates of the letter in the grid
+
+    int Len; // number of pixels in the shape
+  
+} Shape;
+\end{lstlisting}
+
+\vspace{0.5cm}
+
+Un identifiant unique est attribué à chaque forme, puis l'algorithme parcourt récursivement les quatre pixels directement adjacents. Pour chaque pixel visité, sa valeur dans la matrice de vérification est remplacée par l’identifiant de la forme. Cette opération est répétée pour les quatre pixels adjacents suivants.
+\\\\
+Une fois la forme entièrement détectée, des informations telles que le nombre de pixels constituant la forme ainsi que sa largeur et sa hauteur sont stockées.
+\\\\
+Ensuite, un premier tri est effectué pour éliminer les formes trop grandes, par exemple celles qui occupent plus de la moitié de la taille de l'image.
+\\
+
+Si une forme est valide, elle est ajoutée à la liste des formes. Pour cet algorithme, nous avons implémenté une structure de liste chaînée pour faciliter la manipulation des formes trouvées.
+\\\\
+Structure de la liste chaînée :
+\begin{lstlisting}
+typedef struct Node
+{
+    Shape* data;
+    struct Node* next;
+} Node;
+\end{lstlisting}
+
+\vspace{0.5cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{imgFindShape_1.png}
+    \caption{Image après la détection des formes}
+\end{figure}
+\\\\
+
+\subsection{Filtrage des formes}
+
+Une fois toutes les formes détectées, on cherche à filtrer le plus de formes non valides possible pour garder seulement les lettres. Pour cela, nous allons calculer la somme de la largeur, de la hauteur et de la taille de toutes les formes de la liste, puis nous parcourrons à nouveau la liste en supprimant toutes les formes qui sont trop éloignées de la moyenne. Ce filtre n'est pas le plus efficace, mais il permet d'enlever les formes qui sont trop petites.
+\\\\
+En calculant la moyenne des hauteurs, on obtient la moyenne de la taille de la police, qui est le paramètre le plus efficace pour filtrer.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{imgShapeFilter_1.png}
+    \caption{Image après le filtrage des formes}
+\end{figure}
+
+\subsection{Détection des Groupes}
+
+À ce moment-là, la plupart des formes sont des lettres et il reste quelques formes invalides. Nous allons quand même passer à la détection des groupes et nous filtrerons les groupes invalides.
+\\\\
+Pour détecter les groupes, nous allons parcourir chaque forme et vérifier plusieurs paramètres sur les autres formes, tels que :
+\begin{itemize}
+    \item Si la distance entre les deux formes est suffisamment petite par rapport à la taille de la forme.
+    \item Si la hauteur de la forme est assez proche de la moyenne des hauteurs des formes déjà dans le groupe.
+\end{itemize}
+\vspace{0.5cm}
+Pour chaque forme assez proche, on vérifie qu'elle n'est pas déjà dans un autre groupe en consultant une liste qui sauvegarde les formes déjà rencontrées. Si nous ne l'avons jamais rencontrée, nous ajoutons la forme au groupe et nous l'incluons également dans la liste des formes visitées.
+\\\\
+Les groupes sont des listes chaînées de formes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{imgFindCluster_1.png}
+    \caption{Image après la détection des groupes}
+\end{figure}
+
+\subsection{Filtrage des Groupes}
+
+Une fois que tous les groupes ont été créés, nous appliquons un filtre pour garder seulement les groupes de mots ou de lettres. Pour cela, nous allons simplement calculer une moyenne de la taille des groupes. La taille d'un groupe est définie par la somme des tailles de chaque forme qu'il contient, puis nous enlèverons tous les groupes qui sont en dessous de cette moyenne.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{imgClusterFilter_1.png}
+    \caption{Image après le filtrage des groupes}
+\end{figure}
+
+Une fois le filtre appliqué, nous supposons que le groupe le plus grand est la grille et que les autres groupes sont les mots.
+
+\subsection{Récupération des lettres}
+
+Une fois que seuls les groupes de mots ou de lettres sont conservés, nous allons parcourir ces groupes pour ensuite récupérer les lettres et les sauvegarder sous la forme d'images dans un dossier par groupe, afin de pouvoir les traiter avec le réseau de neurones plus tard.
+\\\\
+Pour les récupérer, nous allons utiliser la matrice que nous avons utilisée pour stocker les pixels déjà visités. Nous parcourons cette matrice entre les coordonnées de début et de fin de la forme stockées dans la structure Shape, et pour chaque élément de la matrice qui contient l'identifiant de la forme, nous allons reporter ce pixel dans une nouvelle image aux dimensions de la lettre, que nous sauvegardons dans un dossier représentant le groupe.
+
+
+\section{Réseau de neurones}
+
+Notre réseau de neurones est basé sur une structure classique, c'est-à-dire une couche d'input, une seule couche cachée et une couche d'output. Le nombre de nœuds pour chaque couche varie selon son utilisation, que ce soit pour le XOR ou le traitement d'image.
+
+\subsection{XOR}
+%graph du neural network --
+\begin{tikzpicture}[x=2cm, y=2cm, >=stealth]
+
+\foreach \m/\l [count=\y] in {1,2}
+  \node [every neuron/.try, neuron \m/.try] (input-\m) at (0,1.5-\y) {};
+
+\foreach \m [count=\y] in {1,2,3}
+  \node [every neuron/.try, neuron \m/.try ] (hidden-\m) at (2,2.5-\y*1.25) {};
+
+\foreach \m [count=\y] in {1}
+  \node [every neuron/.try, neuron \m/.try ] (output-\m) at (4,1-\y) {};
+
+\foreach \l [count=\i] in {0,1}
+  \draw [<-] (input-\i) -- ++(-1,0)
+    node [above, midway] {$\l$};
+
+\foreach \l [count=\i] in {1,2,3}
+  \node [above] at (hidden-\i.north) {$H_\l$};
+
+\foreach \l [count=\i] in {1}
+  \draw [->] (output-\i) -- ++(1,0)
+    node [above, midway] {$\l$};
+
+\foreach \i in {1,2,2}
+  \foreach \j in {1,2,3}
+    \draw [->] (input-\i) -- (hidden-\j);
+
+\foreach \i in {1,2,3}
+  \foreach \j in {1}
+    \draw [->] (hidden-\i) -- (output-\j);
+
+\foreach \l [count=\x from 0] in {Input, Hidden, Ouput}
+  \node [align=center, above] at (\x*2,2) {\l \\ layer};
+\end{tikzpicture}
+%----
+\\\\
+
+Pour le XOR, il nous faut 2 nœuds d'input pour représenter les deux entrées de la porte logique, et pour la sortie, il nous faut un nœud d'output. Le nombre de nœuds cachés peut varier, mais pour cet exemple, nous avons choisi 3 nœuds cachés, ce qui est suffisant pour entraîner rapidement ce réseau de neurones tout en s'assurant que les résultats sont corrects après l'entraînement.
+\\\\
+
+\section{Solver}
+Pour résoudre le mot mêlé, on récupère la grille de lettres dans un fichier texte généré par le code. Cette grille est ensuite stockée dans une matrice de caractères afin de pouvoir la manipuler plus facilement dans le programme.
+\\\\
+Pour détecter si le mot se trouve dans la grille, on suit trois étapes :
+
+\begin{description}
+    \item[Étape 1] Trouver la première lettre :\\
+    On parcourt toute la grille jusqu'à trouver la première lettre du mot. Si elle est trouvée, on passe à l'étape suivante en sauvegardant la position de départ du mot. Si elle n'est pas trouvée, le mot n'existe pas dans la grille.\\
+    
+    \item[Étape 2] Trouver la deuxième lettre :\\
+    Une fois la première lettre trouvée, on recherche la deuxième lettre dans les 8 cases adjacentes. Si elle n'est pas trouvée, on continue à chercher la première lettre dans le reste de la grille. Sinon, on détermine la direction à suivre pour les lettres suivantes grâce aux positions des deux premières lettres. Avec cette information, on peut passer à l'étape suivante.\\
+    
+    \item[Étape 3] Trouver le reste du mot :\\
+    On vérifie d'abord que le mot peut tenir dans la direction trouvée sans dépasser les limites de la grille. Si c'est le cas, on parcourt chaque lettre restante du mot pour vérifier qu'elle correspond à la lettre dans la grille selon la direction identifiée. Une fois arrivé à la fin du mot, on sauvegarde la position finale et on retourne les coordonnées de début et de fin du mot.\\
+\end{description}
+Grâce à cet algorithme, on est certain de trouver le mot s'il existe dans la grille et d'en renvoyer les coordonnées. Ces informations seront très utiles plus tard pour indiquer visuellement l'emplacement de chaque mot dans la grille.
+
+\section{Interface}
+\newpage
+\section{Conclusion}
+\paragraph{}
+Afin de clôturer ce premier rapport de soutenance, nous pouvons être fiers d’avoir pu réaliser l’entièreté de nos objectifs:
+\begin{itemize}
+    \item Chargement d’une image et suppression des couleurs 
+    \item Rotation manuelle de l’image 
+    \item Détection de la position : 
+    \begin{itemize}
+        \item De la grille
+        \item De la liste de mots
+        \item Des lettres dans la grille
+        \item Des mots de la liste
+        \item Des lettres dant les mots de la liste
+    \end{itemize}
+    \item Découpage de l’image (sauvegarde de chaque lettre sous la forme d’une image)
+    \item Implémentation de l’algorithme de résolution d’une grille de mots cachés(solver)
+    \item Une preuve de concept de votre réseau de neurones (XOR)
+\end{itemize}
+\paragraph{}
+Ayant toutes ses fonctionnalités de terminées pour la première soutenance, cela nous encourage à poursuivre vers cette voie, démontrant une bonne organisation au sein du groupe.
+\end{document}
