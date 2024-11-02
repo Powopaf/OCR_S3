@@ -95,6 +95,7 @@ void get_gtk_widgets()
 int main(int argc, char *argv[]) 
 {
     // Initialize GTK
+    gtk_disable_setlocale();
     gtk_init(&argc, &argv);
 
     // Read the XML glade file
@@ -137,7 +138,7 @@ void on_window_destroy()
 {
     // Remove temporary files and quit
     system("rm output/*.bmp");
-    //METTRE SHELL QUI SUPPRIME TOUTES LES LETTERS
+    system("./rmCluster.sh");
     gtk_main_quit();
 }
 
@@ -185,6 +186,8 @@ void resize(char *input, char *output)
 // On button import click
 void on_button_import_file_set()
 {
+    system("./rmCluster.sh");
+    
     // Show next buttons
     on_button_import_clicked();
     

@@ -30,5 +30,5 @@ main: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm  $(OBJ) main.out output/*.bmp
+	rm $(OBJ) main.out output/*.bmp
 	./rmCluster.sh
