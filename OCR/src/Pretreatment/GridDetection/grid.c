@@ -1,65 +1,84 @@
 #include "grid.h"
-#include "Shape/shape.h"
-#include "Lib/Lib.h"
-#include "../Utils/sdl_utils.h"
-#include "List/Node.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <unistd.h>
 
-
-void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
-{   
-    //printf("Processing Shape %i\n",shape->id);
-    if(!ContainsNode(*visited,shape))
+// Function to calculate the average height and width of shapes in a cluster
+void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
+{
+    if (cluster == NULL)
     {
-        //printf("Pass the contains\n");
-        Node* nv = NewNode(shape);
-        Node* nc = NewNode(shape);
-        AddNode(visited,nv);
-        //PrintNodeList(*visited," Visited");
-        AddNode(cluster,nc);
-        //PrintNodeList(*cluster," Cluster");
-        //printf("PreVerif Node %i\n",shape->id);
-        Node* current = *shapeList;
-        while(current!=NULL)
-        {
-            //printf("Verif Node %i\n",current->data->id);
-            if(shape->id!=current->data->id)
-            {
-                int seuil = 100;
-                if(distance(shape,current->data)<shape->AverageDist)
-                {
-                    FindCluster(visited,cluster,shapeList,current->data);
-                }
-            }
-            current = current->next;
-        }
+        return;
     }
-    else
-    {
-        //printf("Node %i already Visited\n",shape->id);
-    }
-
-}
-
-void AverageDist(Node* shapeList,Shape* s)
-{   
-    double sum = 0;
+    int sumh = 0;
+    int sumw = 0;
     int count = 0;
-    Node* current = shapeList;
-    while(current->next!=NULL)
+    Node* lst = *cluster;
+
+    // Traverse the list and accumulate heights and widths
+    while (lst != NULL)
     {
-        if(s->id!=current->data->id)
-        {
-            sum+=distance(s,current->data);  
-            count++;
-        }
-        current = current->next;
+        Shape* data = lst->data;
+        sumh += data->h;
+        sumw += data->w;
+        count++;
+        lst = lst->next;
     }
-    s->AverageDist = sum/(double)count;
+    *avHeight = sumh / (double)count;
+    *avWidth = sumw / (double)count;
 }
 
+// Function to adjust the shape list based on average height and a threshold
+void AdjustList(Node** lst) 
+{
+    if (*lst == NULL) 
+    {
+        return;
+    }
+
+    int sumH = 0;
+    Node* c = *lst;
+    int count = 0;
+
+    // Calculate the average height of shapes in the list
+    while (c != NULL) 
+    {
+        sumH += c->data->h;
+        count++;
+        c = c->next;
+    }
+
+    double avH = sumH / (double)count;
+    Node* prev = NULL;
+    c = *lst;
+    double threshold = 5.0;
+
+    // Traverse the list and remove nodes below a height threshold
+    while (c != NULL) 
+    {
+        if (c->data->h < avH - threshold) 
+        {
+            Node* temp = c;
+            if (prev == NULL) 
+            {
+                *lst = c->next;
+            } 
+            else 
+            {
+                prev->next = c->next;
+            }
+            c = c->next;
+
+            // Free memory correctly
+            free(temp); // Free the Node
+        } 
+        else 
+        {
+            prev = c;
+            c = c->next;
+        }
+    }
+}
+
+// Function to filter out shapes with dimensions outside a certain range
 void ShapeFilter(Node** shapeList)
 {
     Node* current = *shapeList;
@@ -67,10 +86,12 @@ void ShapeFilter(Node** shapeList)
     int sumW = 0;
     int sumL = 0;
     int count = 0;
+
+    // Calculate averages for height, width, and length
     while (current != NULL)
     {
-        sumH += current->data->MaxY - current->data->MinY;
-        sumW += current->data->MaxX - current->data->MinX;
+        sumH += current->data->h;
+        sumW += current->data->w;
         sumL += current->data->Len;
         count++;
         current = current->next;
@@ -80,22 +101,23 @@ void ShapeFilter(Node** shapeList)
     double averageW = (double)sumW / count;
     double averageL = (double)sumL / count;
 
-
     current = *shapeList;
     int i = 0;
-    
+
+    // Filter shapes based on a threshold relative to the averages
     while (current != NULL)
     {
         Node* next = current->next;
-        int h = current->data->MaxY - current->data->MinY;
-        int w = current->data->MaxX - current->data->MinX;
+        int h = current->data->h;
+        int w = current->data->w;
         int l = current->data->Len;
-        if (h > 3 * averageH ||
-            h < 0.0 * averageH ||
-            w > 3 * averageW ||
-            w < 0.0 * averageW ||
-            l > 3 * averageL ||
-            l < 0.0 * averageL)
+
+        if (h > 5 * averageH ||
+            h < 0.1 * averageH ||
+            w > 5 * averageW ||
+            w < 0.1 * averageW ||
+            l > 5 * averageL ||
+            l < 0.1 * averageL)
         {
             RemoveNode(shapeList, i);
         }
@@ -105,41 +127,133 @@ void ShapeFilter(Node** shapeList)
         }
         current = next;
     }
-    current = *shapeList;
-    while(current != NULL)
+}
+
+// Function to create a cluster list from a shape list
+Node** CreateCluster(Node** shapeList, int* size)
+{
+    int n = LenNode(shapeList);
+    Node** clusterList = (Node**)malloc(n * sizeof(Node*));
+
+    Node* c = *shapeList;
+    Node* visited = NULL;
+    int i = 1;
+    int count = 0;
+
+    // For each shape, find and store clusters
+    while (c != NULL)
     {
-        AverageDist(*shapeList,current->data);
-        //printf("AvDist: %f\n",current->data->AverageDist);
-        current = current->next;
+        Node* cluster = NULL;
+        FindCluster(&visited, &cluster, shapeList, c->data);
+        clusterList[i - 1] = cluster;
+        if (cluster != NULL)
+        {
+            count++;
+        }
+        i++;
+        c = c->next;
+    }
+
+    FreeNodeList(&visited, 0);
+    *size = n;
+    return ReduceArray(clusterList, size, count);
+}
+
+// Recursive function to find clusters of shapes based on height and distance thresholds
+void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
+{   
+    if (!ContainsNode(*visited, shape))
+    {
+        Node* nv = NewNode(shape);
+        Node* nc = NewNode(shape);
+        AddNode(visited, nv);
+        AddNode(cluster, nc);
+
+        Node* current = *shapeList;
+        while (current != NULL)
+        {
+            if (shape->id != current->data->id)
+            {
+                double threshold = 1.5;
+                double h = shape->h;
+                double avHeight;
+                double avWidth;
+                AverageClusterSize(cluster, &avHeight, &avWidth);
+
+                // Check if shape meets height and distance thresholds
+                if (h < avHeight + threshold && h > avHeight - threshold && 
+                    FindLowestDist(shape, current->data) < (avHeight + avWidth))
+                {
+                    FindCluster(visited, cluster, shapeList, current->data);
+                }
+            }
+            current = current->next;
+        }
     }
 }
 
-void ProcessGrid(SDL_Surface *surface) {
+// Function to filter clusters, keeping only those above a certain average size
+Node** ClusterFilter(Node** clusterList, int* size)
+{
+    if (*size > 2)
+    {
+        double sumSize = 0;
+        for (int i = 0; i < *size; i++)
+        {
+            sumSize += ListSum(clusterList[i]);
+        }
+        double avSize = sumSize / (double)*size;
+        int k = 0;
+
+        for (int i = 0; i < *size; i++)
+        {
+            if (ListSum(clusterList[i]) < avSize)
+            {
+                FreeNodeList(&clusterList[i], 0);
+                clusterList[i] = NULL;
+            }
+            else
+            {
+                k++;
+            }
+        }
+        clusterList = ReduceArray(clusterList, size, k);// Create a new list with only the valid cluster
+    }
+    return clusterList;
+}
+
+// Main function to process the grid in an SDL_Surface
+void ProcessGrid(SDL_Surface *surface) 
+{
     int width = surface->w;
     int height = surface->h;
     int** Map;
     int** surf;
-    
-    SDL_LockSurface(surface);
 
+    SDL_LockSurface(surface);
+    // Malloc the two matrix
     MallocMatrix(&Map, height, width);
     MallocMatrix(&surf, height, width);
-    
-    InitMatrix(surface,&Map,&surf);
+
+    //init the two matrix with base value
+    InitMatrix(surface, &Map, &surf);
 
     Node* shapeList = NULL;
     int id = 0;
 
-    for(int j = 0; j < height; j++) 
+    // Loop through each pixel to identify shapes
+    for (int j = 0; j < height; j++) 
     {
-        for(int i = 0; i < width; i++) 
+        for (int i = 0; i < width; i++) 
         {
-            if (surf[j][i] == 255 && Map[j][i] == 0) {
+            if (surf[j][i] == 255 && Map[j][i] == 0) 
+            {
                 id++;
                 Shape* s = CreateShape(id, j, i);
                 FindShape(s, surf, Map, j, i, height, width);
-                ComputeCenter(s);
+                ComputeShape(s);
 
+                // Add valid shapes to the shape list
                 if (IsShapeValid(surface, s)) 
                 {
                     Node* n = NewNode(s);
@@ -153,29 +267,58 @@ void ProcessGrid(SDL_Surface *surface) {
         }
     }
 
-    FreeMatrix(Map, height);
     FreeMatrix(surf, height);
     
+    SDL_Surface* temp_surface = DuplicateSurface(surface);
+    Draw(temp_surface, shapeList, 177, 0, 0);
+    SDL_SaveBMP(temp_surface, "output/imgFindShape.bmp");
+    SDL_FreeSurface(temp_surface);
+
     ShapeFilter(&shapeList);
+
+    temp_surface = DuplicateSurface(surface);
+    Draw(temp_surface, shapeList, 177, 0, 0);
+    SDL_SaveBMP(temp_surface, "output/imgShapeFilter.bmp");
+    SDL_FreeSurface(temp_surface);
     
-    Node* c = shapeList;
-    Node* visited = NULL;
-    int i = 0;
-    while(c!=NULL)
+    int size = 0;
+    Node** clusterList = CreateCluster(&shapeList, &size);
+
+    temp_surface = DuplicateSurface(surface);
+    DrawList(temp_surface, clusterList, size);
+    SDL_SaveBMP(temp_surface, "output/imgFindCluster.bmp");
+    SDL_FreeSurface(temp_surface);
+    
+    clusterList = ClusterFilter(clusterList, &size);
+
+    for (int i = 0; i < size; i++)
     {
-        Node* cluster = NULL;
-        FindCluster(&visited,&cluster,&shapeList,c->data);
-        Draw(surface,cluster,(i/14)*14,i,(255-i)/2);
-        //PrintNodeList(cluster," Cluster");
-        FreeNodeList(&cluster,0);
-        i = (i + 50)%255;
-        c = c->next;
+        AdjustList(&clusterList[i]);
     }
-    FreeNodeList(&visited,0);
 
-    //Draw(surface, shapeList,255,255,0);
+    DrawList(surface, clusterList, size);
 
-    FreeNodeList(&shapeList,1);
+    for (int i = 0; i < size; i++)
+    {
+        Node* c = clusterList[i];
+        while (c != NULL)
+        {
+            char d[2048];
+            sprintf(d, "mkdir output/letter/Cluster_%i", i);
+            system(d);
+
+            char s[2048];
+            sprintf(s, "output/letter/Cluster_%i/Letter_%i.bmp", i, c->data->id);
+            cropLetter(s, c->data, Map);
+            c = c->next;
+        }
+        
+        FreeNodeList(&clusterList[i], 0);
+    }
+
+    FreeMatrix(Map, height);
+    free(clusterList);
+    FreeNodeList(&shapeList, 1);
 
     SDL_UnlockSurface(surface);
 }

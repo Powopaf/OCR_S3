@@ -4,25 +4,26 @@
 #include <math.h>
 
 //comment to run project uncomment to run noise reduction functions
-//#include "../Utils/convert.h"
 //#include "../Utils/sdl_utils.h"
 //#include "../GreyScale/greyscale.h"
-//#include "../blur/blur.h"
+//#include "../Contrast/contrast.h"
 //#include "median.h"
 //////////////////////////////////////////////////////////////////////
+
+# define M_PI           3.14159265358979323846
 
 double gFunc(int x, int y) {
     /*
      * gaussian funtion see gaussian blur for definition
     */
-    const double sig = 2.0;
+    const double sig = 0.58;
     double part1 = 1 / (2 * M_PI * sig * sig);
     double power = -(x * x + y * y) / (2 * sig * sig);
     double part2 = exp(power);
     return part1 * part2;
 }
 
-void gaussianBlur(SDL_Surface* surface) {
+void gauss(SDL_Surface* surface, double sig) {
     /*
      * G(x,y) = (1/2*pi*sig^2)*(exp^(-(x^2 + y^2/2*sig^2)))
      * with x, y the neighboring pixel
@@ -45,17 +46,27 @@ void gaussianBlur(SDL_Surface* surface) {
         { gFunc(-2,-1), gFunc(-1,-1), gFunc(0,-1), gFunc(1,-1), gFunc(2,-1) },
         { gFunc(-2,-2), gFunc(-1,-2), gFunc(0,-2), gFunc(1,-2), gFunc(2,-2) }
     };*/
-    double kernel[3][3] = {
-        { gFunc(-1, 1), gFunc(0, 1), gFunc(1, 1) },
-        { gFunc(-1, 0), gFunc(0, 0), gFunc(1, 0) },
-        { gFunc(-1,-1), gFunc(0,-1), gFunc(1,-1) }
-    };
+    /*double kernel[3][3] = {
+        { gFunc(-1, 1, sig), gFunc(0, 1, sig), gFunc(1, 1, sig) },
+        { gFunc(-1, 0, sig), gFunc(0, 0, sig), gFunc(1, 0, sig) },
+        { gFunc(-1,-1, sig), gFunc(0,-1, sig), gFunc(1,-1, sig) }
+    };*/
+    double kernel[5][5];
+    size_t j = 0;
+    size_t i = 0;
+    for (int y = 2; y >= -2; y--) {
+        j = 0;
+        for (int x = -2; x <= 2; x ++) {
+            kernel[i][j] = gFunc(x, y, sig);
+        }
+    }
+
     // we don't go in pixel near the ledge
     SDL_LockSurface(surface);
     for (int i = 1; i < surface->h - 1; i++) {
         for (int j = 1; j < surface->w - 1; j++) {
             //curent pixel
-            Uint8* pixel = surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
             
             double sum_color = 0.0;
             int p1 = -1;
@@ -67,45 +78,51 @@ void gaussianBlur(SDL_Surface* surface) {
                 }
                 p2--;
             }
-            pixel[0] = (Uint8)sum_color;
+            //pixel[0] = (Uint8)sum_color;
             pixel[1] = (Uint8)sum_color;
             pixel[2] = (Uint8)sum_color;
+        }
+    }
+    for (int i = 1; i < surface->h - 1; i++) {
+        for (int j = 1; j < surface->w - 1; j++) {
+            Uint8* pixel = (Uint8*)surface->pixels + i * surface->pitch + j * surface->format->BytesPerPixel;
+            pixel[0] = pixel[1];
         }
     }
     SDL_UnlockSurface(surface);
 }
 
 //comment to run project uncomment to run noise reduction function
-/*int main(int argc, char* argv[]) {
-
-    sdl_setup();
-    
-    convert(argv[1]);
-    SDL_Surface* surface = SDL_LoadBMP("img.bmp");
+/*void test_noise(int a) {
+    char filename[2048];
+    SDL_Surface* surface = SDL_LoadBMP("i.bmp");
     greyscale(surface);
-    SDL_SaveBMP(surface, "img.bmp");
+    SDL_SaveBMP(surface, "img0.bmp");
     SDL_FreeSurface(surface);
-    
-    SDL_Surface* s0 = SDL_LoadBMP("img.bmp");
-    contrast(s0);
-    SDL_SaveBMP(s0, "img.bmp");
-    SDL_FreeSurface(s0);
-    
-    SDL_Surface* s = SDL_LoadBMP("img.bmp");
-    gaussianBlur(s);
-    SDL_SaveBMP(s, "gauss1.bmp");
-    SDL_FreeSurface(s);
-    
-    SDL_Surface* s2 = SDL_LoadBMP("gauss1.bmp");
-    median(s2);
-    SDL_SaveBMP(s2, "gauss2.bmp");
-    SDL_FreeSurface(s2);
-    
-    //SDL_Surface* s3 = SDL_LoadBMP("gauss2.bmp");
-    //blurring(s3);
-    //SDL_SaveBMP(s3, "gauss3.bmp");
-    //SDL_FreeSurface(s3);
-    
-    sdl_close();
+    double sig = 0.0;
+    for (int i = 0; i < a; i++) {
+        printf("Sig: %lf | Lap: %d\n", sig, i);
+        SDL_Surface* s = SDL_LoadBMP("img0.bmp");
+        contrast(s);
+        gauss(s, sig);
+        median(s);
+        contrast(s);
+        sprintf(filename, "img%d.bmp", i + 1);
+        SDL_SaveBMP(s, filename);
+        SDL_FreeSurface(s);
+        sig = sig + 0.001;
+    }
+}
+
+int main(int argc, char* argv[]) {
+    sdl_setup();
+    if (argc >= 1) {
+        test_noise(atoi(argv[1]));
+        sdl_close();
+    }
+    else {
+        sdl_close();
+        return EXIT_FAILURE; 
+    }
     return EXIT_SUCCESS;
 }*/

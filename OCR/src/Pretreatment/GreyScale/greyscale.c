@@ -14,31 +14,33 @@ void greyscale(SDL_Surface* surface) {
     
     // error handling
     if (surface == NULL) {
-        char* arg[3] = { "../../Bash/rmAllBMP.sh", "4",  NULL };
-        execvp("../../Bash/rmAllBMP.sh", arg);
         errx(EXIT_FAILURE, "surface is NULL can't apply greyscale");
     }
 
     //init variable to check each pixels
-    SDL_PixelFormat* format = surface->format;
-    int width = surface->w;
-    int height = surface->h;
-    int p = surface->pitch;
-    int bpp = format->BytesPerPixel;
-    Uint8* pix = (Uint8*)surface->pixels;
+    SDL_PixelFormat* format = surface->format; // get the format
+    int width = surface->w; // get the with in pixel
+    int height = surface->h; // get the height in pixel
+    int p = surface->pitch; // get the width * BytesPerPixel 
+    int bpp = format->BytesPerPixel; // get the BYtePerPixel aka 3 with the bmp
+    Uint8* pix = (Uint8*)surface->pixels; // pointer to the very first pixel of
+                                          // the image
+                                          // pix = r
+                                          // pix + 1 = g
+                                          // pix + 2 = b
+                                          // pix + 3 = next pixel red color and
+                                          // so on
     
     //lock to protect memory with error handling
     if (SDL_LockSurface(surface) < 0) {
-        char* arg[3] = {"../../Bash/rmAllBMP.sh", "4", NULL };
-        execvp("../../Bash/rmALLBMP.sh", arg);
         errx(EXIT_FAILURE, "SDL_LockSurface fail:  %s", SDL_GetError());
     }
     
-    //inside the imgae (.bmp)
+    // loop through the image
     for(int j = 0; j < height; j++) {
         for(int i = 0; i < width; i++) {
             Uint8* pixel = pix + j * p + i * bpp; // magic line
-            Uint8 grey = 0.212671f * pixel[0] + 0.715160f * pixel[1] + 0.072169f * pixel[2];
+            Uint8 grey = 0.212671f * pixel[0] + 0.715160f * pixel[1] + 0.072169f * pixel[2]; // formula to turn the color in gray
             pixel[0] = grey;
             pixel[1] = grey;
             pixel[2] = grey;

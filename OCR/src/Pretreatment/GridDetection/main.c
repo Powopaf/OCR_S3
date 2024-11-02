@@ -4,10 +4,8 @@
 #include <err.h>
 #include "grid.h"
 #include "../Utils/sdl_utils.h"
-
 #include "Shape/shape.h"
 #include "List/Node.h"
-
 int main()
 {
     for (int i = 1; i < 7; i++)
@@ -43,6 +41,5 @@ int main()
         free(s);
         free(sg);
     }
-
     return 0;
 }

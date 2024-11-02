@@ -1,13 +1,13 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -Wextra -fsanitize=address -g
 
-LIB=-lSDL2 -lm
+LIB=-lSDL2 -lm -fsanitize=address
 
 SRC=\
 	 ../Utils/convert.c \
 	 ../Utils/sdl_utils.c \
 	 ../GreyScale/greyscale.c \
-	 ../blur/blur.c \
+	 ../Contrast/contrast.c \
 	gauss.c \
 	median.c
 

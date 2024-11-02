@@ -5,8 +5,8 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <math.h>
+#include "../Utils/sdl_utils.h"
 
-Uint8 getPixel(SDL_Surface *surface,int x, int y);
-void setPixel(SDL_Surface *surface, int x, int y, Uint8 pixel);
-SDL_Surface *rotation(SDL_Surface *image, double angle);
+SDL_Surface* rotation3(SDL_Surface* image, double angle);
+void rotation(char* filename, double angle, char* outputPath);
 #endif
