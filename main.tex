@@ -36,7 +36,6 @@
   },
 }
 
-
 \usepackage{minted}
 \usepackage{listings}
 \lstset{language=C, basicstyle=\ttfamily, keywordstyle=\color{blue}, commentstyle=\color{green}}
@@ -375,6 +374,7 @@ Cependant, dans notre cas, il se peut qu'il n'y ait pas de grille sur l'image, e
 \\\\
 Pour cela, nous appliquerons plusieurs étapes afin d'atteindre ce résultat.
 
+\newpage
 \subsection{Détection des formes}
 
 Nous commençons par détecter tous les amas de pixels blancs connectés entre eux, en utilisant un algorithme similaire à celui du "pot de peinture" des logiciels de dessin, qui parcourt l'image de manière récursive.
@@ -457,7 +457,7 @@ Les groupes sont des listes chaînées de formes.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{imgFindCluster_1.png}
+    \includegraphics[scale=0.4]{imgFindCluster_1.png}compare/latex-adrien?expand=1
     \caption{Image après la détection des groupes}
 \end{figure}
 
@@ -529,7 +529,8 @@ Pour résoudre le mot mêlé, on récupère la grille de lettres dans un fichier
     
     \item[Étape 3] Trouver le reste du mot : en vérifiant que le mot peut tenir dans la direction sans dépasser les limites de la grille, on parcourt chaque lettre restante du mot.
 \end{description}
-\newpage
+Grâce à cet algorithme, on est certain de trouver le mot s'il existe dans la grille et d'en renvoyer les coordonnées. Ces informations seront très utiles plus tard pour indiquer visuellement l'emplacement de chaque mot dans la grille.
+\clearpage
 \section{Interface}
 La création d'une interface cohérente et simple à utiliser est cruciale pour fluidifier l'expérience utilisateur. Elle a constitué une part importante du travail à effectuer sur le projet. L'interface est la liaison entre ce que voit l'utilisateur de notre logiciel et le traitement appliqué pour trouver la solution finale du problème initial.\\
 
@@ -602,4 +603,5 @@ Afin de cl\^oturer ce premier rapport de soutenance, nous pouvons \^etre fiers d
 \paragraph{}
 Ayant toutes ces fonctionnalit\'es termin\'ees pour la premi\`ere soutenance, cela nous encourage \`a poursuivre dans cette voie, d\'emontrant une bonne organisation au sein du groupe.
 \end{document}
+
 
