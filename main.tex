@@ -295,18 +295,19 @@ L'algorithme parcourt toute l'image et, dès qu'un pixel blanc non visité est t
 \begin{lstlisting}
 typedef struct Shape 
 {
-    int id; // identifiant de la forme
-    int Cx, Cy; // coordonnees du centre de la forme
-    int h, w; // hauteur et largeur de la forme
+    int id; // Identifier of the shape
+    int Cx, Cy; // Coordinates of the center of the shape
+    int h, w; // Height and width of the shape
 
-    // coordonnees des bords de la forme
+    // Coordinates of the edges of the shape
     int Maxj, Maxi;
     int Minj, Mini;
 
-    int Matj, Mati; // coordonnees de la lettre dans la grille
+    int Matj, Mati; // Coordinates of the letter in the grid
 
-    int Len; // nombre de pixels de la forme
+    int Len; // Number of pixels in the shape
 } Shape;
+
 \end{lstlisting}
 
 \vspace{0.5cm}
@@ -364,7 +365,7 @@ Les groupes sont des listes chaînées de formes.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{imgFindCluster_1.png}
+    \includegraphics[scale=0.4]{imgFindCluster_1.png}compare/latex-adrien?expand=1
     \caption{Image après la détection des groupes}
 \end{figure}
 
@@ -436,10 +437,8 @@ Pour résoudre le mot mêlé, on récupère la grille de lettres dans un fichier
     
     \item[Étape 3] Trouver le reste du mot : en vérifiant que le mot peut tenir dans la direction sans dépasser les limites de la grille, on parcourt chaque lettre restante du mot.
 \end{description}
-
 Grâce à cet algorithme, on est certain de trouver le mot s'il existe dans la grille et d'en renvoyer les coordonnées. Ces informations seront très utiles plus tard pour indiquer visuellement l'emplacement de chaque mot dans la grille.
 \clearpage
-
 \section{Interface}
 La création d'une interface cohérente et simple à utiliser est cruciale pour fluidifier l'expérience utilisateur. Elle a constitué une part importante du travail à effectuer sur le projet. L'interface est la liaison entre ce que voit l'utilisateur de notre logiciel et le traitement appliqué pour trouver la solution finale du problème initial.\\
 
