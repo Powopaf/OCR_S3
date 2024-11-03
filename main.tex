@@ -36,7 +36,6 @@
   },
 }
 
-
 \usepackage{minted}
 \usepackage{listings}
 \lstset{language=C, basicstyle=\ttfamily, keywordstyle=\color{blue}, commentstyle=\color{green}}
@@ -247,10 +246,11 @@ Voici quelques exemples avant et après l’application de notre algorithme :
 \newpage
 \section{Rotation de l'image}
 \paragraph{}
-Plusieurs méthodes peuvent être appliquées afin d’effectuer une rotation d’image. Voici 2 différentes techniques, aboutissant à celle conservée, étant la plus performante.
-\subsection{Rotation avec une seul matrice}
+Plusieurs méthodes peuvent être appliquées afin d’effectuer une rotation d’image. Voici deux techniques testées, menant à celle retenue pour ses meilleures performances.
+
+\subsection{Rotation avec une seule matrice}
 \paragraph{}
-Cette méthode de rotation consiste à utiliser cette formule:
+Cette méthode de rotation utilise la formule suivante :
 $$
 x' = \cos(\theta) * x - \sin(\theta) * y
 $$
@@ -258,122 +258,30 @@ $$
 y' = \sin(\theta) * x + \cos(\theta) * y
 $$
 \paragraph{}
-Provenant de la représentation matricielle suivante:\\
-
+qui provient de la représentation matricielle suivante :\\
 $$\left( \begin{array}{cc} x' \\ y'\end{array}\right) = \left( \begin{array}{cc} \cos(\theta) & \sin(\theta) \\ -\sin(\theta) & \cos(\theta) \end{array}\right)\left(\begin{array}{cc} x \\ y\end{array}\right)$$ 
 \\\\
-(avec $\theta$  l’angle en degré)
+(avec \(\theta\) l’angle en degré)
+
 \subsubsection{Problème rencontré}
 \paragraph{}
-Malgré la simplicité de cette formule, l’application de celle-ci provoque de manière persistante des problèmes d'aliasing, dû à l’apparition non voulue de points noirs, pouvant nuire à la détection des lettres. La rotation avec une seule matrice affecte donc la qualité de l’image, dû à une mauvaise utilisation. En effet, nous sommes partis des coordonnées des pixels de l'image d'origine et nous avons calculé leur position après rotation dans la nouvelle image. Cette technique s’appelle l'échantillonnage en avant, ayant pour effet de laisser des trous dans l’image.
+Malgré la simplicité de cette formule, son application provoque des problèmes d'aliasing dus à l’apparition non voulue de points noirs, nuisibles à la détection des lettres. La rotation avec une seule matrice affecte donc la qualité de l’image, en raison d’une mauvaise utilisation. En effet, nous sommes partis des coordonnées des pixels de l'image d'origine et avons calculé leur position après rotation dans la nouvelle image. Cette technique s’appelle l'échantillonnage en avant, avec pour effet de laisser des trous dans l’image.
 \begin{figure}[H]
     \centering
     \includegraphics[scale=1]{img1.png}
     \caption{Problème 1}
 \end{figure}
+
 \subsection{Rotation par cisaillement}
 \paragraph{}
-Ne sachant pas que le problème rencontré était dû à une mauvaise utilisation, nous avons ainsi voulu appliquer le principe de rotation par cisaillement (aussi appelé rotation par Shearing), qui utilise l’algorithme de Shearing, prenant chaque pixel de l’image, puis applique 3 multiplications successives, par des matrices avec $\theta$ notre angle en radian. \\
-Elle utilise donc cette représentation matricielle:
+Ne sachant pas que le problème rencontré était dû à une mauvaise utilisation, nous avons voulu appliquer le principe de rotation par cisaillement (aussi appelé rotation par \texttt{Shearing}), qui utilise l’algorithme de \texttt{Shearing}, prenant chaque pixel de l’image et appliquant trois multiplications successives avec des matrices utilisant l’angle \(\theta\) en radian. \\
+Elle utilise la représentation matricielle suivante :
 $$
 \left(\begin{array}{cc} x' \\ y' \end{array}\right) = \left(\begin{array}{cc}
    1  & -\tan(\frac{\theta}{2}) \\
-   0  & 1
-\end{array}\right) \left(\begin{array}{cc}
-   1  &  0\\
-   \sin(\theta)  & 1
-\end{array}\right)\left(\begin{array}{cc}
-    1 &  -\tan(\frac{\theta}{2})\\
-    0 & 1
-\end{array}\right)\left(\begin{array}{cc} x \\ y \end{array}\right)
+    0 & 1 \end{array}\right) \times \left(\begin{array}{cc} 1 & 0 \\ \sin(\theta) & 1 \end{array}\right) \times \left(\begin{array}{cc} 1 & -\tan(\frac{\theta}{2}) \\ 0 & 1 \end{array}\right)
+   \left(\begin{array}{cc} x \\ y \end{array}\right)
 $$
-(avec $\theta$ l’angle en degré)
-\paragraph{}
-Afin que la rotation puisse s’effectuer dans le sens horaire et non anti-horaire, nous avons ainsi inverser les signes obtenant les formules suivantes:
-\begin{itemize}
-    \item $1^{er}$ cisaillement :
-    $$
-    x' = x + \tan(\theta) * y
-    y' = y
-    $$
-    \item $2^{eme}$ cisaillement:
-    $$
-    x'' = x'
-    y'' = x'' + \sin(\theta) * (-1) * x' * y'
-    $$
-    \item $3^{eme}$ cisaillement:
-    $$
-    x''' = x'' + \tan(\theta) * y
-    y''' = y''
-    $$
-\end{itemize}\\
-(avec $\theta$ l’angle en degré)\\\\
-Voici un exemple de représentation avec un angle de 20°:
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.5]{img2.png}
-    \caption{Rotation de 20°}
-\end{figure}
-\subsubsection{Problème rencontré}
-\paragraph{}
-Malgré la netteté de l’image, celle-ci affichait des failles, par une perte d’une partie de l’image lors d'angles, comme celui de 35°. En effet, il était difficile de la centrer correctement.
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=1]{img3.png}
-    \caption{Problème 2}
-\end{figure}
-\subsection{Rotation avec matrice de rotation}
-\paragraph{}
-Enfin, cette méthode a été privilégiée par son efficacité, utilisant la formule de “matrice de rotation” vu en 3.1:
-$$
-x' = \cos(\theta) * x - \sin(\theta) * y
-$$
-$$
-y' = \sin(\theta) * x + \cos(\theta) * y
-$$
-(avec $\theta$ l’angle en degré)
-\paragraph{}
-Cependant, au lieu de partir des coordonnées des pixels de l'image d'origine et nous avons calculé leur position après rotation dans la nouvelle image. Nous sommes partis des coordonnées de pixels dans la nouvelle image puis nous avons recherché les pixels correspondants dans l'image d'origine (c’est un "échantillonnage inverse"), ce qui garantit que chaque pixel de la nouvelle image est couvert et minimise les pertes de pixels.
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=1]{img4.png}
-    \caption{Résultat final}
-\end{figure}
-\section{Binarisation}
-
-Pour effectuer la binarisation de l'image, nous avons appliqué l'algorithme de Sauvola. Cet algorithme est basé sur la méthode de seuil local, qui adapte le seuil de binarisation en fonction des variations d'intensité de l'image. Il est particulièrement efficace pour les images ayant un contraste faible ou des variations d'éclairage.
-\\\\
-La formule de Sauvola pour le calcul du seuil \(T(x, y)\) au pixel \((x, y)\) est donnée par :
-
-$$
-T(x, y) = \mu(x, y) + k \cdot \left( \sigma(x, y) - m \right)
-$$
-\\
-où :
-\begin{itemize}
-    \item \(\mu(x, y)\) est la moyenne des intensités des pixels dans un voisinage local autour du pixel \((x, y)\).
-    \item \(\sigma(x, y)\) est l'écart type des intensités des pixels dans le même voisinage.
-    \item \(k\) est un facteur de sensibilité qui peut être ajusté pour contrôler la binarisation.
-    \item \(m\) est un paramètre constant (souvent pris égal à 128 pour des images en niveaux de gris).
-\end{itemize}
-\vspace{0.5cm}
-Pour chaque pixel de l'image, nous comparons son intensité \(I(x, y)\) avec le seuil calculé \(T(x, y)\). Si \(I(x, y) > T(x, y)\), le pixel est classé comme blanc (valeur 1), sinon il est classé comme noir (valeur 0). Cette approche permet de segmenter efficacement les objets d'intérêt dans l'image, en tenant compte des variations locales.
-
-En utilisant cet algorithme, nous avons réussi à obtenir une binarisation robuste qui améliore la qualité des étapes suivantes dans le traitement de l'image.
-\\\\
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{imgBinarisation.png}
-    \caption{Image après la binarisation}
-\end{figure}
-
-\section{Détection de la Grille}
-
-Une fois l'image binarisée, nous allons commencer à détecter la grille et la liste de mots. Pour développer une stratégie efficace, nous avons étudié les méthodes de détection de grille et consulté de nombreuses ressources en ligne, notamment sur l'utilisation de Sobel et d'autres algorithmes de détection de grille. 
-\\
-Cependant, dans notre cas, il se peut qu'il n'y ait pas de grille sur l'image, et la liste de mots, quant à elle, n'est jamais encadrée par une grille. Nous avons donc choisi de procéder à l'inverse : au lieu de détecter la grille pour ensuite identifier les lettres, nous allons d'abord détecter les lettres, puis déterminer lesquelles appartiennent à la grille et lesquelles à la liste de mots. 
-\\\\
-Pour cela, nous appliquerons plusieurs étapes afin d'atteindre ce résultat.
 
 \subsection{Détection des formes}
 
@@ -457,7 +365,7 @@ Les groupes sont des listes chaînées de formes.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{imgFindCluster_1.png}
+    \includegraphics[scale=0.4]{imgFindCluster_1.png}compare/latex-adrien?expand=1
     \caption{Image après la détection des groupes}
 \end{figure}
 
@@ -529,7 +437,8 @@ Pour résoudre le mot mêlé, on récupère la grille de lettres dans un fichier
     
     \item[Étape 3] Trouver le reste du mot : en vérifiant que le mot peut tenir dans la direction sans dépasser les limites de la grille, on parcourt chaque lettre restante du mot.
 \end{description}
-\newpage
+Grâce à cet algorithme, on est certain de trouver le mot s'il existe dans la grille et d'en renvoyer les coordonnées. Ces informations seront très utiles plus tard pour indiquer visuellement l'emplacement de chaque mot dans la grille.
+\clearpage
 \section{Interface}
 La création d'une interface cohérente et simple à utiliser est cruciale pour fluidifier l'expérience utilisateur. Elle a constitué une part importante du travail à effectuer sur le projet. L'interface est la liaison entre ce que voit l'utilisateur de notre logiciel et le traitement appliqué pour trouver la solution finale du problème initial.\\
 
