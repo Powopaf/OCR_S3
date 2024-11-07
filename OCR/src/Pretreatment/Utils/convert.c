@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "is_ubuntu.h"
 
 void convert(const char* path) {    //path MUST end with the impg.png file
     
     char cmd[2048];
-    sprintf(cmd, "magick \"%s\" output/img.bmp", path);
+
+    char* conv = "magick";
+    if(is_ubuntu())
+    {
+        conv = "convert";
+    }
+    sprintf(cmd, "%s \"%s\" output/img.bmp", conv, path);
     system(cmd);
 
     /*

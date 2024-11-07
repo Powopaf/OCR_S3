@@ -5,6 +5,7 @@
 #include "../../main.h"
 #include "../../src/Pretreatment/rotation/rotate.h"
 #include <gtk/gtk.h>
+#include "../../src/Pretreatment/Utils/is_ubuntu.h"
 
 // Global variables
 size_t CurrentState = 0;
@@ -178,8 +179,14 @@ void resize(char *input, char *output)
 {
     // Convert and resize with ImageMagick (only for the interface)
     char cmd[2048];
-    sprintf(cmd,"magick \"%s\" -resize x%d -sharpen 0x1.0 -quality 100 \"%s\"",
-        input, height, output);
+
+    char* conv = "magick";
+    if(is_ubuntu())
+    {
+        conv = "convert";
+    }
+
+    sprintf(cmd,"%s \"%s\" -resize x%d -sharpen 0x1.0 -quality 100 \"%s\"", conv, input, height, output);
     system(cmd);
 }
 
@@ -200,10 +207,17 @@ void on_button_import_file_set()
     if (name == NULL) return;
     
     char cmd[2048];
-    sprintf(cmd, "magick \"%s\" output/img.bmp", name);
+
+    char* conv = "magick";
+    if(is_ubuntu())
+    {
+        conv = "convert";
+    }
+
+    sprintf(cmd, "%s \"%s\" output/img.bmp", conv, name);
     system(cmd);
     
-    sprintf(cmd, "magick \"%s\" output/original.bmp", name);
+    sprintf(cmd, "%s \"%s\" output/original.bmp", conv, name);
     system(cmd);
     
     g_free(name);
@@ -469,7 +483,13 @@ void on_button_export_clicked()
         };
 
         char cmd[2048];
-        sprintf(cmd, "magick \"%s\" \"%s\"", image_paths[CurrentState],
+
+        char* conv = "magick";
+        if(is_ubuntu())
+        {
+            conv = "convert";
+        }
+        sprintf(cmd, "%s \"%s\" \"%s\"", conv, image_paths[CurrentState],
                 export_filename);
         system(cmd);
 
