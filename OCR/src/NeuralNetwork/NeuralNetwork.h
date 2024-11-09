@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <err.h>
+#include <SDL2/SDL.h>
 
 // Neural network functions
 double sigmoid(double x);
@@ -19,3 +20,7 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
               double ***hiddenWeights, double ***outputWeights, int *nbInputs, 
               int *nbHiddenNodes, int *nbOutputs, double *LearningRate);
 void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate);
+
+char*** MallocDataSet();
+void FreeDataSet(char*** arr);
+char*** LoadDataSet(char*** arr);

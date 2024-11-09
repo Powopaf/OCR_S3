@@ -5,7 +5,7 @@
 #include "../GridDetection/Shape/shape.h"
 
 
-void cropLetter(char* output, Shape* shape, int** Map);
+SDL_Surface* cropLetter(Shape* shape, int** Map);
 
 #endif
 

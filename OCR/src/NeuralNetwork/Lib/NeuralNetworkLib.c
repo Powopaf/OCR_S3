@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+#include "../NeuralNetwork.h"
 
 // Sigmoid function
 double sigmoid(double x) {
