@@ -309,7 +309,9 @@ void ProcessGrid(SDL_Surface *surface)
         {
             char s[2048];
             sprintf(s, "output/letter/Cluster_%i/Letter_%i.bmp", i, c->data->id);
-            cropLetter(s, c->data, Map);
+            SDL_Surface* crop_surface = cropLetter(c->data, Map);
+            crop_surface = resize_surface(crop_surface,28,28);
+            SDL_SaveBMP(crop_surface,s);
             c = c->next;
         }
         

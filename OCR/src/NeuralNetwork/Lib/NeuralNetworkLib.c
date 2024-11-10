@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+#include "../NeuralNetwork.h"
 
 // Sigmoid function
 double sigmoid(double x) {
@@ -8,11 +8,6 @@ double sigmoid(double x) {
 // Derivative of the sigmoid function
 double dsigmoid(double x) {
     return x * (1 - x);
-}
-
-// Initialize weights randomly
-double init_weights() {
-    return ((double)rand() / RAND_MAX);
 }
 
 // Read integer from string
@@ -244,4 +239,5 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
 
     fclose(file);
 }
+
 

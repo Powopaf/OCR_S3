@@ -11,6 +11,7 @@
 #include <math.h>
 
 #include "../crop/crop.h"
+#include "../Utils/resize.h"
 
 void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth);
 void AdjustList(Node** lst);

@@ -5,12 +5,12 @@ CC := gcc
 CFLAGS := -Wall -Wextra -g -fsanitize=address
 
 # Linker Flags and Libraries
-LDFLAGS := -lm
+LDFLAGS := -lSDL2 -lm
 
 # Source Files
 SRC_XOR := XOR.c
 SRC_TRAIN := XORTraining.c
-SRC_LIB := ../NeuralNetworkLib.c
+SRC_LIB := ../Lib/NeuralNetworkLib.c \ ../Lib/TrainingLib.c
 
 # Object Files (Automatically replace .c with .o)
 OBJ_XOR := $(SRC_XOR:.c=.o) $(SRC_LIB:.c=.o)

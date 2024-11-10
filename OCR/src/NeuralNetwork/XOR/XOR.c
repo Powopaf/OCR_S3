@@ -72,5 +72,6 @@ int main() {
     printf("Output: %f\n", output[0]);
 
     return 0;
+
 }
 

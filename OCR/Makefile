@@ -1,11 +1,13 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -pedantic -std=c99 -g
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -std=c99 -g
 
 LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -g
 
 SRC=\
 	src/Pretreatment/Utils/convert.c \
+	src/Pretreatment/Utils/is_ubuntu.c \
 	src/Pretreatment/Utils/sdl_utils.c \
+	src/Pretreatment/Utils/resize.c \
 	src/Pretreatment/GreyScale/greyscale.c \
 	src/Pretreatment/Binarisation/binarisation.c \
 	src/Pretreatment/Contrast/contrast.c \
