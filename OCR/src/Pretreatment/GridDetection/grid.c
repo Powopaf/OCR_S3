@@ -245,6 +245,7 @@ void ProcessGrid(SDL_Surface *surface)
     int** surf;
 
     SDL_LockSurface(surface);
+
     // Malloc the two matrix
     MallocMatrix(&Map, height, width);
     MallocMatrix(&surf, height, width);
