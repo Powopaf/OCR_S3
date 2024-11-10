@@ -1,24 +1,27 @@
-#include "Node.h" // Include the header file for the Node and Shape structures
+#include "Node.h"
 
-// Function to create a new node with given Shape data
+// Node is how we named our implementation of linked list
+
 Node* NewNode(Shape* data)
 {
-    Node* node = (Node*)malloc(sizeof(Node)); // Allocate memory for the new node
+    /*
+    Function to create a new node with given Shape data
+    */
+    Node* node = (Node*)malloc(sizeof(Node));
     if (node == NULL)
     {
-        err(1, "ERROR: Memory allocation for node failed\n"); // Handle allocation failure
+        err(1, "ERROR: Memory allocation for node failed\n");
     }
-    node->data = data; // Assign Shape data to the node
-    node->next = NULL; // Set next pointer to NULL
-    return node; // Return the created node
+    node->data = data;
+    node->next = NULL;
+    return node;
 }
 
-// Function to add a node to the end of the list
 void AddNode(Node** lst, Node* node)
 {
     if (lst == NULL || node == NULL)
     {
-        err(1, "ERROR: Invalid list or node\n"); // Handle invalid arguments
+        err(1, "ERROR: Invalid list or node\n");
     }
 
     if (node->next == node)  // Check for self-referencing node
@@ -26,14 +29,14 @@ void AddNode(Node** lst, Node* node)
         err(1, "ERROR: Self-referencing node\n");
     }
     
-    if (*lst == NULL) // If the list is empty, set node as the head
+    if (*lst == NULL)
     {
         *lst = node;
         return;
     }
 
     Node* n = *lst;
-    while (n->next != NULL) // Traverse to the last node
+    while (n->next != NULL) // search the last node
     {
         n = n->next;
     }
@@ -47,11 +50,10 @@ void AddNode(Node** lst, Node* node)
     n->next = node; // Link the last node to the new node
 }
 
-// Function to remove a node at a specific index from the list
 void RemoveNode(Node** lst, int index)
 {
     if (*lst == NULL) {
-        err(1, "ERROR: List is empty\n"); // Handle empty list
+        err(1, "ERROR: List is empty\n");
     }
 
     if (index < 0) {
@@ -67,7 +69,7 @@ void RemoveNode(Node** lst, int index)
         return;
     }
 
-    // Traverse to the node just before the target index
+    // go to the node and stop at index - 1
     for (int i = 0; i < index - 1; i++) {
         if (current == NULL || current->next == NULL) {
             err(1, "ERROR: Index out of range\n");
@@ -77,38 +79,44 @@ void RemoveNode(Node** lst, int index)
 
     Node* nodeToRemove = current->next; // Identify the node to remove
     if (nodeToRemove == NULL) {
-        err(1, "ERROR: Index out of range\n"); // Handle out-of-range index
+        err(1, "ERROR: Index out of range\n");
     }
 
     // Unlink the node and free it
     current->next = nodeToRemove->next;
-    FreeNode(nodeToRemove, 1); // Free the memory of the removed node
+    FreeNode(nodeToRemove, 1);
 }
 
-// Function to count the number of nodes in the list
 int LenNode(Node** lst)
 {
+    /*
+    Function to count the number of nodes in the list
+    */
     if (lst == NULL || *lst == NULL)
     {
-        return 0; // Return 0 for an empty list
+        return 0;
     }
 
     int i = 1;
     Node* n = *lst;
-    while (n->next != NULL) // Traverse through the list
+    // visit all node
+    while (n->next != NULL)
     {
         i++;
         n = n->next;
     }
-    return i; // Return the count
+    return i;
 }
 
-// Function to get the node at a specified index
 Node* GetNode(Node** lst, int i)
 {
+    /*
+    Function to get the node at a specified index
+    return the node at the specific index
+    */
     if (lst == NULL || *lst == NULL)
     {
-        err(1, "ERROR: List is empty\n"); // Handle empty list
+        err(1, "ERROR: List is empty\n");
     }
 
     Node* n = *lst;
@@ -116,17 +124,19 @@ Node* GetNode(Node** lst, int i)
     {
         if (n->next == NULL)
         {
-            err(1, "ERROR: Index out of range\n"); // Handle out-of-range index
+            err(1, "ERROR: Index out of range\n");
         }
         n = n->next;
         i--;
     }
-    return n; // Return the node at the specified index
+    return n;
 }
 
-// Function to free a single node
 void FreeNode(Node* node, int freeData)
 {
+    /*
+    Function to free a single node
+    */
     if (node == NULL)
     {
         return; // Do nothing if node is NULL
@@ -141,9 +151,11 @@ void FreeNode(Node* node, int freeData)
     node = NULL;
 }
 
-// Function to free the entire list
 void FreeNodeList(Node** lst, int freeData)
 {
+    /*
+    Function to free the entire list
+    */
     Node* c = *lst;
     Node* n;
 
@@ -156,9 +168,11 @@ void FreeNodeList(Node** lst, int freeData)
     *lst = NULL; // Set list head to NULL
 }
 
-// Function to check if a Shape with the same ID exists in the list
 int ContainsNode(Node* lst, Shape* s)
 {
+    /*
+    Function to check if a Shape with the same ID exists in the list
+    */
     Node* c = lst;
     while (c != NULL)
     {
