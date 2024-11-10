@@ -10,11 +10,6 @@ double dsigmoid(double x) {
     return x * (1 - x);
 }
 
-// Initialize weights randomly
-double init_weights() {
-    return ((double)rand() / RAND_MAX);
-}
-
 // Read integer from string
 int ReadInt(char str[]) {
     int result = 0, sign = 1, i = 0;
@@ -244,4 +239,5 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
 
     fclose(file);
 }
+
 
