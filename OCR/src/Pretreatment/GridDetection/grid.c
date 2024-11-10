@@ -1,9 +1,11 @@
 #include "grid.h"
 #include <unistd.h>
 
-// Function to calculate the average height and width of shapes in a cluster
 void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
 {
+    /*
+    Function to calculate the average height and width of shapes in a cluster
+    */
     if (cluster == NULL)
     {
         return;
@@ -13,7 +15,7 @@ void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
     int count = 0;
     Node* lst = *cluster;
 
-    // Traverse the list and accumulate heights and widths
+    // go through the list and accumulate heights and widths
     while (lst != NULL)
     {
         Shape* data = lst->data;
@@ -26,9 +28,11 @@ void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
     *avWidth = sumw / (double)count;
 }
 
-// Function to adjust the shape list based on average height and a threshold
 void AdjustList(Node** lst) 
 {
+    /*
+    Function to adjust the shape list based on average height and a threshold
+    */
     if (*lst == NULL) 
     {
         return;
@@ -51,7 +55,7 @@ void AdjustList(Node** lst)
     c = *lst;
     double threshold = 5.0;
 
-    // Traverse the list and remove nodes below a height threshold
+    // go through the list and remove nodes below a height threshold
     while (c != NULL) 
     {
         if (c->data->h < avH - threshold) 
@@ -78,9 +82,11 @@ void AdjustList(Node** lst)
     }
 }
 
-// Function to filter out shapes with dimensions outside a certain range
 void ShapeFilter(Node** shapeList)
 {
+    /*
+    Function to filter out shapes with dimensions outside a certain range
+    */
     Node* current = *shapeList;
     int sumH = 0;
     int sumW = 0;
@@ -129,9 +135,11 @@ void ShapeFilter(Node** shapeList)
     }
 }
 
-// Function to create a cluster list from a shape list
 Node** CreateCluster(Node** shapeList, int* size)
 {
+    /*
+    Function to create a cluster list from a shape list
+    */
     int n = LenNode(shapeList);
     Node** clusterList = (Node**)malloc(n * sizeof(Node*));
 
@@ -159,9 +167,11 @@ Node** CreateCluster(Node** shapeList, int* size)
     return ReduceArray(clusterList, size, count);
 }
 
-// Recursive function to find clusters of shapes based on height and distance thresholds
 void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
-{   
+{
+    /*
+    Recursive function to find clusters of shapes based on height and distance thresholds
+    */   
     if (!ContainsNode(*visited, shape))
     {
         Node* nv = NewNode(shape);
@@ -192,9 +202,11 @@ void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
     }
 }
 
-// Function to filter clusters, keeping only those above a certain average size
 Node** ClusterFilter(Node** clusterList, int* size)
 {
+    /*
+    Function to filter clusters, keeping only those above a certain average size
+    */
     if (*size > 2)
     {
         double sumSize = 0;
@@ -222,15 +234,18 @@ Node** ClusterFilter(Node** clusterList, int* size)
     return clusterList;
 }
 
-// Main function to process the grid in an SDL_Surface
 void ProcessGrid(SDL_Surface *surface) 
 {
+    /*
+    Main function to process the grid in an SDL_Surface
+    */
     int width = surface->w;
     int height = surface->h;
     int** Map;
     int** surf;
 
     SDL_LockSurface(surface);
+
     // Malloc the two matrix
     MallocMatrix(&Map, height, width);
     MallocMatrix(&surf, height, width);
