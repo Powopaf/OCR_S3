@@ -1,6 +1,9 @@
 #ifndef PLACEINGRID
 #define PLACEINGRID
 
-Shape** generateMatrix(Node* ShapeList, int* sizeX, int* sizeY) 
+#include "../Shape/shape.h"
+#include "../List/Node.h"
+
+Shape** generateMatrix(const Node* ShapeList, int* sizeX, int* sizeY);
 
 #endif
