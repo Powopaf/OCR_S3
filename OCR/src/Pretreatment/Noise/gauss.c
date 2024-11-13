@@ -4,10 +4,10 @@
 #include <math.h>
 
 //comment to run project uncomment to run noise reduction functions
-//#include "../Utils/sdl_utils.h"
-//#include "../GreyScale/greyscale.h"
-//#include "../Contrast/contrast.h"
-//#include "median.h"
+#include "../Utils/sdl_utils.h"
+#include "../GreyScale/greyscale.h"
+#include "../Contrast/contrast.h"
+#include "median.h"
 //////////////////////////////////////////////////////////////////////
 
 # define M_PI           3.14159265358979323846
@@ -17,10 +17,10 @@ double gFunc(int x, int y) {
      * gaussian funtion see gaussian blur for definition
     */
     const double sig = 0.58;
-    double part1 = 1 / (2 * M_PI * sig * sig);
+    double part1 = (2 * M_PI * sig * sig);
     double power = -(x * x + y * y) / (2 * sig * sig);
     double part2 = exp(power);
-    return part1 * part2;
+    return part1 / part2;
 }
 
 void gauss(SDL_Surface* surface) {
@@ -93,7 +93,7 @@ void gauss(SDL_Surface* surface) {
 }
 
 //comment to run project uncomment to run noise reduction function
-/*void test_noise(int a) {
+void test_noise(int a) {
     char filename[2048];
     SDL_Surface* surface = SDL_LoadBMP("i.bmp");
     greyscale(surface);
@@ -104,7 +104,7 @@ void gauss(SDL_Surface* surface) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
         contrast(s);
-        gauss(s, sig);
+        gauss(s);
         median(s);
         contrast(s);
         sprintf(filename, "img%d.bmp", i + 1);
@@ -125,4 +125,4 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE; 
     }
     return EXIT_SUCCESS;
-}*/
+}
