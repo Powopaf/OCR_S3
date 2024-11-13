@@ -1,5 +1,9 @@
 #include "rotate.h"
 
+///////////
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
+////////////
 #define M_PI       3.14159265358979323846
 
 // Rotation by rotation matrix (Best result)
@@ -210,3 +214,18 @@ void rotation(char* filename, double angle, char* outputPath)
     SDL_SaveBMP(surface,outputPath);
     SDL_FreeSurface(surface);
 }
+
+// Test of the function
+/*int main(int argc, char* argv[]) {
+	convert(argv[1]);
+    sdl_setup();
+    SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
+
+    SDL_Surface* a = rotation2(surface, 16.0);
+
+    SDL_SaveBMP(a, "img.bmp");
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(a);
+
+    sdl_close();
+}*/

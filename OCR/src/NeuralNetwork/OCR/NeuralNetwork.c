@@ -1,10 +1,10 @@
 #include "../NeuralNetwork.h"
 
-#define nbTrainingSets 100
-#define nbOfEpochs 10000
+#define nbTrainingSets 1000
+#define nbOfEpochs 10
 
 
-void compute(double InputsLayer[], double outputLayer[])
+void compute(char* InputsLayer, double** outputLayer)
 {
 
 	int nbInputs;
@@ -24,39 +24,6 @@ void compute(double InputsLayer[], double outputLayer[])
 
 	double hiddenLayer[nbHiddenNodes];
 
-	//final 
-	printf("\n");
-
-	printf("Final Hidden Weights:\n");
-	for(int i = 0; i<nbHiddenNodes; i++)
-	{
-		for(int j = 0; j<nbInputs; j++)
-		{
-			printf("%f ", hiddenWeights[j][i]);
-		}
-		printf("\n");
-	}
-
-	printf("Final Output Weights:\n");
-    for(int i = 0; i<nbOutputs; i++)
-    {
-        for(int j = 0; j<nbHiddenNodes; j++)
-        {
-            printf("%f ", outputWeights[j][i]);
-        }
-        printf("\n");
-    }
-
-
-	printf("Final Hidden Biases: ");
-	for(int i = 0; i<nbHiddenNodes; i++)
-		printf("%f ", hiddenLayerBias[i]);
-	printf("\n");
-
-	printf("Final Output Biases: ");
-    for(int i = 0; i<nbOutputs; i++)
-        printf("%f ", outputLayerBias[i]);
-	printf("\n");
 	
 	//comute hidden layer activation
     for(int j = 0; j<nbHiddenNodes; j++)
@@ -64,7 +31,7 @@ void compute(double InputsLayer[], double outputLayer[])
         double activation = hiddenLayerBias[j];
         for(int k = 0; k<nbInputs; k++)
         {
-            activation += InputsLayer[k] * hiddenWeights[k][j];
+            activation += (double)InputsLayer[k] * hiddenWeights[k][j];
         }
 
         hiddenLayer[j] = sigmoid(activation);
@@ -79,26 +46,48 @@ void compute(double InputsLayer[], double outputLayer[])
             activation += hiddenLayer[k] * outputWeights[k][j];
         }
 
-        outputLayer[j] = sigmoid(activation);
+        (*outputLayer)[j] = sigmoid(activation);
 
     }
+
+	FreeMatrix(hiddenWeights, nbInputs);
+    FreeMatrix(outputWeights, nbHiddenNodes);
+    free(hiddenLayerBias);
+    free(outputLayerBias);
 	
 }
 
-int main()
+char LetterRecognition(SDL_Surface* surface)
 {
-	DataPoint p;
-	double x = init_weights();
-	double y = init_weights();
-	NewDataPoint(&p,x,y);
-	double output[2];
+	double* output = malloc(26*sizeof(double));
 
-	compute(p.pos,output);
-	printf("Output: %f,%f\n",output[0],output[1]);
-	printf("Expected: %f,%f\n",p.Safe[0],p.Safe[1]);
-	return 0;
+	char* res = LoadImgData(surface);
+
+	compute(res,&output);
+	free(res);
+
+	char Letter = ArrayToLetter(output);
+
+	//print res
+	printf("Output: %c\n",Letter);
+	for(int i = 0; i<26;i++)
+	{
+		printf("%c:%.3f|",(char)(i+'A'),output[i]);
+	}
+	printf("\n");
+	//---
+
+	free(output);
+	
+	return Letter;
 }
 
+int main(int argc, char** argv)
+{
+	SDL_Surface* surface = SDL_LoadBMP(argv[1]);
+	LetterRecognition(surface);
+	SDL_FreeSurface(surface);
+}
 
 
 

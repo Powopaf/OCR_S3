@@ -4,6 +4,7 @@
 #include <math.h>
 #include <err.h>
 #include <SDL2/SDL.h>
+#include <time.h>
 
 // Neural network functions
 double sigmoid(double x);
@@ -27,6 +28,7 @@ double* LetterToArray(char letter);
 char ArrayToLetter(double* arr);
 double** LoadExeptedDataSet();
 double* GetExeptedDataSet(double** ExeptedDataSet, char Letter);
+char* LoadImgData(SDL_Surface* surface);
 
 double init_weights();
 void InitTrainning(int nbInputs, int nbHiddenNodes ,int nbOutputs , double*** hiddenWeights, double** hiddenLayerBias ,double*** outputWeights, double** outputLayerBias);

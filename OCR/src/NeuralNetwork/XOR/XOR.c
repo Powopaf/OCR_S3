@@ -14,31 +14,6 @@ void compute(double InputsLayer[], double outputLayer[]) {
 
     double hiddenLayer[nbHiddenNodes];
 
-    // Final weights and biases output
-    printf("\nFinal Hidden Weights:\n");
-    for (int i = 0; i < nbHiddenNodes; i++) {
-        for (int j = 0; j < nbInputs; j++) {
-            printf("%f ", hiddenWeights[j][i]);
-        }
-        printf("\n");
-    }
-
-    printf("Final Output Weights:\n");
-    for (int i = 0; i < nbOutputs; i++) {
-        for (int j = 0; j < nbHiddenNodes; j++) {
-            printf("%f ", outputWeights[j][i]);
-        }
-        printf("\n");
-    }
-
-    printf("Final Hidden Biases: ");
-    for (int i = 0; i < nbHiddenNodes; i++) printf("%f ", hiddenLayerBias[i]);
-    printf("\n");
-
-    printf("Final Output Biases: ");
-    for (int i = 0; i < nbOutputs; i++) printf("%f ", outputLayerBias[i]);
-    printf("\n");
-
     // Compute hidden layer activation
     for (int j = 0; j < nbHiddenNodes; j++) {
         double activation = hiddenLayerBias[j];

@@ -7,7 +7,8 @@ double sigmoid(double x) {
 
 // Derivative of the sigmoid function
 double dsigmoid(double x) {
-    return x * (1 - x);
+    double r = sigmoid(x);
+    return r * (1 - r);
 }
 
 // Read integer from string
@@ -103,7 +104,8 @@ char **Split(char *str, int *size) {
     }
 
     char **result = (char **)malloc(count * sizeof(char *));
-    strcpy(strCopy, str);
+    free(strCopy);
+    strCopy = strdup(str);
     token = strtok(strCopy, &delimiter);
     int index = 0;
 
@@ -135,7 +137,7 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
         err(1, "Error opening file %s\n", filename);
     }
 
-    char line[256];
+    char line[16384];
     int size;
     char **arr;
 
@@ -153,6 +155,12 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
     fgets(line, sizeof(line), file);
     arr = Split(line, &size);
     MallocArray(hiddenLayerBias, *nbHiddenNodes);
+
+    if (size < *nbHiddenNodes) 
+    {
+        err(1, "Unexpected number of elements in line: expected %d, got %d\n", *nbHiddenNodes, size);
+    }
+  
     for (int i = 0; i < *nbHiddenNodes; i++) {
         (*hiddenLayerBias)[i] = ReadDouble(arr[i]);
     }

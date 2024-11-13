@@ -1,18 +1,17 @@
 #include "../NeuralNetwork.h"
 
-#define nbInputs 2
-#define nbHiddenNodes 3
-#define nbOutputs 2
-#define nbTrainingSets 100
-#define nbOfEpochs 10000
+#define nbInputs 784
+#define nbHiddenNodes 785
+#define nbOutputs 26
+#define nbTrainingSets 1000
 
-void train()
+void train(int nbOfEpochs)
 {
 	//variable
 	const double LearningRate = 0.1f;
 
     double hiddenLayer[nbHiddenNodes];
-    double outputLayer[nbOutputs];
+    double* outputLayer = malloc(nbOutputs*sizeof(double));
 
     double *hiddenLayerBias;
 	MallocArray(&hiddenLayerBias,nbHiddenNodes);
@@ -26,168 +25,151 @@ void train()
 	
 	double totalError = 0.0;
 
-	//generate training sets
-	DataPoint TrainingSets[nbTrainingSets];
-	for(int i = 0; i<nbTrainingSets; i++)
-	{
-		DataPoint p;
-		double x = init_weights();
-		double y = init_weights();
-		NewDataPoint(&p,x,y);
-		TrainingSets[i] = p;
+	//Load DataSet
+	char*** DataSet = MallocDataSet();
+	DataSet = LoadDataSet(DataSet);
 
-		//printf("Pos: %f,%f Safe:[%i,%i]\n",x,y,p.Safe[0],p.Safe[1]);
-	}
+	double** ExeptedDataSet = LoadExeptedDataSet();
 	
 	//set all weights and bias to random value
-	for(int i = 0; i<nbInputs; i++)
-    {
-        for(int j = 0; j<nbHiddenNodes; j++)
-        {
-            hiddenWeights[i][j] = init_weights();
-        }
-    }
-
-    for(int i = 0; i<nbOutputs; i++)
-    {
-        outputLayerBias[i] = init_weights();
-    }
+	InitTrainning(nbInputs,nbHiddenNodes,nbOutputs,&hiddenWeights,&hiddenLayerBias,&outputWeights,&outputLayerBias);
 
 	//training
+
+	clock_t debut, fin;
+	debut = clock();
+
+	int step = 0;
+	int MaxStep = nbOutputs*nbTrainingSets*nbOfEpochs;
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
 		totalError = 0.0;
-
-		for (int x = 0; x<nbTrainingSets; x++)
+		for(int x = 0; x<nbTrainingSets; x++)
 		{
-			DataPoint p = TrainingSets[x];
-			
-			//forward pass
 
-			//comute hidden layer activation
-			for(int j = 0; j<nbHiddenNodes; j++)
+
+			for (int l = 0; l<nbOutputs; l++)
 			{
-				double activation = hiddenLayerBias[j];
-				for(int k = 0; k<nbInputs; k++)
+				char ActualLetter = l+'A';
+				double* ExeptedData = GetExeptedDataSet(ExeptedDataSet,ActualLetter);
+
+				char* p = DataSet[l][x];
+				
+				//forward pass
+
+				//comute hidden layer activation
+				for(int j = 0; j<nbHiddenNodes; j++)
 				{
-					activation += p.pos[k] * hiddenWeights[k][j];
+					double activation = hiddenLayerBias[j];
+					for(int k = 0; k<nbInputs; k++)
+					{
+						activation += (double)p[k] * hiddenWeights[k][j];
+					}
+
+					hiddenLayer[j] = sigmoid(activation);
 				}
 
-				hiddenLayer[j] = sigmoid(activation);
-			}
-
-			//comute output layer activation
-            for(int j = 0; j<nbOutputs; j++)
-            {
-                double activation = outputLayerBias[j];
-                for(int k = 0; k<nbHiddenNodes; k++)
-                {
-                    activation += hiddenLayer[k] * outputWeights[k][j];
-                }
-
-                outputLayer[j] = sigmoid(activation);
-
-            }
-
-			printf("Input: %f,%f  Output: %f,%f  Expected: %f,%f\n",p.x,p.y,outputLayer[0],outputLayer[1],p.Safe[0],p.Safe[1]);
-
-			// Backprop
-
-			//compute change in output weights
-
-			double deltaOutput[nbOutputs];
-
-			for(int j = 0; j<nbOutputs; j++)
-			{
-				double error = (p.Safe[j] - outputLayer[j]);
-				totalError += error*error;
-				deltaOutput[j] = error * dsigmoid(outputLayer[j]);
-			}
-			
-			//compute change in hidden weights
-
-			double deltaHidden[nbHiddenNodes];
-			
-			for(int j = 0; j<nbHiddenNodes; j++)
-			{
-				double error = 0.0f;
-				for(int k = 0; k<nbOutputs; k++)
+				//comute output layer activation
+				for(int j = 0; j<nbOutputs; j++)
 				{
-					error+=deltaOutput[k] * outputWeights[j][k];
+					double activation = outputLayerBias[j];
+					for(int k = 0; k<nbHiddenNodes; k++)
+					{
+						activation += hiddenLayer[k] * outputWeights[k][j];
+					}
+
+					outputLayer[j] = sigmoid(activation);
+
 				}
-				deltaHidden[j] = error * dsigmoid(hiddenLayer[j]);
-			}
-			
-			// Apply change in output weights
-			for(int j = 0; j< nbOutputs; j++)
-			{
-				outputLayerBias[j] += deltaOutput[j] * LearningRate;
-				for(int k = 0; k<nbHiddenNodes; k++)
+				char out = ArrayToLetter(outputLayer);
+				double percentage = (double)step / MaxStep * 100;
+				printf("Input: %c  Output: %c:%.3f",ActualLetter,out,outputLayer[l]);
+				printf(" Expected: %c	%i/%i 	%.3f%%\n",ActualLetter,step,MaxStep,percentage);
+
+				// Backprop
+
+				//compute change in output weights
+
+				double deltaOutput[nbOutputs];
+
+
+				for(int j = 0; j<nbOutputs; j++)
 				{
-					outputWeights[k][j] += hiddenLayer[k] * deltaOutput[j] * LearningRate;
+					double error = (ExeptedData[j] - outputLayer[j]);
+					totalError += error*error;
+					deltaOutput[j] = error * dsigmoid(outputLayer[j]);
 				}
+				
+				//compute change in hidden weights
+
+				double deltaHidden[nbHiddenNodes];
+				
+				for(int j = 0; j<nbHiddenNodes; j++)
+				{
+					double error = 0.0f;
+					for(int k = 0; k<nbOutputs; k++)
+					{
+						error+=deltaOutput[k] * outputWeights[j][k];
+					}
+					deltaHidden[j] = error * dsigmoid(hiddenLayer[j]);
+				}
+				
+				// Apply change in output weights
+				for(int j = 0; j< nbOutputs; j++)
+				{
+					outputLayerBias[j] += deltaOutput[j] * LearningRate;
+					for(int k = 0; k<nbHiddenNodes; k++)
+					{
+						outputWeights[k][j] += hiddenLayer[k] * deltaOutput[j] * LearningRate;
+					}
+				}
+
+				// Apply change in hidden weights
+				for(int j = 0; j< nbHiddenNodes; j++)
+				{
+					hiddenLayerBias[j] += deltaHidden[j] * LearningRate;
+					for(int k = 0; k<nbInputs; k++)
+					{
+						hiddenWeights[k][j] += (double)p[k] * deltaHidden[j] * LearningRate;
+					}
+				}
+
+				step++;
+
 			}
-
-			// Apply change in hidden weights
-            for(int j = 0; j< nbHiddenNodes; j++)
-            {
-                hiddenLayerBias[j] += deltaHidden[j] * LearningRate;
-                for(int k = 0; k<nbInputs; k++)
-                {
-                    hiddenWeights[k][j] += p.pos[k] * deltaHidden[j] * LearningRate;
-                }
-            }
-
 		}
 
     }
 	
+	fin = clock();
+	printf("Temps d'exécution : %f secondes\n", (double)(fin - debut) / CLOCKS_PER_SEC);
 
 	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
 
 	//final 
-	printf("\n");
-
-	printf("Final Hidden Weights:\n");
-	for(int i = 0; i<nbHiddenNodes; i++)
-	{
-		for(int j = 0; j<nbInputs; j++)
-		{
-			printf("%f ", hiddenWeights[j][i]);
-		}
-		printf("\n");
-	}
-
-	printf("Final Output Weights:\n");
-    for(int i = 0; i<nbOutputs; i++)
-    {
-        for(int j = 0; j<nbHiddenNodes; j++)
-        {
-            printf("%f ", outputWeights[j][i]);
-        }
-        printf("\n");
-    }
-
-
-	printf("Final Hidden Biases: ");
-	for(int i = 0; i<nbHiddenNodes; i++)
-		printf("%f ", hiddenLayerBias[i]);
-	printf("\n");
-
-	printf("Final Output Biases: ");
-    for(int i = 0; i<nbOutputs; i++)
-        printf("%f ", outputLayerBias[i]);
-	printf("\n");
 
 	double meanSquaredError = totalError / (nbTrainingSets * nbOutputs);
     printf("Final MSE: %f\n", meanSquaredError);
+
+	// Free allocated memory
+    FreeMatrix(hiddenWeights, nbInputs);
+    FreeMatrix(outputWeights, nbHiddenNodes);
+    free(hiddenLayerBias);
+    free(outputLayerBias);
+
+	FreeDataSet(DataSet);
+	FreeMatrix(ExeptedDataSet,nbOutputs);
+
+	free(outputLayer);
+
+
 
 }
 
 
 int main()
 {
-	train();
+	train(200);
 	return 0;
 }
 

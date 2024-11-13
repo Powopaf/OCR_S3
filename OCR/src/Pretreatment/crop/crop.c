@@ -2,6 +2,9 @@
 #include <err.h>
 #include <unistd.h>
 #include "crop.h"
+//comment to run project uncomment to run crop()
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
 
 SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
     /*

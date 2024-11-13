@@ -1,5 +1,8 @@
 #include <SDL2/SDL.h>
 #include <err.h>
+
+//#include "../Utils/sdl_utils.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,3 +83,32 @@ void binarisation(SDL_Surface *surface, int window_size, double k)
     FreeMatrix(Map, height);
     SDL_UnlockSurface(surface);
 }
+
+// Uncomment to run this project, and comment it out to test grayscale
+/*
+int main() {
+    for (int i = 1; i <= 7; i++)
+    {
+        printf("Processing img%i ...\n", i);
+        char* file = NULL;
+        char* save = NULL;
+
+        asprintf(&file, "img/img%i.bmp", i);
+        asprintf(&save, "img/img%iBin.bmp", i);
+
+        sdl_setup();
+        SDL_Surface* surface = SDL_LoadBMP(file); // convert() creates img.bmp
+        if (surface == NULL)
+        {
+            err(1, "Unable to load image: %s\n", SDL_GetError());
+        }
+        binarisation(surface, 21, 0.35);
+        SDL_SaveBMP(surface, save);
+        SDL_FreeSurface(surface);
+        sdl_close();
+        free(file);
+        free(save);
+    }
+}
+*/
+

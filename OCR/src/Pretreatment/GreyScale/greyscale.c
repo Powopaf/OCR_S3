@@ -2,6 +2,14 @@
 #include <err.h>
 #include <unistd.h>
 
+///////////////////////////
+// to run greyscale only //
+//////////////////////////
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
+////////////////////////////////
+
+
 void greyscale(SDL_Surface* surface) {
     
     // error handling
@@ -42,3 +50,14 @@ void greyscale(SDL_Surface* surface) {
     //unlock when finish
     SDL_UnlockSurface(surface);
 }
+//comment to run project uncomment to test greyscale
+/*int main(int argc, char* argv[]) {
+    convert(argv[1]);
+    sdl_setup();
+    SDL_Surface* surface = SDL_LoadBMP("img.bmp"); //convert() create a img.bmp
+    greyscale(surface);
+    SDL_SaveBMP(surface, "img.bmp");
+    SDL_FreeSurface(surface);
+    sdl_close();
+
+}*/
