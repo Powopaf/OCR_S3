@@ -192,7 +192,7 @@ void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
 
                 // Check if shape meets height and distance thresholds
                 if (h < avHeight + threshold && h > avHeight - threshold && 
-                    FindLowestDist(shape, current->data) < (avHeight + avWidth))
+                    FindLowestDist(shape, current->data) < (avHeight + avWidth)) // replace FindLowest with an other thar call it
                 {
                     FindCluster(visited, cluster, shapeList, current->data);
                 }
