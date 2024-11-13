@@ -12,18 +12,18 @@
 
 # define M_PI           3.14159265358979323846
 
-double gFunc(int x, int y) {
+double gFunc(int x, int y, double sig) {
     /*
      * gaussian funtion see gaussian blur for definition
     */
-    const double sig = 0.58;
+    //const double sig = 0.58;
     double part1 = (2 * M_PI * sig * sig);
     double power = -(x * x + y * y) / (2 * sig * sig);
     double part2 = exp(power);
     return part1 / part2;
 }
 
-void gauss(SDL_Surface* surface) {
+void gauss(SDL_Surface* surface, double sig) {
     /*
      * G(x,y) = (1/2*pi*sig^2)*(exp^(-(x^2 + y^2/2*sig^2)))
      * with x, y the neighboring pixel
@@ -57,7 +57,7 @@ void gauss(SDL_Surface* surface) {
     for (int y = 2; y >= -2; y--) {
         j = 0;
         for (int x = -2; x <= 2; x ++) {
-            kernel[i][j] = gFunc(x, y);
+            kernel[i][j] = gFunc(x, y, sig);
         }
     }
 
@@ -99,12 +99,12 @@ void test_noise(int a) {
     greyscale(surface);
     SDL_SaveBMP(surface, "img0.bmp");
     SDL_FreeSurface(surface);
-    double sig = 0.0;
+    double sig = 0.5;
     for (int i = 0; i < a; i++) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
         contrast(s);
-        gauss(s);
+        gauss(s, sig);
         median(s);
         contrast(s);
         sprintf(filename, "img%d.bmp", i + 1);
