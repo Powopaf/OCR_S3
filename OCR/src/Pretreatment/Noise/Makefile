@@ -4,7 +4,6 @@ CFLAGS=-Wall -Wextra -fsanitize=address -g
 LIB=-lSDL2 -lm -fsanitize=address
 
 SRC=\
-	 ../Utils/convert.c \
 	 ../Utils/sdl_utils.c \
 	 ../GreyScale/greyscale.c \
 	 ../Contrast/contrast.c \
