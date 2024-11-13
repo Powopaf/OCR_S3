@@ -160,7 +160,7 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
     {
         err(1, "Unexpected number of elements in line: expected %d, got %d\n", *nbHiddenNodes, size);
     }
-
+  
     for (int i = 0; i < *nbHiddenNodes; i++) {
         (*hiddenLayerBias)[i] = ReadDouble(arr[i]);
     }

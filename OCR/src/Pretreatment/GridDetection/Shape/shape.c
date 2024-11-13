@@ -1,21 +1,23 @@
 #include "../Shape/shape.h" // Include the header file for shape-related functions and data structures
-#include "../Lib/Lib.h" // Include additional utility functions
-#include <stdlib.h> // Include standard library for memory allocation
-#include <SDL2/SDL.h> // Include SDL2 for handling surfaces
+#include "../Lib/Lib.h"     // Include additional utility functions
+#include <stdlib.h>         // Include standard library for memory allocation
+#include <SDL2/SDL.h>       // Include SDL2 for handling surfaces
 
-// Function to create and initialize a new Shape structure
 Shape* CreateShape(int id, int j, int i) {
+    /*
+    Function to create and initialize a new Shape structure
+    */
     Shape* s = (Shape*)malloc(sizeof(Shape));
     if (s == NULL) {
-        err(1, "ERROR Memory Allocation"); // Error handling if memory allocation fails
+        err(1, "ERROR Memory Allocation");
     }
-    s->id = id; // Assign shape ID
+    s->id = id;     // Assign shape ID
 
-    s->Cx = j; // Set initial center x-coordinate
-    s->Cy = i; // Set initial center y-coordinate
+    s->Cx = j;      // Set initial center x-coordinate
+    s->Cy = i;      // Set initial center y-coordinate
 
-    s->h = 0; // Initialize height to 0
-    s->w = 0; // Initialize width to 0
+    s->h = 0;       // Initialize height to 0
+    s->w = 0;       // Initialize width to 0
 
     // Initialize bounding box coordinates
     s->Maxj = j;
@@ -23,31 +25,39 @@ Shape* CreateShape(int id, int j, int i) {
     s->Minj = j;
     s->Mini = i;
     
-    s->Matj = 0; // Initialize matrix coordinates
+    s->Matj = 0;    // Initialize matrix coordinates
     s->Mati = 0;
 
-    s->Len = 0; // Initialize length of shape to 0
-    return s; // Return pointer to the created shape
+    s->Len = 0;     // Initialize length of shape to 0
+    return s;       // Return pointer to the created shape
 }
 
-// Function to compute dimensions and center coordinates of a shape
+
 void ComputeShape(Shape* s)
 {
-    s->h = s->Maxj - s->Minj + 1; // Calculate height
-    s->w = s->Maxi - s->Mini + 1; // Calculate width
-    s->Cx = s->Minj + (s->h)/2; // Set center x-coordinate
-    s->Cy = s->Mini + (s->w)/2; // Set center y-coordinate
+    /*
+    Function to compute dimensions and center coordinates of a shape
+    */
+    s->h = s->Maxj - s->Minj + 1;   // Calculate height
+    s->w = s->Maxi - s->Mini + 1;   // Calculate width
+    s->Cx = s->Minj + (s->h)/2;     // Set center x-coordinate
+    s->Cy = s->Mini + (s->w)/2;     // Set center y-coordinate
 }
 
-// Recursive function to find a shape on a surface
 void FindShape(Shape* s, int** surface, int** Map, int j, int i, int height, int width) {
-    Map[j][i] = s->id; // Mark the current position with the shape ID
-    s->Len++; // Increment the length of the shape
+    /*
+    Recursive function to find a shape on a surface
+    */
+    Map[j][i] = s->id;  // Mark the current position with the shape ID
+    s->Len++;           // Increment the length of the shape
 
     // Update bounding box coordinates
     if (s->Maxj < j) s->Maxj = j;
+    
     if (s->Minj > j) s->Minj = j;
+    
     if (s->Maxi < i) s->Maxi = i;
+    
     if (s->Mini > i) s->Mini = i;
 
     // Recursive exploration in four directions to find connected pixels
@@ -64,14 +74,21 @@ void FindShape(Shape* s, int** surface, int** Map, int j, int i, int height, int
         FindShape(s, surface, Map, j, i-1, height, width);
 }
 
-// Function to check if a shape is valid by comparing its dimensions to the surface
 int IsShapeValid(SDL_Surface* surface, Shape* s) {
-    return (s->w < surface->w / 8 && s->h < surface->h / 8); // Returns true if the shape is smaller than a threshold
+    /*
+    Function to check if a shape is valid by comparing its dimensions to the surface
+    Returns true if the shape is smaller than a threshold
+    */
+    return (s->w < surface->w / 8 && s->h < surface->h / 8);
 }
 
-// Function to calculate the minimum distance between two shapes
 double FindLowestDist(Shape* s1, Shape* s2)
 {
+    /*
+    Function to calculate the minimum distance between two shapes
+    Return the minimum distance found
+    */
+
     // Define the four corners of each shape's bounding box
     int p1[4][2] = {
         {s1->Minj, s1->Mini},
@@ -100,6 +117,5 @@ double FindLowestDist(Shape* s1, Shape* s2)
         }
     }
 
-    return MinDist; // Return the minimum distance found
+    return MinDist;
 }
-
