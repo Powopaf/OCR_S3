@@ -3,6 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-SDL_Surface* resize_surface(SDL_Surface* original_surface, int new_width, int new_height);
+SDL_Surface* resize_surface(SDL_Surface* original_surface);
 
 #endif

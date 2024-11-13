@@ -2,6 +2,9 @@
 #include <err.h>
 #include <unistd.h>
 #include "crop.h"
+//comment to run project uncomment to run crop()
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
 
 SDL_Surface* crop(SDL_Surface* surface, Uint8* pixel, int w, int h) {
     /*
@@ -64,5 +67,23 @@ SDL_Surface* cropLetter(Shape* shape, int** Map)
         }
     }
     SDL_UnlockSurface(surface);
+
+    //SDL_SaveBMP(surface,output);
+
+    //SDL_FreeSurface(surface);
+    //
     return surface;
 }
+
+
+
+//comment to run project uncomment to run crop()
+/*int main(int argc, char* argv[]) {
+    convert(argv[1]);
+    SDL_Surface* surface = SDL_LoadBMP("img.bmp");
+    SDL_Surface* c = crop(surface, surface->pixels, 256, 256);
+    SDL_SaveBMP(c, "crop.bmp");
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(c);
+    return EXIT_SUCCESS;
+}*/

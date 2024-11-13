@@ -1,5 +1,11 @@
 #include <SDL2/SDL.h>
 
+//comment to run project, uncomment to run contrast
+//#include "../Utils/convert.h"
+//#include "../Utils/sdl_utils.h"
+//#include "../GreyScale/greyscale.h"
+
+
 void contrast(SDL_Surface* surface) {
     // init image loop
     int width = surface->w;
@@ -40,3 +46,20 @@ void contrast(SDL_Surface* surface) {
     }
     SDL_UnlockSurface(surface);
 }
+
+
+//comment to run project, uncomment to run contrast
+/*int main(int argc, char* argv[]) {
+    convert(argv[1]);
+    sdl_setup();
+    SDL_Surface* s = SDL_LoadBMP("img.bmp");
+    greyscale(s);
+    SDL_SaveBMP(s, "c.bmp");
+    SDL_Surface* s1 = SDL_LoadBMP("c.bmp");
+    contrast(s1);
+    SDL_SaveBMP(s1, "c.bmp");
+    SDL_FreeSurface(s1);
+    SDL_FreeSurface(s);
+    sdl_close();
+    return EXIT_SUCCESS;
+}*/

@@ -53,6 +53,10 @@ char* LoadImgData(SDL_Surface* surface)
             {
                 res[k] = 1;
             }
+            else
+            {
+                res[k] = 0;
+            }
             k++;
         }
     }
@@ -123,7 +127,7 @@ double** LoadExeptedDataSet()
 
 double* GetExeptedDataSet(double** ExeptedDataSet, char Letter)
 {
-    int id = Letter-65;
+    int id = Letter-'A';
     return ExeptedDataSet[id];
 }
 
