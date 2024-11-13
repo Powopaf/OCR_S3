@@ -30,6 +30,16 @@ void train(int nbOfEpochs)
 	DataSet = LoadDataSet(DataSet);
 
 	double** ExeptedDataSet = LoadExeptedDataSet();
+
+	int** shuffleArray = malloc(nbOutputs*sizeof(int*));
+	for(int i = 0; i<nbOutputs; i++)
+	{
+		shuffleArray[i] = malloc(nbTrainingSets*sizeof(int));
+		for(int j = 0; j<nbTrainingSets; j++)
+		{
+			shuffleArray[i][j] = j;
+		}
+	}
 	
 	//set all weights and bias to random value
 	InitTrainning(nbInputs,nbHiddenNodes,nbOutputs,&hiddenWeights,&hiddenLayerBias,&outputWeights,&outputLayerBias);
@@ -44,6 +54,7 @@ void train(int nbOfEpochs)
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
 		totalError = 0.0;
+		shuffle(shuffleArray,nbOutputs,nbTrainingSets);
 		for(int x = 0; x<nbTrainingSets; x++)
 		{
 
@@ -53,7 +64,8 @@ void train(int nbOfEpochs)
 				char ActualLetter = l+'A';
 				double* ExeptedData = GetExeptedDataSet(ExeptedDataSet,ActualLetter);
 
-				char* p = DataSet[l][x];
+				int i = shuffleArray[l][x];
+				char* p = DataSet[l][i];
 				
 				//forward pass
 
@@ -83,7 +95,7 @@ void train(int nbOfEpochs)
 				}
 				char out = ArrayToLetter(outputLayer);
 				double percentage = (double)step / MaxStep * 100;
-				printf("Input: %c  Output: %c:%.3f",ActualLetter,out,outputLayer[l]);
+				printf("Input: %4i:%c  Output: %c:%.3f",i,ActualLetter,out,outputLayer[l]);
 				printf(" Expected: %c	%i/%i 	%.3f%%\n",ActualLetter,step,MaxStep,percentage);
 
 				// Backprop
@@ -139,18 +151,18 @@ void train(int nbOfEpochs)
 			}
 		}
 
+		WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,epoch);
     }
 	
 	fin = clock();
 	printf("Temps d'exécution : %f secondes\n", (double)(fin - debut) / CLOCKS_PER_SEC);
 
-	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,nbOfEpochs);
 
 	//final 
 
 	double meanSquaredError = totalError / (nbTrainingSets * nbOutputs);
     printf("Final MSE: %f\n", meanSquaredError);
-
 	// Free allocated memory
     FreeMatrix(hiddenWeights, nbInputs);
     FreeMatrix(outputWeights, nbHiddenNodes);
@@ -161,7 +173,11 @@ void train(int nbOfEpochs)
 	FreeMatrix(ExeptedDataSet,nbOutputs);
 
 	free(outputLayer);
-
+	for(int i = 0; i<nbOutputs; i++)
+	{
+		free(shuffleArray[i]);
+	}
+	free(shuffleArray);
 
 
 }
@@ -169,7 +185,7 @@ void train(int nbOfEpochs)
 
 int main()
 {
-	train(200);
+	train(1);
 	return 0;
 }
 
