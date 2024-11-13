@@ -19,7 +19,7 @@ void FreeSplitArray(char **arr, int size);
 void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBias, 
               double ***hiddenWeights, double ***outputWeights, int *nbInputs, 
               int *nbHiddenNodes, int *nbOutputs, double *LearningRate);
-void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate);
+void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate, int epoch);
 
 char*** MallocDataSet();
 void FreeDataSet(char*** arr);
@@ -32,3 +32,4 @@ char* LoadImgData(SDL_Surface* surface);
 
 double init_weights();
 void InitTrainning(int nbInputs, int nbHiddenNodes ,int nbOutputs , double*** hiddenWeights, double** hiddenLayerBias ,double*** outputWeights, double** outputLayerBias);
+void shuffle(int** mat, int sizex, int sizey);
