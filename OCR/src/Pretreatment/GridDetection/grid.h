@@ -16,9 +16,9 @@
 void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeight, double* avWidth);
 void AdjustList(Node** lst);
 void ShapeFilter(Node** shapeList);
-Node** CreateCluster(Node** shapeList, int* size,SDL_Surface* surface);
+Node** CreateCluster(Node** shapeList, int* size);
 void FindCluster(int** visited, Node** shapeList, Shape* shape,int id);
-Node** ClusterFilter(Node** clusterList, int* size);
+void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface);
 void ProcessGrid(SDL_Surface *surface);
 Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id);
 

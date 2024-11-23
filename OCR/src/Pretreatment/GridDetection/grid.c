@@ -150,10 +150,14 @@ Node* ArrayToNode(Node** shapeList, int* visited, int id)
         }
         c = c->next;
     }
+    if(res == NULL)
+    {
+        err(1,"Error in ArrayToNode\n");
+    }
     return res;
 }
 
-Node** CreateCluster(Node** shapeList, int* size, SDL_Surface* surface)
+Node** CreateCluster(Node** shapeList, int* size)
 {
     /*
     Function to create a cluster list from a shape list
@@ -234,40 +238,7 @@ void FindCluster(int** visited, Node** shapeList, Shape* shape,int id)
     }
 }
 
-
-Node** ClusterFilter(Node** clusterList, int* size)
-{
-    /*
-    Function to filter clusters, keeping only those above a certain average size
-    */
-    if (*size > 2)
-    {
-        double sumSize = 0;
-        for (int i = 0; i < *size; i++)
-        {
-            sumSize += ListSum(clusterList[i]);
-        }
-        double avSize = sumSize / (double)*size;
-        int k = 0;
-
-        for (int i = 0; i < *size; i++)
-        {
-            if (ListSum(clusterList[i]) < avSize)
-            {
-                FreeNodeList(&clusterList[i], 0);
-                clusterList[i] = NULL;
-            }
-            else
-            {
-                k++;
-            }
-        }
-        clusterList = ReduceArray(clusterList, size, k);// Create a new list with only the valid cluster
-    }
-    return clusterList;
-}
-
-int isShapeAline(Shape* s1, Shape* s2, int MaxAngle)
+int isShapeAline_Horizontal(Shape* s1, Shape* s2, int MaxAngle)
 {
     // Check horizontal alignment (0° or 180° with MaxAngle tolerance)
     if (s2->Cx>s1->Cx-MaxAngle && s2->Cx<s1->Cx+MaxAngle)
@@ -277,6 +248,84 @@ int isShapeAline(Shape* s1, Shape* s2, int MaxAngle)
     return 0; // The shapes are not horizontally aligned
 }
 
+int isShapeAline_Vertical(Shape* s1, Shape* s2, int MaxAngle)
+{
+    // Check vertical alignment (90° or 270° with MaxAngle tolerance)
+    if (s2->Cy>s1->Cy-MaxAngle && s2->Cy<s1->Cy+MaxAngle)
+    {
+        return 1; // The shapes are vertically aligned
+    }
+    return 0; // The shapes are not vertically aligned
+}
+
+Shape* GetMainShape(Shape* s, Node* cluster)
+{
+    // Get the main shape in a cluster based on the lowest distance
+    Node* c = cluster;
+    Shape* res = c->data;
+    double minDist = FindLowestDist(s, c->data);
+    while (c != NULL)
+    {
+        double dist = FindLowestDist(s, c->data);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            res = c->data;
+        }
+        c = c->next;
+    }
+    return res;
+}
+
+void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
+{
+    //Node*** res = (Node***)malloc(sizeof(Node**));
+    int* visited = (int*)calloc((*size),sizeof(int));
+    int* ClusterSize = (int*)calloc(1,(sizeof(int)));
+    int k = 1;
+    for(int i = 0; i < (*size); i++)
+    {
+        Node* cluster = clusterList[i];
+        if(visited[i] != 0)
+        {
+            continue;
+        }
+        visited[i] = k;
+        int count = 1;
+        for(int j = 0; j<(*size); j++)
+        {
+            if(visited[j] == 0)
+            {
+                Node* cluster2 = clusterList[j];
+                Shape* shape1 = cluster->data;
+                Shape* shape2 = GetMainShape(shape1,cluster2);
+                if(isShapeAline_Vertical(shape1,shape2, 20))// && FindLowestDist(shape1,shape2)<(shape1->h*5))//&& LenNode(&cluster2) == LenNode(&cluster))
+                {
+                    visited[j] = k;
+                    count++;
+                }
+            }
+        }
+        ClusterSize = (int*)realloc(ClusterSize, k * sizeof(int));
+        ClusterSize[k-1] = count;
+        k++;
+    }
+
+    for(int i = 0; i < (*size); i++)
+    {
+        float hue = (visited[i] * 360.0 / ((k+1)/2)); // Calculate hue for color
+        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
+        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
+        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+        Draw(surface, clusterList[i], r, g, b);
+    }
+    free(visited);
+    free(ClusterSize);
+    return;
+
+    
+    
+}
 
 Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id)
 {
@@ -303,7 +352,7 @@ Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, 
         double thresholdH = 5.0;
 
         // Check alignment, distance, and height thresholds
-        if (isShapeAline(s, currentShape, 10) &&
+        if (isShapeAline_Horizontal(s, currentShape, 10) &&
             dist < minDist &&
             dist <= MaxDist &&
             h > avH - thresholdH &&
@@ -317,6 +366,40 @@ Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, 
     }
 
     return closestShape;
+}
+
+int mostFrequentValue(int* array, int size) {
+    int maxCount = 0;    // Compteur maximum
+    int mostFrequent = 0; // Valeur la plus fréquente
+
+    for (int i = 0; i < size; i++) {
+        int count = 0;
+        for (int j = 0; j < size; j++) {
+            if (array[i] == array[j]) {
+                count++;
+            }
+        }
+        if (count > maxCount) {
+            maxCount = count;
+            mostFrequent = array[i];
+        }
+    }
+    return mostFrequent;
+}
+
+int GridSize(Node** clusterList, int size)
+{
+    /*
+    Function to calculate the size of the grid based on the most frequent number of shapes in a cluster
+    */
+    int* sizes = (int*)malloc(size * sizeof(int));
+    for (int i = 0; i < size; i++)
+    {
+        sizes[i] = LenNode(&clusterList[i]);
+    }
+    int gridSize = mostFrequentValue(sizes, size);
+    free(sizes);
+    return gridSize;
 }
 
 
@@ -383,23 +466,37 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_FreeSurface(temp_surface);
     
     int size = 0;
-    Node** clusterList = CreateCluster(&shapeList, &size,surface);
+    Node** clusterList = CreateCluster(&shapeList, &size);
 
     temp_surface = DuplicateSurface(surface);
     DrawList(temp_surface, clusterList, size);
     SDL_SaveBMP(temp_surface, "output/imgFindCluster.bmp");
     SDL_FreeSurface(temp_surface);
-    
-    clusterList = ClusterFilter(clusterList, &size);
+
+    /*
+    int gridSize = GridSize(clusterList, size);
+
+    Node** ClusterGrid = (Node**)malloc(sizeof(Node*));
+    int k = 0;
+    for(int i = 0; i < size; i++)
+    {
+        if(LenNode(&clusterList[i]) == gridSize)
+        {
+            ClusterGrid = (Node**)realloc(ClusterGrid, (k + 1) * sizeof(Node*));
+            ClusterGrid[k] = clusterList[i];
+            k++;
+        }
+    }*/
+
+    ClusterFilter(clusterList, &size,surface);
 
     /*
     for (int i = 0; i < size; i++)
     {
         AdjustList(&clusterList[i]);
     }
-
-    DrawList(surface, clusterList, size);
     */
+    //DrawList(surface, clusterList, size);
     /*
     for (int i = 0; i < size; i++)
     {
@@ -422,6 +519,7 @@ void ProcessGrid(SDL_Surface *surface)
     }*/
 
     FreeMatrix(Map, height);
+    //free(ClusterGrid);
     for(int i = 0; i < size; i++)
     {
         FreeNodeList(&clusterList[i], 0);
