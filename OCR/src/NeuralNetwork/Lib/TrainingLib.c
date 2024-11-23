@@ -185,3 +185,29 @@ void shuffle(int** mat, int sizex, int sizey)
         shuffleArray(mat[i],sizey,i);
     }
 }
+
+
+
+double testData()
+{
+    int res = 0;
+    for(char l = 'A'; l<='Z'; l++)
+    {
+        char* filename = NULL;
+        asprintf(&filename,"test/%c.bmp",l);
+        SDL_Surface* surface = SDL_LoadBMP(filename);
+        free(filename);
+        char letter = LetterRecognition(surface);  
+        SDL_FreeSurface(surface);
+        if(letter==l)
+        {
+            printf("Success for %c\n",l);
+            res++;
+        }
+        else
+        {
+            printf("Fail for %c, find %c\n",l,letter);
+        }
+    }
+    return (double)res/26.0;
+}

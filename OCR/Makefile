@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -Wvla -std=c99 -g
+CFLAGS=`pkg-config --cflags gtk+-3.0` -rdynamic -Wall -Wextra -g
 
-LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -g
+LIB=`pkg-config --libs gtk+-3.0` -lSDL2 -lm -fsanitize=address -g
 
 SRC=\
 	src/Pretreatment/Utils/convert.c \

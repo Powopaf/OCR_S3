@@ -31,15 +31,16 @@ void train(int nbOfEpochs)
 
 	double** ExeptedDataSet = LoadExeptedDataSet();
 
-	int** shuffleArray = malloc(nbOutputs*sizeof(int*));
+	int** DataOrder = malloc(nbOutputs*sizeof(int*));
 	for(int i = 0; i<nbOutputs; i++)
 	{
-		shuffleArray[i] = malloc(nbTrainingSets*sizeof(int));
+		DataOrder[i] = malloc(nbTrainingSets*sizeof(int));
 		for(int j = 0; j<nbTrainingSets; j++)
 		{
-			shuffleArray[i][j] = j;
+			DataOrder[i][j] = j;
 		}
 	}
+	int* LetterOrder = malloc(nbOutputs*sizeof(int));
 	
 	//set all weights and bias to random value
 	InitTrainning(nbInputs,nbHiddenNodes,nbOutputs,&hiddenWeights,&hiddenLayerBias,&outputWeights,&outputLayerBias);
@@ -51,10 +52,12 @@ void train(int nbOfEpochs)
 
 	int step = 0;
 	int MaxStep = nbOutputs*nbTrainingSets*nbOfEpochs;
+	double MaxSuccess = 0.0;
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
 		totalError = 0.0;
-		shuffle(shuffleArray,nbOutputs,nbTrainingSets);
+		shuffle(DataOrder,nbOutputs,nbTrainingSets);
+		shuffleArray(LetterOrder,nbOutputs,epoch);
 		for(int x = 0; x<nbTrainingSets; x++)
 		{
 
@@ -64,8 +67,9 @@ void train(int nbOfEpochs)
 				char ActualLetter = l+'A';
 				double* ExeptedData = GetExeptedDataSet(ExeptedDataSet,ActualLetter);
 
-				int i = shuffleArray[l][x];
-				char* p = DataSet[l][i];
+				int i = DataOrder[l][x];
+				int j = LetterOrder[l];
+				char* p = DataSet[j][i];
 				
 				//forward pass
 
@@ -95,7 +99,7 @@ void train(int nbOfEpochs)
 				}
 				char out = ArrayToLetter(outputLayer);
 				double percentage = (double)step / MaxStep * 100;
-				printf("Input: %4i:%c  Output: %c:%.3f",i,ActualLetter,out,outputLayer[l]);
+				printf("Input: %4i|%4i:%c  Output: %c:%.3f",j,i,ActualLetter,out,outputLayer[l]);
 				printf(" Expected: %c	%i/%i 	%.3f%%\n",ActualLetter,step,MaxStep,percentage);
 
 				// Backprop
@@ -152,6 +156,12 @@ void train(int nbOfEpochs)
 		}
 
 		WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,epoch);
+		double success = testData();
+		if(success > MaxSuccess)
+		{
+			MaxSuccess = success;
+			WriteData("bestData.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,epoch);
+		}
     }
 	
 	fin = clock();
@@ -175,19 +185,13 @@ void train(int nbOfEpochs)
 	free(outputLayer);
 	for(int i = 0; i<nbOutputs; i++)
 	{
-		free(shuffleArray[i]);
+		free(DataOrder[i]);
 	}
-	free(shuffleArray);
+	free(DataOrder);
 
 
 }
 
-
-int main()
-{
-	train(1);
-	return 0;
-}
 
 
 

@@ -168,24 +168,12 @@ void FreeNodeList(Node** lst, int freeData)
     *lst = NULL; // Set list head to NULL
 }
 
-int ContainsNode(Node* lst, Shape* s)
+int ContainsNode(int* lst, Shape* s)
 {
     /*
     Function to check if a Shape with the same ID exists in the list
     */
-    Node* c = lst;
-    while (c != NULL)
-    {
-        if (c->next != NULL && c->data->id == c->next->data->id) // Detect circular reference
-        {
-            err(1, "ERROR: Circular reference detected\n");
-        }
-        if (c->data->id == s->id) // Check for matching ID
-        {
-            return 1; // Return 1 if the shape is found
-        }
-        c = c->next;
-    }
-    return 0; // Return 0 if the shape is not found
+    
+    return lst[s->id-1]!=0; // Return 0 if the shape is not found
 }
 

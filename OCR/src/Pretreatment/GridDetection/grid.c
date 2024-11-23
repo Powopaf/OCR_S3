@@ -1,31 +1,30 @@
 #include "grid.h"
 #include <unistd.h>
+#include <math.h>
 
-void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
+#define M_PI 3.14159265358979323846
+
+void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeight, double* avWidth)
 {
     /*
     Function to calculate the average height and width of shapes in a cluster
     */
-    if (cluster == NULL)
-    {
-        return;
-    }
-    int sumh = 0;
-    int sumw = 0;
+    Node* c = *shapeList;
     int count = 0;
-    Node* lst = *cluster;
-
-    // go through the list and accumulate heights and widths
-    while (lst != NULL)
+    double sumH = 0;
+    double sumW = 0;
+    while (c != NULL)
     {
-        Shape* data = lst->data;
-        sumh += data->h;
-        sumw += data->w;
-        count++;
-        lst = lst->next;
+        if((*visited)[c->data->id - 1] == id)
+        {
+            sumH += c->data->h;
+            sumW += c->data->w;
+            count++;
+        }
+        c = c->next;
     }
-    *avHeight = sumh / (double)count;
-    *avWidth = sumw / (double)count;
+    *avHeight = sumH / (double)count;
+    *avWidth = sumW / (double)count;
 }
 
 void AdjustList(Node** lst) 
@@ -135,72 +134,106 @@ void ShapeFilter(Node** shapeList)
     }
 }
 
-Node** CreateCluster(Node** shapeList, int* size)
+Node* ArrayToNode(Node** shapeList, int* visited, int id)
+{
+    /*
+    Function to convert an array of visited shapes to a linked list
+    */
+    Node* res = NULL;
+    Node* c = *shapeList;
+    while (c != NULL)
+    {
+        if (visited[c->data->id - 1] == id)
+        {
+            Node* n = NewNode(c->data);
+            AddNode(&res, n);
+        }
+        c = c->next;
+    }
+    return res;
+}
+
+Node** CreateCluster(Node** shapeList, int* size, SDL_Surface* surface)
 {
     /*
     Function to create a cluster list from a shape list
     */
     int n = LenNode(shapeList);
-    Node** clusterList = (Node**)malloc(n * sizeof(Node*));
 
     Node* c = *shapeList;
-    Node* visited = NULL;
+    int* visited = calloc(n,sizeof(int));
     int i = 1;
     int count = 0;
 
     // For each shape, find and store clusters
     while (c != NULL)
     {
-        Node* cluster = NULL;
-        FindCluster(&visited, &cluster, shapeList, c->data);
-        clusterList[i - 1] = cluster;
-        if (cluster != NULL)
+        if(visited[c->data->id - 1] != 0)
         {
-            count++;
+            c = c->next;
+            continue;
         }
+        FindCluster(&visited, shapeList, c->data,count + 1);
+        count++;
         i++;
         c = c->next;
+
     }
 
-    FreeNodeList(&visited, 0);
-    *size = n;
-    return ReduceArray(clusterList, size, count);
+    Node** clusterList = (Node**)malloc(count * sizeof(Node*));
+    for(int i = 0; i < count; i++)
+    {
+        clusterList[i] = ArrayToNode(shapeList, visited, i + 1);
+    }
+    free(visited);
+    *size = count;
+    return clusterList;
 }
 
-void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
+void FindCluster(int** visited, Node** shapeList, Shape* shape,int id)
 {
     /*
     Recursive function to find clusters of shapes based on height and distance thresholds
     */   
-    if (!ContainsNode(*visited, shape))
+    if ((*visited)[(shape->id) - 1] == 0)
     {
-        Node* nv = NewNode(shape);
-        Node* nc = NewNode(shape);
-        AddNode(visited, nv);
-        AddNode(cluster, nc);
-
-        Node* current = *shapeList;
-        while (current != NULL)
-        {
-            if (shape->id != current->data->id)
+        (*visited)[(shape->id) - 1] = id;
+        Shape* s = shape;
+        printf("id: %i\n",id);
+        while(s!=NULL)
+        {   
+            double avgH = 0;
+            double avgW = 0;
+            AverageClusterSize(shapeList, visited,id, &avgH, &avgW);
+            s = FindNearestShape(shapeList, shape, visited, shape->h * 5,avgH,id);
+            if(s!=NULL)
             {
-                double threshold = 1.5;
-                double h = shape->h;
-                double avHeight;
-                double avWidth;
-                AverageClusterSize(cluster, &avHeight, &avWidth);
-
-                // Check if shape meets height and distance thresholds
-                if (h < avHeight + threshold && h > avHeight - threshold && 
-                    FindLowestDist(shape, current->data) < (avHeight + avWidth)) // replace FindLowest with an other thar call it
+                printf("Shapeid: %i CLuster id %i Actual Id: %i\n",s->id,(*visited)[s->id - 1],id);
+                if((*visited)[s->id - 1] == 0)
                 {
-                    FindCluster(visited, cluster, shapeList, current->data);
+                    FindCluster(visited, shapeList, s, id);
                 }
+                else if((*visited)[s->id - 1] != id)
+                {
+                    printf("between\n");
+                    int OldId = (*visited)[s->id - 1];
+                    for(int i = 0; i < LenNode(shapeList); i++)
+                    {
+                        if((*visited)[i] == OldId)
+                        {
+                            (*visited)[i] = id;
+                        }
+                    }
+                    (*visited)[s->id - 1] = id;
+                }
+                else{
+                }
+                printf("Shapeid: %i CLuster id %i Actual Id: %i\n\n",s->id,(*visited)[s->id - 1],id);
             }
-            current = current->next;
         }
     }
 }
+
 
 Node** ClusterFilter(Node** clusterList, int* size)
 {
@@ -233,6 +266,59 @@ Node** ClusterFilter(Node** clusterList, int* size)
     }
     return clusterList;
 }
+
+int isShapeAline(Shape* s1, Shape* s2, int MaxAngle)
+{
+    // Check horizontal alignment (0° or 180° with MaxAngle tolerance)
+    if (s2->Cx>s1->Cx-MaxAngle && s2->Cx<s1->Cx+MaxAngle)
+    {
+        return 1; // The shapes are horizontally aligned
+    }
+    return 0; // The shapes are not horizontally aligned
+}
+
+
+Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id)
+{
+    /*
+    Function to find the nearest shape to a given shape within certain thresholds
+    */
+    double minDist = INFINITY; // Use a large initial value for minimum distance
+    Shape* closestShape = NULL;
+    Node* current = *shapeList;
+
+    while (current != NULL)
+    {
+        Shape* currentShape = current->data;
+
+        // Skip the shape itself and already visited shapes
+        if (currentShape->id == s->id || (*visited)[currentShape->id - 1] == id)
+        {
+            current = current->next;
+            continue;
+        }
+
+        double dist = FindLowestDist(s, currentShape);
+        int h = currentShape->h;
+        double thresholdH = 5.0;
+
+        // Check alignment, distance, and height thresholds
+        if (isShapeAline(s, currentShape, 10) &&
+            dist < minDist &&
+            dist <= MaxDist &&
+            h > avH - thresholdH &&
+            h < avH + thresholdH)
+        {
+            minDist = dist;
+            closestShape = currentShape;
+        }
+
+        current = current->next;
+    }
+
+    return closestShape;
+}
+
 
 void ProcessGrid(SDL_Surface *surface) 
 {
@@ -297,7 +383,7 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_FreeSurface(temp_surface);
     
     int size = 0;
-    Node** clusterList = CreateCluster(&shapeList, &size);
+    Node** clusterList = CreateCluster(&shapeList, &size,surface);
 
     temp_surface = DuplicateSurface(surface);
     DrawList(temp_surface, clusterList, size);
@@ -306,13 +392,15 @@ void ProcessGrid(SDL_Surface *surface)
     
     clusterList = ClusterFilter(clusterList, &size);
 
+    /*
     for (int i = 0; i < size; i++)
     {
         AdjustList(&clusterList[i]);
     }
 
     DrawList(surface, clusterList, size);
-
+    */
+    /*
     for (int i = 0; i < size; i++)
     {
         char d[2048];
@@ -331,9 +419,13 @@ void ProcessGrid(SDL_Surface *surface)
         }
         
         FreeNodeList(&clusterList[i], 0);
-    }
+    }*/
 
     FreeMatrix(Map, height);
+    for(int i = 0; i < size; i++)
+    {
+        FreeNodeList(&clusterList[i], 0);
+    }
     free(clusterList);
     FreeNodeList(&shapeList, 1);
 

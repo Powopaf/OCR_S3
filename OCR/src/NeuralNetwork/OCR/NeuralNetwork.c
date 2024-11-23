@@ -68,6 +68,7 @@ char LetterRecognition(SDL_Surface* surface)
 
 	char Letter = ArrayToLetter(output);
 
+	/*
 	//print res
 	printf("Output: %c\n",Letter);
 	for(int i = 0; i<26;i++)
@@ -76,17 +77,10 @@ char LetterRecognition(SDL_Surface* surface)
 	}
 	printf("\n");
 	//---
-
+	*/
 	free(output);
 	
 	return Letter;
-}
-
-int main(int argc, char** argv)
-{
-	SDL_Surface* surface = SDL_LoadBMP(argv[1]);
-	LetterRecognition(surface);
-	SDL_FreeSurface(surface);
 }
 
 

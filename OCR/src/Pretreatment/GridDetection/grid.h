@@ -13,13 +13,14 @@
 #include "../crop/crop.h"
 #include "../Utils/resize.h"
 
-void AverageClusterSize(Node** cluster,double* avHeight, double* avWidth);
+void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeight, double* avWidth);
 void AdjustList(Node** lst);
 void ShapeFilter(Node** shapeList);
-Node** CreateCluster(Node** shapeList, int* size);
-void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape);
+Node** CreateCluster(Node** shapeList, int* size,SDL_Surface* surface);
+void FindCluster(int** visited, Node** shapeList, Shape* shape,int id);
 Node** ClusterFilter(Node** clusterList, int* size);
 void ProcessGrid(SDL_Surface *surface);
+Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id);
 
 #endif
 
