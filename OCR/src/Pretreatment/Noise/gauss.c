@@ -104,9 +104,9 @@ void test_noise(int a) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
         contrast(s);
-        gauss(s, sig);
+        gauss(s, 1);
         median(s);
-        contrast(s);
+        //contrast(s);
         sprintf(filename, "img%d.bmp", i + 1);
         SDL_SaveBMP(s, filename);
         SDL_FreeSurface(s);
