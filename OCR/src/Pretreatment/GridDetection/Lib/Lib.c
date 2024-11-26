@@ -174,6 +174,7 @@ void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, 
         if (e2 <= dx) { err += dx; y1 += sy; }
         i++;
     }
+    /*
     for(int i = y1-2; i<y1+2; i++)
     {
         for(int j = x1-2; j<x1+2; j++)
@@ -184,6 +185,7 @@ void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, 
             pixel[2] = 0;
         }
     }
+    */
 }
 
 // Function to draw shapes on an SDL_Surface based on a linked list
@@ -200,7 +202,7 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
     {   
         if(prev!=NULL)
         {
-            DrawLine(surface, prev->data, n->data, 255, 0, 0); // Draw a line between shapes
+            //DrawLine(surface, prev->data, n->data, 255, 0, 0); // Draw a line between shapes
         }
         prev = n;
         Shape* s = n->data;

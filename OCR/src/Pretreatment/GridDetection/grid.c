@@ -15,6 +15,7 @@ void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeigh
     double sumW = 0;
     while (c != NULL)
     {
+        printf("id %i visited %i\n",c->data->id,(*visited)[c->data->id-1]);
         if((*visited)[c->data->id - 1] == id)
         {
             sumH += c->data->h;
@@ -152,7 +153,7 @@ Node* ArrayToNode(Node** shapeList, int* visited, int id)
     }
     if(res == NULL)
     {
-        err(1,"Error in ArrayToNode\n");
+        printf("Error in ArrayToNode\n");
     }
     return res;
 }
@@ -263,10 +264,10 @@ Shape* GetMainShape(Shape* s, Node* cluster)
     // Get the main shape in a cluster based on the lowest distance
     Node* c = cluster;
     Shape* res = c->data;
-    double minDist = FindLowestDist(s, c->data);
+    double minDist = distance(s->Cx,s->Cy,res->Cx,res->Cy);
     while (c != NULL)
     {
-        double dist = FindLowestDist(s, c->data);
+        double dist = distance(s->Cx,s->Cy,c->data->Cx,c->data->Cy);
         if (dist < minDist)
         {
             minDist = dist;
@@ -286,7 +287,7 @@ void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
     for(int i = 0; i < (*size); i++)
     {
         Node* cluster = clusterList[i];
-        if(visited[i] != 0)
+        if(visited[i] != 0 || cluster == NULL)
         {
             continue;
         }
@@ -297,12 +298,27 @@ void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
             if(visited[j] == 0)
             {
                 Node* cluster2 = clusterList[j];
+                if(cluster2 == NULL)
+                {
+                    continue;
+                }
                 Shape* shape1 = cluster->data;
                 Shape* shape2 = GetMainShape(shape1,cluster2);
-                if(isShapeAline_Vertical(shape1,shape2, 20))// && FindLowestDist(shape1,shape2)<(shape1->h*5))//&& LenNode(&cluster2) == LenNode(&cluster))
+                if(FindLowestDist(shape1,shape2)<(shape1->h*3))//&& LenNode(&cluster2) == LenNode(&cluster))
                 {
-                    visited[j] = k;
-                    count++;
+                    //DrawLine(surface,shape1,shape2,255,0,0);
+                    if(isShapeAline_Vertical(shape1,shape2, 15))
+                    {
+                        visited[j] = k;
+                        count++;
+                        cluster = clusterList[j];
+                        
+                    }
+                    DrawLine(surface,shape1,shape2,255,0,0);
+                }
+                else
+                {
+                    //DrawLine(surface,shape1,shape2,0,255,0);
                 }
             }
         }
@@ -313,7 +329,7 @@ void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
 
     for(int i = 0; i < (*size); i++)
     {
-        float hue = (visited[i] * 360.0 / ((k+1)/2)); // Calculate hue for color
+        float hue = (visited[i] * 360.0 / ((*size)/2)); // Calculate hue for color
         int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
         int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
         int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
@@ -352,7 +368,7 @@ Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, 
         double thresholdH = 5.0;
 
         // Check alignment, distance, and height thresholds
-        if (isShapeAline_Horizontal(s, currentShape, 10) &&
+        if (isShapeAline_Horizontal(s, currentShape, 15) &&
             dist < minDist &&
             dist <= MaxDist &&
             h > avH - thresholdH &&
