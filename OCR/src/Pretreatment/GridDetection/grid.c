@@ -15,7 +15,7 @@ void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeigh
     double sumW = 0;
     while (c != NULL)
     {
-        printf("id %i visited %i\n",c->data->id,(*visited)[c->data->id-1]);
+        //printf("id %i visited %i\n",c->data->id,(*visited)[c->data->id-1]);
         if((*visited)[c->data->id - 1] == id)
         {
             sumH += c->data->h;
@@ -204,7 +204,7 @@ void FindCluster(int** visited, Node** shapeList, Shape* shape,int id)
     {
         (*visited)[(shape->id) - 1] = id;
         Shape* s = shape;
-        printf("id: %i\n",id);
+        //printf("id: %i\n",id);
         while(s!=NULL)
         {   
             double avgH = 0;
@@ -213,14 +213,14 @@ void FindCluster(int** visited, Node** shapeList, Shape* shape,int id)
             s = FindNearestShape(shapeList, shape, visited, shape->h * 5,avgH,id);
             if(s!=NULL)
             {
-                printf("Shapeid: %i CLuster id %i Actual Id: %i\n",s->id,(*visited)[s->id - 1],id);
+                //printf("Shapeid: %i CLuster id %i Actual Id: %i\n",s->id,(*visited)[s->id - 1],id);
                 if((*visited)[s->id - 1] == 0)
                 {
                     FindCluster(visited, shapeList, s, id);
                 }
                 else if((*visited)[s->id - 1] != id)
                 {
-                    printf("between\n");
+                    //printf("between\n");
                     int OldId = (*visited)[s->id - 1];
                     for(int i = 0; i < LenNode(shapeList); i++)
                     {
@@ -233,7 +233,7 @@ void FindCluster(int** visited, Node** shapeList, Shape* shape,int id)
                 }
                 else{
                 }
-                printf("Shapeid: %i CLuster id %i Actual Id: %i\n\n",s->id,(*visited)[s->id - 1],id);
+                //printf("Shapeid: %i CLuster id %i Actual Id: %i\n\n",s->id,(*visited)[s->id - 1],id);
             }
         }
     }
@@ -278,25 +278,22 @@ Shape* GetMainShape(Shape* s, Node* cluster)
     return res;
 }
 
-void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
+int ClusterFilter(Node** clusterList, int* size,int** visited,SDL_Surface* surface)
 {
     //Node*** res = (Node***)malloc(sizeof(Node**));
-    int* visited = (int*)calloc((*size),sizeof(int));
-    int* ClusterSize = (int*)calloc(1,(sizeof(int)));
+    *visited = (int*)calloc((*size),sizeof(int));
     int k = 1;
+    int nbId = 0;
     for(int i = 0; i < (*size); i++)
     {
         Node* cluster = clusterList[i];
-        if(visited[i] != 0 || cluster == NULL)
+        if((*visited)[i] != 0 || cluster == NULL)
         {
             continue;
         }
-        visited[i] = k;
-        int count = 1;
+        (*visited)[i] = k;
         for(int j = 0; j<(*size); j++)
         {
-            if(visited[j] == 0)
-            {
                 Node* cluster2 = clusterList[j];
                 if(cluster2 == NULL)
                 {
@@ -309,38 +306,122 @@ void ClusterFilter(Node** clusterList, int* size,SDL_Surface* surface)
                     //DrawLine(surface,shape1,shape2,255,0,0);
                     if(isShapeAline_Vertical(shape1,shape2, 15))
                     {
-                        visited[j] = k;
-                        count++;
-                        cluster = clusterList[j];
+                        if((*visited)[j] == 0)
+                        {
+                            (*visited)[j] = k;
+                            cluster = clusterList[j];
+                        }
+                        else if((*visited)[j]!=k)
+                        {
+                            int oldId = (*visited)[j];
+                            for(int l = 0; l<(*size); l++)
+                            {
+                                if((*visited)[l]==oldId)
+                                {
+                                    (*visited)[l] = k;
+                                }
+                            }
+                            (*visited)[j] = k;
+                            nbId--;
+                        }
+                        //DrawLine(surface,shape1,shape2,255,0,0);
                         
                     }
-                    DrawLine(surface,shape1,shape2,255,0,0);
                 }
                 else
                 {
                     //DrawLine(surface,shape1,shape2,0,255,0);
                 }
+        }
+        k++;
+        nbId++;
+    }
+    printf("%i\n",nbId);
+
+    return nbId;
+    
+}
+
+Node*** AdjusteCluster(Node** ClusterList,int** visited,int* Ids, int* size, int* nbId)
+{
+    float avSize = 0;
+    for(int i = 0; i<*nbId; i++)
+    {
+        avSize += (float)ListSum(ClusterList[i]);
+    }
+    avSize = avSize/(float)(*nbId);
+    printf("avSize = %f\n",avSize);
+
+    Node*** Res = malloc(sizeof(Node**));
+    int* ClusterSize = malloc(sizeof(int));
+    int k = 0;
+    for(int i = 0; i<*nbId; i++)
+    {
+        float sum = 0;
+        int nbLine = 0;
+        Node** Line = malloc(sizeof(Node*));
+        for(int j = 0; j<*size; j++)
+        {
+            if((*visited)[j]==Ids[i] && ClusterList[j]!=NULL)
+            {
+                sum+=ListSum(ClusterList[j]);
+                nbLine++;
+                Line = realloc(Line,nbLine*sizeof(Node*));
+                AdjustList(&ClusterList[j]);
+                Line[nbLine-1] = ClusterList[j];
             }
         }
-        ClusterSize = (int*)realloc(ClusterSize, k * sizeof(int));
-        ClusterSize[k-1] = count;
-        k++;
+        printf("ID: %i  nbLine = %i Sum = %f\n",Ids[i],nbLine,sum);
+        if(nbLine>5 && sum>avSize/2)
+        {
+            k++;
+            Res = realloc(Res,k*sizeof(Node**));
+            ClusterSize = realloc(ClusterSize,k*sizeof(Node**));
+            ClusterSize[k-1] = nbLine;
+            Res[k-1] = Line;
+        }
+        else
+        {
+            for(int j = 0; j<nbLine; j++)
+            {
+                //FreeNodeList(&Line[j],0);
+            }
+            //free(Line);
+        }
     }
+    *size = k;
+    free(*visited);
+    *visited = ClusterSize;
+    return Res;
+}
 
-    for(int i = 0; i < (*size); i++)
+Node*** ReduceCluster(Node*** Clusters,int* size,int* ClusterSize)
+{
+    for(int i = 0;i<*size;i++)
     {
-        float hue = (visited[i] * 360.0 / ((*size)/2)); // Calculate hue for color
-        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
-        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
-        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
-        Draw(surface, clusterList[i], r, g, b);
+        int avSize = 0;
+        printf("ClusterSize %i\n",ClusterSize[i]);
+        int* Size = malloc(ClusterSize[i]*sizeof(int));
+        int s = ClusterSize[i];;
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            Size[j] = ListSum(Clusters[i][j]);
+            avSize += Size[j];
+        }
+        avSize = avSize/(float)ClusterSize[i];
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            if(Size[j]<avSize/2)
+            {
+                //FreeNodeList(&Clusters[i][j],0);
+                Clusters[i][j] = NULL;
+                s--;
+            }
+        }
+        printf("New Size %i\n",s);
+        
     }
-    free(visited);
-    free(ClusterSize);
-    return;
-
-    
-    
+    return Clusters;
 }
 
 Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id)
@@ -418,6 +499,17 @@ int GridSize(Node** clusterList, int size)
     return gridSize;
 }
 
+int contain(int* lst, int i, int size)
+{
+    for(int j = 0; j<size; j++)
+    {
+        if(lst[j] == i)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void ProcessGrid(SDL_Surface *surface) 
 {
@@ -503,8 +595,40 @@ void ProcessGrid(SDL_Surface *surface)
             k++;
         }
     }*/
+    int* visited = NULL;
+    int nbId = ClusterFilter(clusterList, &size,&visited,surface);
+    
+    int* Ids = malloc(sizeof(int));
+    int k = 0;
+    for(int i = 0; i<size; i++)
+    {
+        if(!contain(Ids,visited[i],k))
+        {
+            k++;
+            Ids = realloc(Ids,k*sizeof(int));
+            Ids[k-1] = visited[i];
+        }
+    }
 
-    ClusterFilter(clusterList, &size,surface);
+    Node*** Clusters = AdjusteCluster(clusterList,&visited,Ids,&size,&k);
+    Clusters = ReduceCluster(Clusters,&size,visited);
+    printf("sizes:%i\n",size);
+    for(int i = 0; i<size; i++)
+    {
+        printf(" %i\n",visited[i]);
+    }
+    printf("\n");
+    for(int i = 0; i<size; i++)
+    {
+        DrawList(surface,Clusters[i],visited[i]);
+    }
+
+
+    /*   
+        Clusters = liste des cluster
+        Cluster[i] = liste des lignes
+        Cluster[i][j] = liste des shapes dans la lignes
+    */
 
     /*
     for (int i = 0; i < size; i++)
@@ -533,6 +657,9 @@ void ProcessGrid(SDL_Surface *surface)
         
         FreeNodeList(&clusterList[i], 0);
     }*/
+
+
+    //Gros pb de leak je m'en occuperais plus tard
 
     FreeMatrix(Map, height);
     //free(ClusterGrid);

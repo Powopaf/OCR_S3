@@ -202,7 +202,7 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
     {   
         if(prev!=NULL)
         {
-            //DrawLine(surface, prev->data, n->data, 255, 0, 0); // Draw a line between shapes
+             // Draw a line between shapes
         }
         prev = n;
         Shape* s = n->data;
@@ -238,13 +238,23 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 // Function to draw a list of clusters on an SDL_Surface with unique colors
 void DrawList(SDL_Surface* surface, Node** clusterList, int size)
 {
-    for(int i = 0; i < size; i++)
+    Draw(surface, clusterList[0], 255, 0, 0); 
+    printf("size %i\n",size);
+    for(int i = 1; i < size; i++)
     {
-        float hue = (i * 360.0 / (size/2)); // Calculate hue for color
+        float hue = (i * 360.0 / ((size+4)/2.0)); // Calculate hue for color
         int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
         int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
         int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
         Draw(surface, clusterList[i], r, g, b); // Draw each cluster with its color
+    
+        /*printf("clusterList[i]         %i\n",clusterList[i]!=NULL);
+        printf("clusterList[i-1]       %i\n",clusterList[i]!=NULL);
+        printf("ClusterList[i]->data   %p\n",clusterList[i]);
+        printf("ClusterList[i-1]->data %p\n",clusterList[i-1]);*/
+        if (clusterList[i-1] != NULL && clusterList[i] != NULL) {
+            DrawLine(surface, clusterList[i-1]->data, clusterList[i]->data, 255, 0, 0);
+        }
     }
 }
 
