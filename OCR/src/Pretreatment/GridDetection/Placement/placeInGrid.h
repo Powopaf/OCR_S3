@@ -4,6 +4,6 @@
 #include "../Shape/shape.h"
 #include "../List/Node.h"
 
-Shape** generateMatrix(const Node* ShapeList, int* sizeX, int* sizeY);
+Node*** place(const Node*** list, int size);
 
 #endif

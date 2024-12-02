@@ -1,11 +1,17 @@
 #include "placeInGrid.h"
 
-Shape** generateMatrix(const Node* ShapeList, size_t* sizeX, size_t* sizeY) 
-{
+Node* swap(Node* list, int size, int p1, int p2) {
+	/*
+	 * list -> linked list
+	 * size -> size of list
+	 * we swap p1 and p2
+	 */
+}
+
+Node*** place(const Node*** list, int size) {
     /*
-    *   return a matrix of Shape of dimension sizeX and sizeY 
-    *   the two pointer are modified in the function
-    *   ShapeList is a cluster thar represent the grid
-    */
-    // TODO
+	 * Sort the list inside the cluster list
+	 * list -> array of all the cluster 
+	 * size -> length of list
+	 */
 }
