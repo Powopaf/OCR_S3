@@ -1,11 +1,15 @@
 #include "placeInGrid.h"
+#include <err.h>
 
-Node* swap(Node* list, int size, int p1, int p2) {
+void swap(int* p1, int* p2) {
 	/*
 	 * list -> linked list
-	 * size -> size of list
-	 * we swap p1 and p2
+	 * we swap p1 and p2 !! p1 > p2
+	 * p1, p2 index of the values to switch
 	 */
+	int t = *p1;
+	*p1 = *p2;
+	*p2 = t;
 }
 
 Node*** place(const Node*** list, int size) {
