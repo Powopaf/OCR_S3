@@ -4,6 +4,6 @@
 #include "../Shape/shape.h"
 #include "../List/Node.h"
 
-Node*** place(const Node*** list, int size);
+void place(Node*** list, int size, int* clusters_size);
 
 #endif
