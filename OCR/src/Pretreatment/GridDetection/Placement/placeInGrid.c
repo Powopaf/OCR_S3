@@ -1,19 +1,50 @@
 #include "placeInGrid.h"
+#include <err.h>
 
-Shape** generateMatrix(const Node* ShapeList, size_t* sizeX, size_t* sizeY) 
-{
+int len(Shape* lst) {
+	// TODO -> return the length of lst
+	return 0;
+}
+
+void swap(Shape* p1, Shape* p2) {
+	/*
+	 * list -> linked list
+	 * we swap p1 and p2 !! p1 > p2
+	 * p1, p2 index of the values to switch
+	 */
+	struct Shape t = *p1;
+	*p1 = *p2;
+	*p2 = t;
+}
+
+Shape* sort_cluster(struct Shape* lst, int len) {
+	/*
+	 * Sort the liked list lst using a ShellSort
+	 */
+	for (int gap = len / 2; gap > 0; gap = gap / 2) {
+		for (int i = gap; i < len; i++) {
+			Shape t = lst[i];
+			int j;
+			for (j = i; j >= gap && lst[j - gap].Cx > t.Cx; j = j - gap) {
+				lst[j] = lst[j - gap];
+			}
+		}
+	}
+	return lst;
+}
+
+void place(Shape*** list, int size, int* clusters_size) {
     /*
-    *   return a matrix of Shape of dimension sizeX and sizeY 
-    *   the two pointer are modified in the function
-    *   ShapeList is a cluster thar represent the grid
-    */
-    if (ShapeList == NULL) { err(EXIT_FAILURE, "Shapelist point to NULL\n"); }
-   
-    Shape** res = malloc(sizeof(struct Shape*) * LenNode(&ShapeList));
-    
-    while (ShapeList != NULL)
-    {
-        ShapeList = ShapeList->next;
-    }
-    return NULL;
+	 * Sort the list inside the cluster list
+	 * list -> array of all the cluster 
+	 * size -> length of list
+	 */
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < clusters_size[i]; j++) {
+			if (list[i][j] == NULL) {
+				err(EXIT_FAILURE, "cluster %i line %iis NULL in place()", i, j);
+			}
+			sort_cluster(list[i][j], len(list[i][j]));
+		}
+	}
 }
