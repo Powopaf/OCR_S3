@@ -31,6 +31,7 @@ void place(Node*** list, int size, int* clusters_size) {
 	 * size -> length of list
 	 */
 	for (int i = 0; i < size; i++) {
+		// add if
 		for (int j = 0; j < clusters_size[i]; j++) {
 			if (list[i][j] != NULL) {
 				sort_cluster(list[i][j]);
