@@ -1,7 +1,7 @@
 #include "placeInGrid.h"
 #include <err.h>
 
-int len(Shape* lst) {
+int len(Shape** lst) {
 	// TODO -> return the length of lst
 	return 0;
 }
@@ -17,15 +17,15 @@ void swap(Shape* p1, Shape* p2) {
 	*p2 = t;
 }
 
-Shape* sort_cluster(struct Shape* lst, int len) {
+Shape** sort_cluster(struct Shape** lst, int len) {
 	/*
 	 * Sort the liked list lst using a ShellSort
 	 */
 	for (int gap = len / 2; gap > 0; gap = gap / 2) {
 		for (int i = gap; i < len; i++) {
-			Shape t = lst[i];
+			Shape* t = lst[i];
 			int j;
-			for (j = i; j >= gap && lst[j - gap].Cx > t.Cx; j = j - gap) {
+			for (j = i; j >= gap && lst[j - gap]->Cx > t->Cx; j = j - gap) {
 				lst[j] = lst[j - gap];
 			}
 		}
@@ -33,7 +33,7 @@ Shape* sort_cluster(struct Shape* lst, int len) {
 	return lst;
 }
 
-void place(Shape*** list, int size, int* clusters_size) {
+void place(Shape**** list, int size, int* clusters_size) {
     /*
 	 * Sort the list inside the cluster list
 	 * list -> array of all the cluster 
