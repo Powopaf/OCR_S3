@@ -39,4 +39,18 @@ void place(Node*** list, int size, int* clusters_size) {
 	}
 }
 
-void find_grid()
+void find_grid(Node*** list, int size, int* clusters_size) {
+	for (int i = 0; i < size; i++) {
+		int k = 0;
+		for (int j = 0; j < clusters_size[i]; j++) {
+			int l = 0;
+			for(struct Node* p = list[i][j]; p != NULL; p = p->next) {
+				l++;
+			}
+			k = j == 0 ? l : k;
+			if (k != l) {
+				break;
+			}
+		}
+	}
+}
