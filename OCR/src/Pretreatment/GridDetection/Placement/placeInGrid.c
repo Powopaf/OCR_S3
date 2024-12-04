@@ -38,3 +38,5 @@ void place(Node*** list, int size, int* clusters_size) {
 		}
 	}
 }
+
+void find_grid()
