@@ -39,18 +39,22 @@ void place(Node*** list, int size, int* clusters_size) {
 	}
 }
 
+
+
 void find_grid(Node*** list, int size, int* clusters_size) {
 	for (int i = 0; i < size; i++) {
-		int k = 0;
-		for (int j = 0; j < clusters_size[i]; j++) {
-			int l = 0;
-			for(struct Node* p = list[i][j]; p != NULL; p = p->next) {
-				l++;
-			}
-			k = j == 0 ? l : k;
-			if (k != l) {
-				break;
-			}
+		int a = LenNode(&list[i][0]);
+		int b = a;
+		int j = 0;
+		while (j < clusters_size[i] && a == b) {
+			b = LenNode(&list[i][j]);
+			j++;
+		}
+		if (j >= clusters_size[i]) {
+			Node** t = list[0];
+			list[0] = list[i];
+			list[i] = t;
+			break;
 		}
 	}
 }
