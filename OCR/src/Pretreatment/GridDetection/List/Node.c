@@ -153,9 +153,6 @@ void FreeNode(Node* node, int freeData)
 
 void FreeNodeList(Node** lst, int freeData)
 {
-    /*
-    Function to free the entire list
-    */
     Node* c = *lst;
     Node* n;
 

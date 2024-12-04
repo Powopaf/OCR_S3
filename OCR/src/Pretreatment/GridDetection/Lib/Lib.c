@@ -144,6 +144,14 @@ Node** ReduceArray(Node** lst, int* size, int nsize)
     return res; // Return the new list
 }
 
+void getRandomColor(int* r, int* g, int* b, int id, int nbOfColor)
+{
+    float hue = (id * 360.0 / ((nbOfColor+5)/2.0)); // Calculate hue for color
+    *r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
+    *g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
+    *b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+}
+
 void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, int b)
 {
     SDL_PixelFormat* format = surface->format;
@@ -203,6 +211,7 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
         if(prev!=NULL)
         {
              // Draw a line between shapes
+             DrawLine(surface, prev->data, n->data, r, g, b);
         }
         prev = n;
         Shape* s = n->data;
@@ -242,10 +251,8 @@ void DrawList(SDL_Surface* surface, Node** clusterList, int size)
     printf("size %i\n",size);
     for(int i = 1; i < size; i++)
     {
-        float hue = (i * 360.0 / ((size+4)/2.0)); // Calculate hue for color
-        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
-        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
-        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+        int r,g,b;
+        getRandomColor(&r, &g, &b, i, size); // Get a random color for each cluster
         Draw(surface, clusterList[i], r, g, b); // Draw each cluster with its color
     
         /*printf("clusterList[i]         %i\n",clusterList[i]!=NULL);
