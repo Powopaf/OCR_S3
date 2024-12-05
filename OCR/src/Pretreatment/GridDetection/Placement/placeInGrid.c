@@ -66,7 +66,8 @@ void place(Node*** list, int size, int* clusters_size) {
 	find_grid(list, size, clusters_size);
 }
 
-int main() {
+// DO NOT DELETE THE TEST !!!!
+/*int main() {
 	Node*** list = malloc(sizeof(Node***) * 3);
 	
 	list[0] = malloc(sizeof(Node**) * 3);
@@ -145,4 +146,4 @@ int main() {
 	}
 
 	return EXIT_SUCCESS;
-}
+}*/
