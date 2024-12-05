@@ -24,18 +24,25 @@ void sort_cluster(struct Node* lst) {
 
 void find_grid(Node*** list, int size, int* clusters_size) {
 	for (int i = 0; i < size; i++) {
-		int a = LenNode(&list[i][0]);
-		int b = a;
-		int j = 0;
-		while (j < clusters_size[i] && a == b) {
-			b = LenNode(&list[i][j]);
-			j++;
-		}
-		if (j >= clusters_size[i]) {
-			Node** t = list[0];
-			list[0] = list[i];
-			list[i] = t;
-			break;
+		if (list[i] != NULL) {
+			int b = 0;
+			int j = 0;
+			while (j < clusters_size[i]) {
+				if (list[i][j] != NULL) {
+					int a = LenNode(&list[i][j]);
+					b = j == 0 ? a : b;
+					if (b != a) {
+						break;
+					}
+					j++;
+				}
+			}
+			if (j >= clusters_size[i]) {
+				Node** t = list[0];
+				list[0] = list[i];
+				list[i] = t;
+				break;
+			}
 		}
 	}
 }
@@ -56,7 +63,7 @@ void place(Node*** list, int size, int* clusters_size) {
 			}
 		}
 	}
-//	find_grid(list, size, clusters_size);
+	find_grid(list, size, clusters_size);
 }
 
 int main() {
@@ -110,18 +117,19 @@ int main() {
 	rrr->Cx = 1;
 	AddNode(&list[2][0], NewNode(rrr));
 
-	list[2][1] = NULL;
+	//list[2][1] = NULL;
 
 	Shape* t = malloc(sizeof(Shape*));
 	t->Cx = 7;
-	list[2][2] = NewNode(t);
+	list[2][1] = NewNode(t);
 	Shape* tt = malloc(sizeof(Shape*));
 	tt->Cx = 5;
-	AddNode(&list[2][2], NewNode(tt));
+	AddNode(&list[2][1], NewNode(tt));
 	Shape* ttt = malloc(sizeof(Shape*));
 	ttt->Cx = 1;
-	AddNode(&list[2][2], NewNode(ttt));
-	int s[3] = { 3, 0, 3 };
+	AddNode(&list[2][1], NewNode(ttt));
+	
+	int s[3] = { 3, 0, 2 };
 	place(list, 3, s);
 
 	for (int i = 0; i < 3; i++) {
