@@ -15,6 +15,7 @@ int find_second_letter(char word[], int End[2], int x, int y);
 int solve_grid(char word[], int Start[2], int End[2]);
 int read_grid(char filename[]);
 int solver(char word[]);
+void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2, int r, int g, int b);
 
 #endif
 

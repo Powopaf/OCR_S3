@@ -162,6 +162,8 @@ int solver(char word[])
 	}
 	return 0;
 }
+
+/*
 //main function only for debug (remove it!)
 int main(int argc, char *argv[])
 {
@@ -170,3 +172,5 @@ int main(int argc, char *argv[])
 	else
 		return solver(argv[1]);
 }
+
+*/
