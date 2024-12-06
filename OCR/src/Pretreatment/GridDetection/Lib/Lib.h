@@ -6,8 +6,8 @@
 #include "../List/Node.h"
 
 SDL_Surface* DuplicateSurface(SDL_Surface* surface);
-void MallocMatrix(int ***arr, int sizex, int sizey);
-void FreeMatrix(int **arr, int sizex);
+void GMallocMatrix(int ***arr, int sizex, int sizey);
+void GFreeMatrix(int **arr, int sizex);
 
 int IsOnSurface(int x, int y, int h, int w);
 void InitMatrix(SDL_Surface *surface, int*** Map, int*** surf);
@@ -18,6 +18,8 @@ int ListSum(Node* lst);
 Node** ReduceArray(Node** lst, int* size, int nsize);
 void FindShapePosMatrix(Node* shapeList, int* j, int* i);
 
+void getRandomColor(int* r, int* g, int* b, int id, int nbOfColor);
+void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, int b);
 void Draw(SDL_Surface *surface, Node* s, int r, int g, int b);
 void DrawList(SDL_Surface* surface, Node** clusterList, int size);
 

@@ -247,5 +247,3 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
 
     fclose(file);
 }
-
-

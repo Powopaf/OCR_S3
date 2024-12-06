@@ -159,3 +159,36 @@ void InitTrainning(int nbInputs, int nbHiddenNodes ,int nbOutputs , double*** hi
         (*outputLayerBias)[i] = init_weights();
     }
 }
+
+
+void shuffleArray(int *array, int size,int i) 
+{
+    // Initialize the random number generator
+    srand(time(NULL)*i);
+
+    // Fisher-Yates algorithm
+    for (int i = size - 1; i > 0; i--) {
+        // Generate a random index between 0 and i
+        int j = rand() % (i + 1);
+
+        // Swap array[i] and array[j]
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+void shuffle(int** mat, int sizex, int sizey)
+{
+    for(int i = 0; i<sizex; i++)
+    {
+        shuffleArray(mat[i],sizey,i);
+    }
+}
+
+
+
+double testData()
+{
+    return 0;
+}

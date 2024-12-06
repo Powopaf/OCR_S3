@@ -23,7 +23,7 @@ OBJ := $(SRC:.c=.o)
 BIN := grid.out
 
 # Default Target
-all: $(BIN)
+all: clean $(BIN)
 
 # Link the object files to create the final binary
 $(BIN): $(OBJ)

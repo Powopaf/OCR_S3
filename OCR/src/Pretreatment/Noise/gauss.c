@@ -113,7 +113,7 @@ void test_noise(int a) {
         sig = sig + 0.001;
     }
 }
-
+/*
 int main(int argc, char* argv[]) {
     sdl_setup();
     if (argc >= 1) {
@@ -126,3 +126,4 @@ int main(int argc, char* argv[]) {
     }
     return EXIT_SUCCESS;
 }
+*/

@@ -1,31 +1,31 @@
 #include "grid.h"
 #include <unistd.h>
+#include <math.h>
 
-void AverageClusterSize(Node** cluster, double* avHeight, double* avWidth)
+#define M_PI 3.14159265358979323846
+
+void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeight, double* avWidth)
 {
     /*
     Function to calculate the average height and width of shapes in a cluster
     */
-    if (cluster == NULL)
-    {
-        return;
-    }
-    int sumh = 0;
-    int sumw = 0;
+    Node* c = *shapeList;
     int count = 0;
-    Node* lst = *cluster;
-
-    // go through the list and accumulate heights and widths
-    while (lst != NULL)
+    double sumH = 0;
+    double sumW = 0;
+    while (c != NULL)
     {
-        Shape* data = lst->data;
-        sumh += data->h;
-        sumw += data->w;
-        count++;
-        lst = lst->next;
+        //printf("id %i visited %i\n",c->data->id,(*visited)[c->data->id-1]);
+        if((*visited)[c->data->id - 1] == id)
+        {
+            sumH += c->data->h;
+            sumW += c->data->w;
+            count++;
+        }
+        c = c->next;
     }
-    *avHeight = sumh / (double)count;
-    *avWidth = sumw / (double)count;
+    *avHeight = sumH / (double)count;
+    *avWidth = sumW / (double)count;
 }
 
 void AdjustList(Node** lst) 
@@ -135,103 +135,492 @@ void ShapeFilter(Node** shapeList)
     }
 }
 
-Node** CreateCluster(Node** shapeList, int* size)
+Node* ArrayToNode(Node** shapeList, int* visited, int id)
+{
+    /*
+    Function to convert an array of visited shapes to a linked list
+    */
+    Node* res = NULL;
+    Node* c = *shapeList;
+    while (c != NULL)
+    {
+        if (visited[c->data->id - 1] == id)
+        {
+            Node* n = NewNode(c->data);
+            AddNode(&res, n);
+        }
+        c = c->next;
+    }
+    if(res == NULL)
+    {
+        printf("Error in ArrayToNode\n");
+    }
+    return res;
+}
+
+int contain(int* lst, int i, int size)
+{
+    for(int j = 0; j<size; j++)
+    {
+        if(lst[j] == i)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+Node** CreateLine(Node** shapeList, int* size)
 {
     /*
     Function to create a cluster list from a shape list
     */
     int n = LenNode(shapeList);
-    Node** clusterList = (Node**)malloc(n * sizeof(Node*));
 
     Node* c = *shapeList;
-    Node* visited = NULL;
+    int* visited = calloc(n,sizeof(int));
     int i = 1;
     int count = 0;
 
     // For each shape, find and store clusters
     while (c != NULL)
     {
-        Node* cluster = NULL;
-        FindCluster(&visited, &cluster, shapeList, c->data);
-        clusterList[i - 1] = cluster;
-        if (cluster != NULL)
+        if(visited[c->data->id - 1] != 0)
         {
-            count++;
+            c = c->next;
+            continue;
         }
+        FindLine(&visited, shapeList, c->data,count + 1);
+        count++;
         i++;
         c = c->next;
+
     }
 
-    FreeNodeList(&visited, 0);
-    *size = n;
-    return ReduceArray(clusterList, size, count);
+    Node** LineList = (Node**)malloc(count * sizeof(Node*));
+    int nbValid = 0;
+    for(int i = 0; i < count; i++)
+    {
+        LineList[i] = ArrayToNode(shapeList, visited, i + 1);
+        if(LineList[i]!=NULL)
+        {
+            nbValid++;
+        }
+    }
+    Node** res = (Node**)malloc(nbValid*sizeof(Node*));
+    int k = 0;
+    for(int i = 0; i<count; i++)
+    {
+        if(LineList[i]!=NULL)
+        {
+            res[k] = LineList[i];
+            k++;
+        }
+    }
+    free(visited);
+    free(LineList);
+    *size = k;
+    return res;
 }
 
-void FindCluster(Node** visited, Node** cluster, Node** shapeList, Shape* shape)
+void FindLine(int** visited, Node** shapeList, Shape* shape,int id)
 {
     /*
     Recursive function to find clusters of shapes based on height and distance thresholds
     */   
-    if (!ContainsNode(*visited, shape))
+    if ((*visited)[(shape->id) - 1] == 0)
     {
-        Node* nv = NewNode(shape);
-        Node* nc = NewNode(shape);
-        AddNode(visited, nv);
-        AddNode(cluster, nc);
-
-        Node* current = *shapeList;
-        while (current != NULL)
-        {
-            if (shape->id != current->data->id)
+        (*visited)[(shape->id) - 1] = id;
+        Shape* s = shape;
+        //printf("id: %i\n",id);
+        while(s!=NULL)
+        {   
+            double avgH = 0;
+            double avgW = 0;
+            AverageClusterSize(shapeList, visited,id, &avgH, &avgW);
+            s = FindNearestShape(shapeList, shape, visited, shape->h * 3,avgH,id);
+            if(s!=NULL)
             {
-                double threshold = 1.5;
-                double h = shape->h;
-                double avHeight;
-                double avWidth;
-                AverageClusterSize(cluster, &avHeight, &avWidth);
-
-                // Check if shape meets height and distance thresholds
-                if (h < avHeight + threshold && h > avHeight - threshold && 
-                    FindLowestDist(shape, current->data) < (avHeight + avWidth)) // replace FindLowest with an other thar call it
+                //printf("Shapeid: %i CLuster id %i Actual Id: %i\n",s->id,(*visited)[s->id - 1],id);
+                if((*visited)[s->id - 1] == 0)
                 {
-                    FindCluster(visited, cluster, shapeList, current->data);
+                    FindLine(visited, shapeList, s, id);
                 }
+                else if((*visited)[s->id - 1] != id)
+                {
+                    //printf("between\n");
+                    int OldId = (*visited)[s->id - 1];
+                    for(int i = 0; i < LenNode(shapeList); i++)
+                    {
+                        if((*visited)[i] == OldId)
+                        {
+                            (*visited)[i] = id;
+                        }
+                    }
+                    (*visited)[s->id - 1] = id;
+                }
+                else{
+                }
+                //printf("Shapeid: %i CLuster id %i Actual Id: %i\n\n",s->id,(*visited)[s->id - 1],id);
             }
-            current = current->next;
         }
     }
 }
 
-Node** ClusterFilter(Node** clusterList, int* size)
+Node** LineToCluster(Node** ClusterList, int* visited, int id, int* ClusterSize, int size)
+{
+    Node** res = malloc(sizeof(Node*));
+    int count = 0;
+    for(int i = 0; i<size; i++)
+    {
+        if(visited[i] == id)
+        {
+            count++;
+            res = realloc(res,count*sizeof(Node*));
+            res[count-1] = ClusterList[i];   
+        }
+    }
+    *ClusterSize = count;
+    return res;
+    
+}
+
+Shape* GetMainShape(Shape* s, Node* cluster)
+{
+    // Get the main shape in a cluster based on the lowest distance
+    Node* c = cluster;
+    Shape* res = c->data;
+    double minDist = distance(s->Cx,s->Cy,res->Cx,res->Cy);
+    while (c != NULL)
+    {
+        double dist = distance(s->Cx,s->Cy,c->data->Cx,c->data->Cy);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            res = c->data;
+        }
+        c = c->next;
+    }
+    return res;
+}
+
+int isShapeAline_Horizontal(Shape* s1, Shape* s2, int MaxAngle)
+{
+    // Check horizontal alignment (0° or 180° with MaxAngle tolerance)
+    if (s2->Cx>s1->Cx-MaxAngle && s2->Cx<s1->Cx+MaxAngle)
+    {
+        return 1; // The shapes are horizontally aligned
+    }
+    return 0; // The shapes are not horizontally aligned
+}
+
+int isShapeAline_Vertical(Shape* s1, Shape* s2, int MaxAngle)
+{
+    // Check vertical alignment (90° or 270° with MaxAngle tolerance)
+    if (s2->Cy>s1->Cy-MaxAngle && s2->Cy<s1->Cy+MaxAngle)
+    {
+        return 1; // The shapes are vertically aligned
+    }
+    return 0; // The shapes are not vertically aligned
+}
+
+Node*** CreateClusters(Node** clusterList, int* size,int** ClusterSize)
+{
+    Node*** res = (Node***)malloc(sizeof(Node**));
+    int* visited = (int*)calloc((*size),sizeof(int));
+    int id = 1;
+    int nbId = 0;
+    for(int i = 0; i < (*size); i++)
+    {
+        Node* line = clusterList[i];
+        if((visited)[i] != 0 || line == NULL)
+        {
+            continue;
+        }
+        (visited)[i] = id;
+        for(int j = 0; j<(*size); j++)
+        {
+                Node* testedLine = clusterList[j];
+                if(testedLine == NULL)
+                {
+                    continue;
+                }
+                Shape* shape1;
+                Shape* shape2;
+                if(LenNode(&line) > LenNode(&testedLine))
+                {
+                    shape1 = GetMainShape(line->data,testedLine);
+                    shape2 = line->data;
+                }
+                else
+                {
+                    shape1 = line->data;
+                    shape2 = GetMainShape(shape1,testedLine);
+                }
+                if(FindLowestDist(shape1,shape2)<(shape1->h*4))//&& LenNode(&cluster2) == LenNode(&cluster))
+                {
+                    //DrawLine(surface,shape1,shape2,255,0,0);
+                    if(isShapeAline_Vertical(shape1,shape2, 5))
+                    {
+                        if((visited)[j] == 0)
+                        {
+                            (visited)[j] = id;
+                            line = clusterList[j];
+                        }
+                        else if((visited)[j]!=id)
+                        {
+                            int oldId = (visited)[j];
+                            for(int l = 0; l<(*size); l++)
+                            {
+                                if((visited)[l]==oldId)
+                                {
+                                    (visited)[l] = id;
+                                }
+                            }
+                            (visited)[j] = id;
+                            nbId--;
+                        }
+                        //DrawLine(surface,shape1,shape2,255,0,0);
+                        
+                    }
+                }
+                else
+                {
+                    //DrawLine(surface,shape1,shape2,0,255,0);
+                }
+        }
+        id++;
+        nbId++;
+    }
+    for(int i = 0; i<size; i++)
+    {
+        if(visited[i]==0)
+        {
+            //FreeNodeList(&clusterList[i],0);
+        }
+    }
+    int* Ids = malloc(sizeof(int));
+    int k = 0;
+    for(int i = 0; i<*size; i++)
+    {
+        if(!contain(Ids,visited[i],k))
+        {
+            k++;
+            Ids = realloc(Ids,k*sizeof(int));
+            Ids[k-1] = visited[i];
+        }
+    }
+    *ClusterSize = malloc(k*sizeof(int));
+    for(int id = 0; id<k; id++)
+    {
+        printf("ID %i\n",id);
+        res = realloc(res,(id+1)*sizeof(Node**));
+        int clusterSize = 0;
+        res[id] = LineToCluster(clusterList,visited,Ids[id],&clusterSize,*size);
+        (*ClusterSize)[id] = clusterSize;
+        printf("ClusterSize %i\n",clusterSize);
+
+    }
+    for(int i = 0; i<*size; i++)
+    {
+        if(!contain(Ids,visited[i],k))
+        {
+            printf("Free %i\n",i);
+            FreeNodeList(&clusterList[i],0);
+        }
+    }
+    printf("visited: ");
+    for(int i = 0; i<*size; i++)
+    {
+        printf("%i ",visited[i]);
+    }
+    printf("\n");
+    printf("Ids: ");
+    for(int i = 0; i<k; i++)
+    {
+        printf("%i ",Ids[i]);
+    }
+    printf("\n");
+    free(visited);
+    free(Ids);
+    *size = k;
+    return res;
+}
+
+
+
+void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
+{
+    double avSize = 0;
+    for(int i = 0; i<*size; i++)
+    {
+        avSize += (double)(*ClusterSize)[i];
+    }
+    avSize = avSize/(double)(*size);
+
+    for(int i = 0; i<*size; i++)
+    {
+        if((*ClusterSize)[i]<avSize/2 || (*ClusterSize)[i]<5)
+        {
+
+            for(int j = 0; j<(*ClusterSize)[i]; j++)
+            {
+                if((*clusterList)[i][j]!=NULL)
+                {
+                    FreeNodeList(&(*clusterList)[i][j],0);
+                }
+            }
+            free((*clusterList)[i]);
+            (*clusterList)[i] = NULL;
+        }
+        else
+        {
+            
+            int avClusterSize = 0;
+            for(int j = 0; j<(*ClusterSize)[i]; j++)
+            {
+                avClusterSize += LenNode(&(*clusterList)[i][j]);
+            }
+            avClusterSize = avClusterSize/(double)(*ClusterSize)[i];
+            int newsize = 0;
+            for(int j = 0; j<(*ClusterSize)[i]; j++)
+            {
+                if(LenNode(&(*clusterList)[i][j])<3)
+                {
+                    FreeNodeList(&(*clusterList)[i][j],0);
+                    (*clusterList)[i][j] = NULL;
+                }
+                else
+                {
+                    newsize++;
+                }
+                
+            }
+            int s = (*ClusterSize)[i];
+            /*
+            printf("Test Before Reduce Array  %i\n",s);
+            for(int i = 0; i<s; i++)
+            {
+                if((*clusterList)[i]==NULL)
+                {
+                    printf("Cluster %i NULL\n",i);
+                }
+                else
+                {
+                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
+                }
+            }
+            (*clusterList)[i] = ReduceArray((*clusterList)[i],&s,0);
+            printf("Test Reduce Array  %i\n",s);
+            for(int i = 0; i<s; i++)
+            {
+                if((*clusterList)[i]==NULL)
+                {
+                    printf("Cluster %i NULL\n",i);
+                }
+                else
+                {
+                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
+                }
+            }
+            (*ClusterSize)[i] = s;
+            */
+            
+
+        }
+    }
+
+
+
+}
+
+
+
+Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, double avH, int id)
 {
     /*
-    Function to filter clusters, keeping only those above a certain average size
+    Function to find the nearest shape to a given shape within certain thresholds
     */
-    if (*size > 2)
-    {
-        double sumSize = 0;
-        for (int i = 0; i < *size; i++)
-        {
-            sumSize += ListSum(clusterList[i]);
-        }
-        double avSize = sumSize / (double)*size;
-        int k = 0;
+    double minDist = INFINITY; // Use a large initial value for minimum distance
+    Shape* closestShape = NULL;
+    Node* current = *shapeList;
 
-        for (int i = 0; i < *size; i++)
+    while (current != NULL)
+    {
+        Shape* currentShape = current->data;
+
+        // Skip the shape itself and already visited shapes
+        if (currentShape->id == s->id || (*visited)[currentShape->id - 1] == id)
         {
-            if (ListSum(clusterList[i]) < avSize)
+            current = current->next;
+            continue;
+        }
+
+        double dist = FindLowestDist(s, currentShape);
+        int h = currentShape->h;
+        double thresholdH = 5.0;
+
+        // Check alignment, distance, and height thresholds
+        if (isShapeAline_Horizontal(s, currentShape, 5) &&
+            dist < minDist &&
+            dist <= MaxDist &&
+            h > avH - thresholdH &&
+            h < avH + thresholdH)
+        {
+            minDist = dist;
+            closestShape = currentShape;
+        }
+
+        current = current->next;
+    }
+
+    return closestShape;
+}
+
+void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
+{
+    Node*** GridList = NULL;//call the function
+    //Shape** Grid = GridList[0];
+
+    Letter*** GridLine = malloc(sizeof(Shape**));
+    int nbWords = 0;
+    int* wordSize = malloc(sizeof(int));
+    for(int i = 1; i<*size; i++)
+    {
+        if(Clusters[i]!=NULL)
+        {
+            for(int j = 0; j<ClusterSize[i]; j++)
             {
-                FreeNodeList(&clusterList[i], 0);
-                clusterList[i] = NULL;
-            }
-            else
-            {
-                k++;
+                int sizeofword = LenNode(&Clusters[i][j]);
+                GridLine = realloc(GridLine,(nbWords+1)*sizeof(Shape**));
+                GridLine[nbWords] = malloc(sizeofword*sizeof(Shape*));
+                int m = 0;
+                for(Node* k = Clusters[i][j]; k!=NULL; k = k->next)
+                {
+                    SDL_Surface* surface = cropLetter(k->data,Map);
+                    Letter* l = malloc(sizeof(Letter));
+                    //l->letter = LetterRecognition(surface);
+                    l->x = k->data->Cx;
+                    l->y = k->data->Cy;
+                    GridLine[nbWords][m] = l;
+                    m++;
+                }
+                wordSize = realloc(wordSize,(nbWords+1)*sizeof(int));
+                wordSize[nbWords] = sizeofword;
+                
+                
             }
         }
-        clusterList = ReduceArray(clusterList, size, k);// Create a new list with only the valid cluster
     }
-    return clusterList;
+    for(int i = 0; i<nbWords; i++)
+    {
+        printf("Word %i: ",i);
+        for(int j = 0; j<wordSize[i]; j++)
+        {
+            printf("%c",GridLine[i][j]->letter);
+        }
+        printf("\n");
+    }
 }
 
 void ProcessGrid(SDL_Surface *surface) 
@@ -247,8 +636,8 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_LockSurface(surface);
 
     // Malloc the two matrix
-    MallocMatrix(&Map, height, width);
-    MallocMatrix(&surf, height, width);
+    GMallocMatrix(&Map, height, width);
+    GMallocMatrix(&surf, height, width);
 
     //init the two matrix with base value
     InitMatrix(surface, &Map, &surf);
@@ -282,7 +671,7 @@ void ProcessGrid(SDL_Surface *surface)
         }
     }
 
-    FreeMatrix(surf, height);
+    GFreeMatrix(surf, height);
     
     SDL_Surface* temp_surface = DuplicateSurface(surface);
     Draw(temp_surface, shapeList, 177, 0, 0);
@@ -297,45 +686,156 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_FreeSurface(temp_surface);
     
     int size = 0;
-    Node** clusterList = CreateCluster(&shapeList, &size);
+    Node** clusterList = CreateLine(&shapeList, &size);
 
     temp_surface = DuplicateSurface(surface);
-    DrawList(temp_surface, clusterList, size);
+    for(int i = 0; i<size; i++)
+    {
+        int r,g,b;
+        getRandomColor(&r, &g, &b, i, size);
+        Draw(temp_surface,clusterList[i],r,g,b);
+    }
     SDL_SaveBMP(temp_surface, "output/imgFindCluster.bmp");
     SDL_FreeSurface(temp_surface);
-    
-    clusterList = ClusterFilter(clusterList, &size);
 
-    for (int i = 0; i < size; i++)
-    {
-        AdjustList(&clusterList[i]);
-    }
 
-    DrawList(surface, clusterList, size);
 
-    for (int i = 0; i < size; i++)
-    {
-        char d[2048];
-        sprintf(d, "mkdir -p output/letter/Cluster_%i", i);
-        system(d);
-        
-        Node* c = clusterList[i];
-        while (c != NULL)
+
+   printf("CreateLine\n");
+   for(int i = 0; i<size ; i++)
+   {
+        if(clusterList[i]!=NULL)
         {
-            char s[2048];
-            sprintf(s, "output/letter/Cluster_%i/Letter_%i.bmp", i, c->data->id);
-            SDL_Surface* crop_surface = cropLetter(c->data, Map);
-            crop_surface = resize_surface(crop_surface);
-            SDL_SaveBMP(crop_surface,s);
-            c = c->next;
+            printf("Cluster %i ",i);
+            printf("Size %i\n",LenNode(&clusterList[i]));
+        }
+        else
+        {
+            printf("Cluster %i NULL\n",i);
+        }
+   }
+
+
+    int* ClusterSize = NULL;
+
+    Node*** Clusters = CreateClusters(clusterList,&size,&ClusterSize);
+
+    ClusterFilter(&Clusters, &size, &ClusterSize);
+
+    printf("Size %i\n",size);
+    for(int i = 0; i<size; i++)
+    {
+        if(Clusters[i]==NULL)
+        {
+            printf("Cluster %i NULL\n",i);
+            continue;
+        }
+        printf("Cluster %i Size %i\n",i,ClusterSize[i]);
+        int r,g,b;
+        getRandomColor(&r, &g, &b, i, size);
+        if(Clusters[i][0]==NULL)
+        {
+                printf("Cluster %i NULL!!!!!!!!!!!!!!\n",0);
+                continue;
+        }
+        Draw(surface,Clusters[i][0],r,g,b);
+        for(int j = 1; j<ClusterSize[i]; j++)
+        {
+            if(Clusters[i][j]==NULL || Clusters[i][j-1]==NULL)
+            {
+                printf("Cluster %i NULL!!!!!!!!!!!!!!\n",j);
+                continue;
+            }
+            Draw(surface,Clusters[i][j],r,g,b);
+            DrawLine(surface,Clusters[i][j-1]->data,Clusters[i][j]->data,0,0,255);
         }
         
-        FreeNodeList(&clusterList[i], 0);
     }
 
-    FreeMatrix(Map, height);
+    //init value Neural Network;
+    int nbInputs;
+	int nbHiddenNodes;
+	int nbOutputs;
+
+	double LearningRate;
+
+    double *hiddenLayerBias;
+    double *outputLayerBias;
+
+    double **hiddenWeights;
+    double **outputWeights;
+    
+    LoadData("data.txt",&hiddenLayerBias, &outputLayerBias, &hiddenWeights, &outputWeights, &nbInputs, &nbHiddenNodes, &nbOutputs, &LearningRate);
+
+    printf("WordList:\n");
+    for(int i = 0; i<size; i++)
+    {
+        if(Clusters[i]==NULL)
+        {
+            continue;
+        }
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            if(Clusters[i][j]==NULL)
+            {
+                continue;
+            }
+            printf("Word: ");
+            int m = 0;
+            for(Node* k = Clusters[i][j]; k!=NULL; k = k->next)
+            {
+                SDL_Surface* surface = cropLetter(k->data,Map);
+                surface = resize_surface(surface);
+                char* cmd = NULL;
+                asprintf(&cmd, "output/letter/imgLetter%i_%i.bmp",j,m);
+                SDL_SaveBMP(surface, cmd);
+                free(cmd);
+                //printf("Load nb %i\n",j);
+                char letter = LetterRecognition(surface,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights);
+                printf("%c",letter);
+                SDL_FreeSurface(surface);
+                m++;
+            }
+            printf("\n");
+            
+        }
+    }
+    
+    FreeMatrix(hiddenWeights, nbInputs);
+    FreeMatrix(outputWeights, nbHiddenNodes);
+    free(hiddenLayerBias);
+    free(outputLayerBias);
+
+    GFreeMatrix(Map, height);
+    //free(ClusterGrid);
+    /*
+    for(int i = 0; i < size; i++)
+    {
+        if(clusterList[i]!=NULL)
+        {
+            FreeNodeList(&clusterList[i], 0);
+        }
+    }
+    */
     free(clusterList);
     FreeNodeList(&shapeList, 1);
+    for(int i = 0; i<size; i++)
+    {
+        if(Clusters[i]==NULL)
+        {
+            continue;
+        }
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            if(Clusters[i][j]!=NULL)
+            {
+                FreeNodeList(&Clusters[i][j],0);
+            }
+        }
+        free(Clusters[i]);
+    }
+    free(Clusters);
+    free(ClusterSize);
 
     SDL_UnlockSurface(surface);
 }

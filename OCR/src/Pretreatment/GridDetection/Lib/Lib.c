@@ -23,7 +23,7 @@ SDL_Surface* DuplicateSurface(SDL_Surface* surface)
 }
 
 // Function to allocate a 2D dynamic integer matrix
-void MallocMatrix(int ***arr, int sizex, int sizey) {
+void GMallocMatrix(int ***arr, int sizex, int sizey) {
     *arr = (int **)malloc(sizex * sizeof(int *));
     if (*arr == NULL) {
         err(1, "Memory allocation error\n"); // Handle allocation failure
@@ -38,7 +38,7 @@ void MallocMatrix(int ***arr, int sizex, int sizey) {
 }
 
 // Function to free a dynamically allocated 2D integer matrix
-void FreeMatrix(int **arr, int sizex) {
+void GFreeMatrix(int **arr, int sizex) {
     for (int i = 0; i < sizex; i++) {
         free(arr[i]);  // Free each row
     }
@@ -144,6 +144,58 @@ Node** ReduceArray(Node** lst, int* size, int nsize)
     return res; // Return the new list
 }
 
+void getRandomColor(int* r, int* g, int* b, int id, int nbOfColor)
+{
+    float hue = (id * 360.0 / ((nbOfColor+5)/2.0)); // Calculate hue for color
+    *r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
+    *g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
+    *b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+}
+
+void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, int b)
+{
+    SDL_PixelFormat* format = surface->format;
+    int p = surface->pitch;
+    int bpp = format->BytesPerPixel;
+    Uint8* pix = (Uint8*)surface->pixels;
+
+    int x1 = (shape1->Mini + shape1->Maxi) / 2;
+    int y1 = (shape1->Minj + shape1->Maxj) / 2;
+    int x2 = (shape2->Mini + shape2->Maxi) / 2;
+    int y2 = (shape2->Minj + shape2->Maxj) / 2;
+
+    // Bresenham's line algorithm
+    int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+    int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+    int err = dx + dy, e2;
+    int i = 0;
+    while (1) {
+
+        Uint8* pixel = pix + y1 * p + x1 * bpp;
+        pixel[0] = r;
+        pixel[1] = g;
+        pixel[2] = b;
+
+        if (x1 == x2 && y1 == y2) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x1 += sx; }
+        if (e2 <= dx) { err += dx; y1 += sy; }
+        i++;
+    }
+    /*
+    for(int i = y1-2; i<y1+2; i++)
+    {
+        for(int j = x1-2; j<x1+2; j++)
+        {
+            Uint8* pixel = pix + i * p + j * bpp;
+            pixel[0] = 0;
+            pixel[1] = 255;
+            pixel[2] = 0;
+        }
+    }
+    */
+}
+
 // Function to draw shapes on an SDL_Surface based on a linked list
 void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 {
@@ -152,10 +204,16 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
     int bpp = format->BytesPerPixel;
     Uint8* pix = (Uint8*)surface->pixels; // Get pixel data
     SDL_LockSurface(surface); // Lock the surface for safe manipulation
-   
+    Node* prev = NULL;
     Node* n = shape_lst;
     while(n != NULL)
-    {
+    {   
+        if(prev!=NULL)
+        {
+             // Draw a line between shapes
+             DrawLine(surface, prev->data, n->data, r, g, b);
+        }
+        prev = n;
         Shape* s = n->data;
         // Draw vertical lines
         for (int j = s->Minj; j <= s->Maxj; j++) 
@@ -189,13 +247,21 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 // Function to draw a list of clusters on an SDL_Surface with unique colors
 void DrawList(SDL_Surface* surface, Node** clusterList, int size)
 {
-    for(int i = 0; i < size; i++)
+    Draw(surface, clusterList[0], 255, 0, 0); 
+    printf("size %i\n",size);
+    for(int i = 1; i < size; i++)
     {
-        float hue = (i * 360.0 / size); // Calculate hue for color
-        int r = (int)(255 * (1 + sin(hue * 3.14 / 180)) / 2); // RGB values based on hue
-        int g = (int)(255 * (1 + sin((hue + 120) * 3.14 / 180)) / 2);
-        int b = (int)(255 * (1 + sin((hue + 240) * 3.14 / 180)) / 2);
+        int r,g,b;
+        getRandomColor(&r, &g, &b, i, size); // Get a random color for each cluster
         Draw(surface, clusterList[i], r, g, b); // Draw each cluster with its color
+    
+        /*printf("clusterList[i]         %i\n",clusterList[i]!=NULL);
+        printf("clusterList[i-1]       %i\n",clusterList[i]!=NULL);
+        printf("ClusterList[i]->data   %p\n",clusterList[i]);
+        printf("ClusterList[i-1]->data %p\n",clusterList[i-1]);*/
+        if (clusterList[i-1] != NULL && clusterList[i] != NULL) {
+            DrawLine(surface, clusterList[i-1]->data, clusterList[i]->data, 255, 0, 0);
+        }
     }
 }
 

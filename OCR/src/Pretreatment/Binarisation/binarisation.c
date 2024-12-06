@@ -26,7 +26,7 @@ void binarisation(SDL_Surface *surface, int window_size, double k)
     double R = 128.0;
     
     int** Map = NULL; // Matrix to store the binarized values
-    MallocMatrix(&Map, height, width);
+    GMallocMatrix(&Map, height, width);
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -80,7 +80,7 @@ void binarisation(SDL_Surface *surface, int window_size, double k)
             pixel[2] = color;
         }
     }
-    FreeMatrix(Map, height);
+    GFreeMatrix(Map, height);
     SDL_UnlockSurface(surface);
 }
 
