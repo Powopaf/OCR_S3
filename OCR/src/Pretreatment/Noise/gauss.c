@@ -12,18 +12,18 @@
 
 # define M_PI           3.14159265358979323846
 
-double gFunc(int x, int y) {
+double gFunc(int x, int y, double sig) {
     /*
      * gaussian funtion see gaussian blur for definition
     */
-    const double sig = 0.58;
+    //const double sig = 0.5;
     double part1 = (2 * M_PI * sig * sig);
     double power = -(x * x + y * y) / (2 * sig * sig);
     double part2 = exp(power);
     return part1 / part2;
 }
 
-void gauss(SDL_Surface* surface) {
+void gauss(SDL_Surface* surface, double sig) {
     /*
      * G(x,y) = (1/2*pi*sig^2)*(exp^(-(x^2 + y^2/2*sig^2)))
      * with x, y the neighboring pixel
@@ -39,13 +39,6 @@ void gauss(SDL_Surface* surface) {
      * THE IMAGE MUST HAVE WENT THROUGH THE GREYSCALE BEFORE THIS ONE!!!!
      * !!!!
      */
-    /*double kernel[5][5] = {
-        { gFunc(-2, 2), gFunc(-1, 2), gFunc(0, 2), gFunc(1, 2), gFunc(2, 2) },
-        { gFunc(-2, 1), gFunc(-1, 1), gFunc(0, 1), gFunc(1, 1), gFunc(2, 1) },
-        { gFunc(-2, 0), gFunc(-1, 0), gFunc(0, 0), gFunc(1, 0), gFunc(2, 0) },
-        { gFunc(-2,-1), gFunc(-1,-1), gFunc(0,-1), gFunc(1,-1), gFunc(2,-1) },
-        { gFunc(-2,-2), gFunc(-1,-2), gFunc(0,-2), gFunc(1,-2), gFunc(2,-2) }
-    };*/
     /*double kernel[3][3] = {
         { gFunc(-1, 1, sig), gFunc(0, 1, sig), gFunc(1, 1, sig) },
         { gFunc(-1, 0, sig), gFunc(0, 0, sig), gFunc(1, 0, sig) },
@@ -56,9 +49,11 @@ void gauss(SDL_Surface* surface) {
     size_t i = 0;
     for (int y = 2; y >= -2; y--) {
         j = 0;
-        for (int x = -2; x <= 2; x ++) {
-            kernel[i][j] = gFunc(x, y);
+        for (int x = -2; x <= 2; x++) {
+            kernel[i][j] = gFunc(x, y, sig);
+			j++;
         }
+		i++;
     }
 
     // we don't go in pixel near the ledge
@@ -92,6 +87,51 @@ void gauss(SDL_Surface* surface) {
     SDL_UnlockSurface(surface);
 }
 
+void applyMedianFilter(SDL_Surface *image) {
+    const int kernelSize = 3; // 3x3 kernel
+    const int halfKernel = kernelSize / 2;
+	SDL_LockSurface(image);
+    for (int y = 1; y < image->h - 1; y++) {
+        for (int x = 1; x < image->w - 1; x++) {
+            int values[9]; // For the 3x3 kernel
+
+            // Collect pixel values in the kernel
+            int k = 0;
+            for (int ky = -halfKernel; ky <= halfKernel; ky++) {
+                for (int kx = -halfKernel; kx <= halfKernel; kx++) {
+                    Uint8 *p = (Uint8 *)image->pixels + (y + ky) * image->pitch + (x + kx) * image->format->BytesPerPixel;
+                    values[k++] = p[2];
+                }
+            }
+
+            // Sort values and find the median
+            for (int i = 0; i < 9; i++) {
+                for (int j = i + 1; j < 9; j++) {
+                    if (values[j] < values[i]) {
+                        int temp = values[i];
+                        values[i] = values[j];
+                        values[j] = temp;
+                    }
+                }
+            }
+
+            // Set the median value as the new pixel value
+            Uint8 *p = (Uint8 *)image + y * image->pitch + x * image->format->BytesPerPixel;
+            *p = values[4]; // Median of 3x3 is the 5th element
+        }
+    }
+	for (int i = 0; i < image->h; i++) {
+		for (int j = 0; j < image->w; j++) {
+			Uint8* pix = (Uint8*) image->pixels + i * image->pitch + j * image->format->BytesPerPixel;
+			pix[1] = pix[0];
+			pix[2] = pix[0];
+		}
+	}
+    // Copy newPixels back to the original image
+	SDL_UnlockSurface(image);
+}
+
+
 //comment to run project uncomment to run noise reduction function
 void test_noise(int a) {
     char filename[2048];
@@ -99,21 +139,23 @@ void test_noise(int a) {
     greyscale(surface);
     SDL_SaveBMP(surface, "img0.bmp");
     SDL_FreeSurface(surface);
-    double sig = 0.0;
+    double sig = 0.5;
     for (int i = 0; i < a; i++) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
-        contrast(s);
-        gauss(s);
-        median(s);
-        contrast(s);
-        sprintf(filename, "img%d.bmp", i + 1);
+        
+		applyMedianFilter(s);
+        //gauss(s, sig);
+		//median(s);
+		//contrast(s);
+		
+		sprintf(filename, "img%d.bmp", i + 1);
         SDL_SaveBMP(s, filename);
         SDL_FreeSurface(s);
         sig = sig + 0.001;
     }
 }
-/*
+
 int main(int argc, char* argv[]) {
     sdl_setup();
     if (argc >= 1) {
@@ -126,4 +168,4 @@ int main(int argc, char* argv[]) {
     }
     return EXIT_SUCCESS;
 }
-*/
+

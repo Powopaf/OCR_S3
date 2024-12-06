@@ -25,7 +25,7 @@ void contrast(SDL_Surface* surface) {
             side_pixel[7] = *(pixel + width * bpp + 3);
             for (size_t k = 0; k < 8; k++) {
                 if (side_pixel[k] < pixel[0] && pixel[0] < 200) {
-                    pixel[2] = pixel[2] - 50 < 0 ? 0 : pixel[2] - 50;
+                    pixel[2] = pixel[2] - 80 < 0 ? 0 : pixel[2] - 80;
                 }
             }
         }
