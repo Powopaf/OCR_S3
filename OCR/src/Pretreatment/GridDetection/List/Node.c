@@ -96,6 +96,10 @@ int LenNode(Node** lst)
     {
         return 0;
     }
+    if((*lst)->next == NULL)
+    {
+        return 1;
+    }
 
     int i = 1;
     Node* n = *lst;

@@ -160,7 +160,7 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
     {
         err(1, "Unexpected number of elements in line: expected %d, got %d\n", *nbHiddenNodes, size);
     }
-
+  
     for (int i = 0; i < *nbHiddenNodes; i++) {
         (*hiddenLayerBias)[i] = ReadDouble(arr[i]);
     }
@@ -201,7 +201,7 @@ void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBia
     fclose(file);
 }
 
-void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate, int epoch) 
+void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights, int nbInputs, int nbHiddenNodes, int nbOutputs, double LearningRate) 
 {
     FILE *file = fopen(filename, "w");
     const char com1[] = "// Hidden layer data, first line for bias, others for weights\n";
@@ -212,7 +212,7 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
     }
 
     // Write network structure details and learning rate
-    fprintf(file, "%i|%i|%i|%f|%i|\n", nbInputs, nbHiddenNodes, nbOutputs, LearningRate,epoch);
+    fprintf(file, "%i|%i|%i|%f|\n", nbInputs, nbHiddenNodes, nbOutputs, LearningRate);
     fprintf(file, "%s", com1);
 
     // Write hidden layer biases
@@ -247,5 +247,3 @@ void WriteData(char filename[], double *hiddenLayerBias, double *outputLayerBias
 
     fclose(file);
 }
-
-

@@ -2,21 +2,13 @@
 
 int main(int argc, char** argv)
 {
-    char* _train = "train";
-    char* _test = "test";
-    if(argc>1)
+    
+    if(1)
     {
-        train(100);
-        return 0;
-    }
-    else if(argc<=1)
-    {
-        printf("Success: %f\n",testData());
-        return 0;
-    }
-    else
-    {
-        printf("Wrong Argument: %s\n",argv[1]);
+        SDL_Surface* surface = SDL_LoadBMP(argv[1]);
+        char letter = LetterRecognition(surface);
+        SDL_FreeSurface(surface);
+        printf("Letter: %c\n", letter);
         return 0;
     }
 }

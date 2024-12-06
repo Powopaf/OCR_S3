@@ -4,9 +4,10 @@
 #define nbOfEpochs 10
 
 
-void compute(char* InputsLayer, double** outputLayer)
+void compute(char* InputsLayer, double** outputLayer,int nbInputs,int nbHiddenNodes,int nbOutputs,double LearningRate,double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights)
 {
 
+    /*
 	int nbInputs;
 	int nbHiddenNodes;
 	int nbOutputs;
@@ -21,7 +22,7 @@ void compute(char* InputsLayer, double** outputLayer)
     double **outputWeights;
 
 	LoadData("data.txt",&hiddenLayerBias, &outputLayerBias, &hiddenWeights, &outputWeights, &nbInputs, &nbHiddenNodes, &nbOutputs, &LearningRate);
-
+    */
 	double hiddenLayer[nbHiddenNodes];
 
 	
@@ -50,25 +51,26 @@ void compute(char* InputsLayer, double** outputLayer)
 
     }
 
+    /*
 	FreeMatrix(hiddenWeights, nbInputs);
     FreeMatrix(outputWeights, nbHiddenNodes);
     free(hiddenLayerBias);
     free(outputLayerBias);
+    */
 	
 }
 
-char LetterRecognition(SDL_Surface* surface)
+char LetterRecognition(SDL_Surface* surface,int nbInputs,int nbHiddenNodes,int nbOutputs,double LearningRate,double *hiddenLayerBias, double *outputLayerBias, double **hiddenWeights, double **outputWeights)
 {
 	double* output = malloc(26*sizeof(double));
 
 	char* res = LoadImgData(surface);
 
-	compute(res,&output);
+	compute(res,&output,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights);
 	free(res);
 
 	char Letter = ArrayToLetter(output);
-
-	/*
+    /*
 	//print res
 	printf("Output: %c\n",Letter);
 	for(int i = 0; i<26;i++)
@@ -77,11 +79,8 @@ char LetterRecognition(SDL_Surface* surface)
 	}
 	printf("\n");
 	//---
-	*/
+    */
 	free(output);
 	
 	return Letter;
 }
-
-
-

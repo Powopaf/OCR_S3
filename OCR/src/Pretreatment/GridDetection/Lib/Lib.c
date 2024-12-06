@@ -23,7 +23,7 @@ SDL_Surface* DuplicateSurface(SDL_Surface* surface)
 }
 
 // Function to allocate a 2D dynamic integer matrix
-void MallocMatrix(int ***arr, int sizex, int sizey) {
+void GMallocMatrix(int ***arr, int sizex, int sizey) {
     *arr = (int **)malloc(sizex * sizeof(int *));
     if (*arr == NULL) {
         err(1, "Memory allocation error\n"); // Handle allocation failure
@@ -38,7 +38,7 @@ void MallocMatrix(int ***arr, int sizex, int sizey) {
 }
 
 // Function to free a dynamically allocated 2D integer matrix
-void FreeMatrix(int **arr, int sizex) {
+void GFreeMatrix(int **arr, int sizex) {
     for (int i = 0; i < sizex; i++) {
         free(arr[i]);  // Free each row
     }

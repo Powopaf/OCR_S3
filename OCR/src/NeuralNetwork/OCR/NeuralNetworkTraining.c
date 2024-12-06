@@ -56,8 +56,8 @@ void train(int nbOfEpochs)
 	for(int epoch = 0; epoch<nbOfEpochs; epoch++)
     {
 		totalError = 0.0;
-		shuffle(DataOrder,nbOutputs,nbTrainingSets);
-		shuffleArray(LetterOrder,nbOutputs,epoch);
+		//shuffle(DataOrder,nbOutputs,nbTrainingSets);
+		//shuffleArray(LetterOrder,nbOutputs,epoch);
 		for(int x = 0; x<nbTrainingSets; x++)
 		{
 
@@ -155,19 +155,19 @@ void train(int nbOfEpochs)
 			}
 		}
 
-		WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,epoch);
-		double success = testData();
+		WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
+		double success = 0;//testData();
 		if(success > MaxSuccess)
 		{
 			MaxSuccess = success;
-			WriteData("bestData.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,epoch);
+			WriteData("bestData.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
 		}
     }
 	
 	fin = clock();
 	printf("Temps d'exécution : %f secondes\n", (double)(fin - debut) / CLOCKS_PER_SEC);
 
-	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,nbOfEpochs);
+	WriteData("data.txt",hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights,nbInputs,nbHiddenNodes,nbOutputs,LearningRate);
 
 	//final 
 

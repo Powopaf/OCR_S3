@@ -19,6 +19,10 @@ SRC=\
 	src/Pretreatment/GridDetection/List/Node.c \
 	src/Pretreatment/crop/crop.c \
 	src/Pretreatment/rotation/rotate.c \
+	src/NeuralNetwork/OCR/NeuralNetwork.c \
+	src/NeuralNetwork/OCR/NeuralNetworkTraining.c \
+	src/NeuralNetwork/Lib/NeuralNetworkLib.c \
+	src/NeuralNetwork/Lib/TrainingLib.c \
 	./main.c \
 	src/Gtk/interface.c
 

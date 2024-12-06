@@ -6,8 +6,8 @@
 #include "../List/Node.h"
 
 SDL_Surface* DuplicateSurface(SDL_Surface* surface);
-void MallocMatrix(int ***arr, int sizex, int sizey);
-void FreeMatrix(int **arr, int sizex);
+void GMallocMatrix(int ***arr, int sizex, int sizey);
+void GFreeMatrix(int **arr, int sizex);
 
 int IsOnSurface(int x, int y, int h, int w);
 void InitMatrix(SDL_Surface *surface, int*** Map, int*** surf);

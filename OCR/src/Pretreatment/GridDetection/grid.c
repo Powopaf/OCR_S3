@@ -421,6 +421,26 @@ Node*** CreateClusters(Node** clusterList, int* size,int** ClusterSize)
         printf("ClusterSize %i\n",clusterSize);
 
     }
+    for(int i = 0; i<*size; i++)
+    {
+        if(!contain(Ids,visited[i],k))
+        {
+            printf("Free %i\n",i);
+            FreeNodeList(&clusterList[i],0);
+        }
+    }
+    printf("visited: ");
+    for(int i = 0; i<*size; i++)
+    {
+        printf("%i ",visited[i]);
+    }
+    printf("\n");
+    printf("Ids: ");
+    for(int i = 0; i<k; i++)
+    {
+        printf("%i ",Ids[i]);
+    }
+    printf("\n");
     free(visited);
     free(Ids);
     *size = k;
@@ -442,6 +462,15 @@ void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
     {
         if((*ClusterSize)[i]<avSize/2 || (*ClusterSize)[i]<5)
         {
+
+            for(int j = 0; j<(*ClusterSize)[i]; j++)
+            {
+                if((*clusterList)[i][j]!=NULL)
+                {
+                    FreeNodeList(&(*clusterList)[i][j],0);
+                }
+            }
+            free((*clusterList)[i]);
             (*clusterList)[i] = NULL;
         }
         else
@@ -458,6 +487,7 @@ void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
             {
                 if(LenNode(&(*clusterList)[i][j])<3)
                 {
+                    FreeNodeList(&(*clusterList)[i][j],0);
                     (*clusterList)[i][j] = NULL;
                 }
                 else
@@ -467,8 +497,34 @@ void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
                 
             }
             int s = (*ClusterSize)[i];
-            //(*clusterList)[i] = ReduceArray((*clusterList)[i],&s,newsize);
-            //(*ClusterSize)[i] = newsize;
+            /*
+            printf("Test Before Reduce Array  %i\n",s);
+            for(int i = 0; i<s; i++)
+            {
+                if((*clusterList)[i]==NULL)
+                {
+                    printf("Cluster %i NULL\n",i);
+                }
+                else
+                {
+                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
+                }
+            }
+            (*clusterList)[i] = ReduceArray((*clusterList)[i],&s,0);
+            printf("Test Reduce Array  %i\n",s);
+            for(int i = 0; i<s; i++)
+            {
+                if((*clusterList)[i]==NULL)
+                {
+                    printf("Cluster %i NULL\n",i);
+                }
+                else
+                {
+                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
+                }
+            }
+            (*ClusterSize)[i] = s;
+            */
             
 
         }
@@ -521,6 +577,52 @@ Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, 
     return closestShape;
 }
 
+void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
+{
+    Node*** GridList = NULL;//call the function
+    //Shape** Grid = GridList[0];
+
+    Letter*** GridLine = malloc(sizeof(Shape**));
+    int nbWords = 0;
+    int* wordSize = malloc(sizeof(int));
+    for(int i = 1; i<*size; i++)
+    {
+        if(Clusters[i]!=NULL)
+        {
+            for(int j = 0; j<ClusterSize[i]; j++)
+            {
+                int sizeofword = LenNode(&Clusters[i][j]);
+                GridLine = realloc(GridLine,(nbWords+1)*sizeof(Shape**));
+                GridLine[nbWords] = malloc(sizeofword*sizeof(Shape*));
+                int m = 0;
+                for(Node* k = Clusters[i][j]; k!=NULL; k = k->next)
+                {
+                    SDL_Surface* surface = cropLetter(k->data,Map);
+                    Letter* l = malloc(sizeof(Letter));
+                    //l->letter = LetterRecognition(surface);
+                    l->x = k->data->Cx;
+                    l->y = k->data->Cy;
+                    GridLine[nbWords][m] = l;
+                    m++;
+                }
+                wordSize = realloc(wordSize,(nbWords+1)*sizeof(int));
+                wordSize[nbWords] = sizeofword;
+                
+                
+            }
+        }
+    }
+    for(int i = 0; i<nbWords; i++)
+    {
+        printf("Word %i: ",i);
+        for(int j = 0; j<wordSize[i]; j++)
+        {
+            printf("%c",GridLine[i][j]->letter);
+        }
+        printf("\n");
+    }
+}
+
 void ProcessGrid(SDL_Surface *surface) 
 {
     /*
@@ -534,8 +636,8 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_LockSurface(surface);
 
     // Malloc the two matrix
-    MallocMatrix(&Map, height, width);
-    MallocMatrix(&surf, height, width);
+    GMallocMatrix(&Map, height, width);
+    GMallocMatrix(&surf, height, width);
 
     //init the two matrix with base value
     InitMatrix(surface, &Map, &surf);
@@ -569,7 +671,7 @@ void ProcessGrid(SDL_Surface *surface)
         }
     }
 
-    FreeMatrix(surf, height);
+    GFreeMatrix(surf, height);
     
     SDL_Surface* temp_surface = DuplicateSurface(surface);
     Draw(temp_surface, shapeList, 177, 0, 0);
@@ -597,20 +699,7 @@ void ProcessGrid(SDL_Surface *surface)
     SDL_FreeSurface(temp_surface);
 
 
-    /*
-    int gridSize = GridSize(clusterList, size);
 
-    Node** ClusterGrid = (Node**)malloc(sizeof(Node*));
-    int k = 0;
-    for(int i = 0; i < size; i++)
-    {
-        if(LenNode(&clusterList[i]) == gridSize)
-        {
-            ClusterGrid = (Node**)realloc(ClusterGrid, (k + 1) * sizeof(Node*));
-            ClusterGrid[k] = clusterList[i];
-            k++;
-        }
-    }*/
 
    printf("CreateLine\n");
    for(int i = 0; i<size ; i++)
@@ -628,13 +717,11 @@ void ProcessGrid(SDL_Surface *surface)
 
 
     int* ClusterSize = NULL;
-    //int nbId = ClusterFilter(clusterList, &size,&visited,surface);
-    
-    
-
 
     Node*** Clusters = CreateClusters(clusterList,&size,&ClusterSize);
+
     ClusterFilter(&Clusters, &size, &ClusterSize);
+
     printf("Size %i\n",size);
     for(int i = 0; i<size; i++)
     {
@@ -664,73 +751,64 @@ void ProcessGrid(SDL_Surface *surface)
         }
         
     }
+
+    //init value Neural Network;
+    int nbInputs;
+	int nbHiddenNodes;
+	int nbOutputs;
+
+	double LearningRate;
+
+    double *hiddenLayerBias;
+    double *outputLayerBias;
+
+    double **hiddenWeights;
+    double **outputWeights;
     
-    
-    /*
+    LoadData("data.txt",&hiddenLayerBias, &outputLayerBias, &hiddenWeights, &outputWeights, &nbInputs, &nbHiddenNodes, &nbOutputs, &LearningRate);
+
+    printf("WordList:\n");
     for(int i = 0; i<size; i++)
     {
-        int r,g,b;
-        getRandomColor(&r, &g, &b, i, size);
+        if(Clusters[i]==NULL)
+        {
+            continue;
+        }
         for(int j = 0; j<ClusterSize[i]; j++)
         {
-            Draw(surface,Clusters[i][j],r,g,b);
+            if(Clusters[i][j]==NULL)
+            {
+                continue;
+            }
+            printf("Word: ");
+            int m = 0;
+            for(Node* k = Clusters[i][j]; k!=NULL; k = k->next)
+            {
+                SDL_Surface* surface = cropLetter(k->data,Map);
+                surface = resize_surface(surface);
+                char* cmd = NULL;
+                asprintf(&cmd, "output/letter/imgLetter%i_%i.bmp",j,m);
+                SDL_SaveBMP(surface, cmd);
+                free(cmd);
+                //printf("Load nb %i\n",j);
+                char letter = LetterRecognition(surface,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights);
+                printf("%c",letter);
+                SDL_FreeSurface(surface);
+                m++;
+            }
+            printf("\n");
+            
         }
     }
-    */
-    //Clusters = ReduceCluster(Clusters,&size,visited);
-    /*
-    printf("sizes:%i\n",size);
-    for(int i = 0; i<size; i++)
-    {
-        printf(" %i\n",visited[i]);
-    }
-    printf("\n");
-    for(int i = 0; i<size; i++)
-    {
-        DrawList(surface,Clusters[i],visited[i]);
-    }*/
     
+    FreeMatrix(hiddenWeights, nbInputs);
+    FreeMatrix(outputWeights, nbHiddenNodes);
+    free(hiddenLayerBias);
+    free(outputLayerBias);
 
-
-    /*   
-        Clusters = liste des cluster
-        Cluster[i] = liste des lignes
-        Cluster[i][j] = liste des shapes dans la lignes
-    */
-
-    /*
-    for (int i = 0; i < size; i++)
-    {
-        AdjustList(&clusterList[i]);
-    }
-    */
-    //DrawList(surface, clusterList, size);
-    /*
-    for (int i = 0; i < size; i++)
-    {
-        char d[2048];
-        sprintf(d, "mkdir -p output/letter/Cluster_%i", i);
-        system(d);
-        
-        Node* c = clusterList[i];
-        while (c != NULL)
-        {
-            char s[2048];
-            sprintf(s, "output/letter/Cluster_%i/Letter_%i.bmp", i, c->data->id);
-            SDL_Surface* crop_surface = cropLetter(c->data, Map);
-            crop_surface = resize_surface(crop_surface);
-            SDL_SaveBMP(crop_surface,s);
-            c = c->next;
-        }
-        
-        FreeNodeList(&clusterList[i], 0);
-    }*/
-
-
-    //Gros pb de leak je m'en occuperais plus tard
-
-    FreeMatrix(Map, height);
+    GFreeMatrix(Map, height);
     //free(ClusterGrid);
+    /*
     for(int i = 0; i < size; i++)
     {
         if(clusterList[i]!=NULL)
@@ -738,8 +816,26 @@ void ProcessGrid(SDL_Surface *surface)
             FreeNodeList(&clusterList[i], 0);
         }
     }
+    */
     free(clusterList);
     FreeNodeList(&shapeList, 1);
+    for(int i = 0; i<size; i++)
+    {
+        if(Clusters[i]==NULL)
+        {
+            continue;
+        }
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            if(Clusters[i][j]!=NULL)
+            {
+                FreeNodeList(&Clusters[i][j],0);
+            }
+        }
+        free(Clusters[i]);
+    }
+    free(Clusters);
+    free(ClusterSize);
 
     SDL_UnlockSurface(surface);
 }

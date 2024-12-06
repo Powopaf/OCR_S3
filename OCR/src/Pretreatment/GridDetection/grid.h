@@ -12,6 +12,14 @@
 
 #include "../crop/crop.h"
 #include "../Utils/resize.h"
+#include "../../NeuralNetwork/NeuralNetwork.h"
+
+typedef struct Letter
+{
+    char letter;
+    int x;
+    int y;
+} Letter;
 
 void AverageClusterSize(Node** shapeList, int** visited, int id, double* avHeight, double* avWidth);
 void AdjustList(Node** lst);
