@@ -90,18 +90,24 @@ void gauss(SDL_Surface* surface, double sig) {
 void applyMedianFilter(SDL_Surface *image) {
     const int kernelSize = 3; // 3x3 kernel
     const int halfKernel = kernelSize / 2;
-	SDL_LockSurface(image);
-    for (int x = 1; x < image->h - 1; x++) {
-        for (int y = 1; y < image->w - 1; y++) {
+
+    if (image->format->BytesPerPixel != 3 && image->format->BytesPerPixel != 4) {
+        fprintf(stderr, "Unsupported pixel format\n");
+        return;
+    }
+
+    SDL_LockSurface(image);
+
+    for (int y = halfKernel; y < image->h - halfKernel; y++) {
+        for (int x = halfKernel; x < image->w - halfKernel; x++) {
             int values[9]; // For the 3x3 kernel
+            int k = 0;
 
             // Collect pixel values in the kernel
-            int k = 0;
             for (int ky = -halfKernel; ky <= halfKernel; ky++) {
                 for (int kx = -halfKernel; kx <= halfKernel; kx++) {
-                    Uint8 *p = (Uint8 *)image->pixels + (y + ky) * image->pitch + (x + kx) * image->format->BytesPerPixel;
-                    values[k] = p[2];
-					k++;
+                    Uint8* p = (Uint8*)image->pixels + (y + ky) * image->pitch + (x + kx) * image->format->BytesPerPixel;
+                    values[k++] = p[0]; // Assuming grayscale
                 }
             }
 
@@ -117,19 +123,14 @@ void applyMedianFilter(SDL_Surface *image) {
             }
 
             // Set the median value as the new pixel value
-            Uint8 *p = (Uint8 *)image + x * image->pitch + y * image->format->BytesPerPixel;
-            p[0] = values[4]; // Median of 3x3 is the 5th element
+            Uint8* pix = (Uint8*)image->pixels + y * image->pitch + x * image->format->BytesPerPixel;
+            pix[0] = values[4]; // Median
+            pix[1] = values[4]; // For RGB/RGBA
+            pix[2] = values[4];
         }
     }
-	for (int i = 0; i < image->h; i++) {
-		for (int j = 0; j < image->w; j++) {
-			Uint8* pix = (Uint8*) image->pixels + i * image->pitch + j * image->format->BytesPerPixel;
-			pix[1] = pix[0];
-			pix[2] = pix[0];
-		}
-	}
-    // Copy newPixels back to the original image
-	SDL_UnlockSurface(image);
+
+    SDL_UnlockSurface(image);
 }
 
 
@@ -144,12 +145,12 @@ void test_noise(int a) {
     for (int i = 0; i < a; i++) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
-        
+        //contrast(s);
 		applyMedianFilter(s);
         //gauss(s, sig);
 		//median(s);
 		//contrast(s);
-		
+		contrast(s);	
 		sprintf(filename, "img%d.bmp", i + 1);
         SDL_SaveBMP(s, filename);
         SDL_FreeSurface(s);
