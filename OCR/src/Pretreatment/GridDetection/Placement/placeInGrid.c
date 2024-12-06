@@ -41,6 +41,9 @@ void find_grid(Node*** list, int size, int* clusters_size) {
 				Node** t = list[0];
 				list[0] = list[i];
 				list[i] = t;
+				int tt = clusters_size[0];
+				clusters_size[0] = clusters_size[i];
+				clusters_size[i] = tt;
 				break;
 			}
 		}
