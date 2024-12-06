@@ -33,7 +33,7 @@ void drawSolution(SDL_Surface *surface, int x1, int y1, int x2, int y2, int r, i
                     int px = cx + rx;
                     int py = cy + ry;
 
-                    if (px >= 0 && px < surface->w && py >= 0 && py < surface->h)
+                    if (px >= 0 && px < surface->h && py >= 0 && py < surface->w)
                     {
                         int p = surface->pitch;
                         int bpp = format->BytesPerPixel;
@@ -41,6 +41,7 @@ void drawSolution(SDL_Surface *surface, int x1, int y1, int x2, int y2, int r, i
                         Uint8* pixel = pixels + px * p + py * bpp;
                         pixel[0] = r;
                         pixel[1] = g;
+                        
                         //
                     }
                 }

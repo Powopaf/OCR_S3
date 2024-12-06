@@ -23,6 +23,9 @@ SRC=\
 	src/NeuralNetwork/OCR/NeuralNetworkTraining.c \
 	src/NeuralNetwork/Lib/NeuralNetworkLib.c \
 	src/NeuralNetwork/Lib/TrainingLib.c \
+	src/Pretreatment/GridDetection/Placement/placeInGrid.c \
+	src/Solver/solver.c \
+	src/Solver/drawSolution.c \
 	./main.c \
 	src/Gtk/interface.c
 

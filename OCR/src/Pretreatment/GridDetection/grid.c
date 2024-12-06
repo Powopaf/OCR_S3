@@ -392,7 +392,7 @@ Node*** CreateClusters(Node** clusterList, int* size,int** ClusterSize)
         id++;
         nbId++;
     }
-    for(int i = 0; i<size; i++)
+    for(int i = 0; i<*size; i++)
     {
         if(visited[i]==0)
         {
@@ -460,7 +460,7 @@ void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
 
     for(int i = 0; i<*size; i++)
     {
-        if((*ClusterSize)[i]<avSize/2 || (*ClusterSize)[i]<5)
+        if((*ClusterSize)[i]<avSize/2 || (*ClusterSize)[i]<5 )//|| (*ClusterSize)[i]>21)
         {
 
             for(int j = 0; j<(*ClusterSize)[i]; j++)
@@ -577,50 +577,206 @@ Shape* FindNearestShape(Node** shapeList, Shape* s, int** visited, int MaxDist, 
     return closestShape;
 }
 
+void writeGrid(Letter*** Grid,int nbOfLine, int LineSize)
+{
+    FILE* file = fopen("grid", "w");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return;
+    }
+
+    for (int i = 0; i < nbOfLine; i++) {
+        for (int j = 0; j < LineSize; j++) {
+            fputc(Grid[i][j]->letter, file);
+        }
+        fputc('\n', file); // Ajouter un retour à la ligne après chaque ligne de la matrice
+    }
+
+    fclose(file);
+}
+
 void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
 {
-    Node*** GridList = NULL;//call the function
-    //Shape** Grid = GridList[0];
+    Node*** GridList = *Clusters;//call the function
+    place(GridList,*size,ClusterSize);
+    Node** GridN = GridList[0];
+    Letter*** Grid = malloc(ClusterSize[0]*sizeof(Letter**));
+    int GridSize = 0;
+    int WordCount = 0;
+    int* WordSize = malloc(sizeof(int));
+    Letter*** LetterList = malloc(sizeof(Letter**));
+    char** WordList = malloc(sizeof(char*));
 
-    Letter*** GridLine = malloc(sizeof(Shape**));
-    int nbWords = 0;
-    int* wordSize = malloc(sizeof(int));
-    for(int i = 1; i<*size; i++)
+    //init value Neural Network;
+    int nbInputs;
+	int nbHiddenNodes;
+	int nbOutputs;
+
+	double LearningRate;
+
+    double *hiddenLayerBias;
+    double *outputLayerBias;
+
+    double **hiddenWeights;
+    double **outputWeights;
+    
+    LoadData("data.txt",&hiddenLayerBias, &outputLayerBias, &hiddenWeights, &outputWeights, &nbInputs, &nbHiddenNodes, &nbOutputs, &LearningRate);
+
+    //Load Grid
+    printf("GridSize %i\n",ClusterSize[0]);
+    for(int i = 0; i<ClusterSize[0]; i++)
     {
-        if(Clusters[i]!=NULL)
+        printf("Line: ");
+        if(GridN[i]==NULL)
         {
-            for(int j = 0; j<ClusterSize[i]; j++)
-            {
-                int sizeofword = LenNode(&Clusters[i][j]);
-                GridLine = realloc(GridLine,(nbWords+1)*sizeof(Shape**));
-                GridLine[nbWords] = malloc(sizeofword*sizeof(Shape*));
-                int m = 0;
-                for(Node* k = Clusters[i][j]; k!=NULL; k = k->next)
-                {
-                    SDL_Surface* surface = cropLetter(k->data,Map);
-                    Letter* l = malloc(sizeof(Letter));
-                    //l->letter = LetterRecognition(surface);
-                    l->x = k->data->Cx;
-                    l->y = k->data->Cy;
-                    GridLine[nbWords][m] = l;
-                    m++;
-                }
-                wordSize = realloc(wordSize,(nbWords+1)*sizeof(int));
-                wordSize[nbWords] = sizeofword;
-                
-                
-            }
+            continue;
+            printf("Grid %i NULL\n",i);
         }
-    }
-    for(int i = 0; i<nbWords; i++)
-    {
-        printf("Word %i: ",i);
-        for(int j = 0; j<wordSize[i]; j++)
+        if(GridSize == 0)
         {
-            printf("%c",GridLine[i][j]->letter);
+            GridSize = LenNode(&GridN[i]);
+        }
+        Grid[i] = malloc(GridSize*sizeof(Letter));
+        int j = 0;
+        for(Node* c = GridN[i]; c!=NULL; c = c->next)
+        {   
+            Letter* l = malloc(sizeof(Letter));
+            SDL_Surface* surface = cropLetter(c->data,Map);
+            surface = resize_surface(surface);
+            //printf("Load nb %i\n",j);
+            char letter = LetterRecognition(surface,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights);
+            printf("%c",letter);
+            l->letter = letter;
+            l->x = c->data->Cx;
+            l->y = c->data->Cy;
+            Grid[i][j] = l;
+            j++;
+            SDL_FreeSurface(surface);
         }
         printf("\n");
     }
+    
+    for(int i = 1; i<*size; i++)
+    {
+        if(GridList[i]==NULL)
+        {
+            continue;
+        }
+        for(int j = 0; j<ClusterSize[i]; j++)
+        {
+            if(GridList[i][j]==NULL)
+            {
+                continue;
+            }
+            WordCount++;
+            LetterList = realloc(LetterList,WordCount*sizeof(Letter**));
+            WordSize = realloc(WordSize,WordCount*sizeof(int));
+            WordList = realloc(WordList,WordCount*sizeof(char*));
+            char* word = malloc(sizeof(char));
+            int sizeofword = 0;
+            int id = 0;
+            LetterList[WordCount-1] = malloc(sizeof(Letter*));
+            for(Node* c = GridList[i][j]; c!=NULL; c = c->next)
+            {
+                Letter* l = malloc(sizeof(Letter));
+                SDL_Surface* surface = cropLetter(c->data,Map);
+                surface = resize_surface(surface);
+                char letter = LetterRecognition(surface,nbInputs,nbHiddenNodes,nbOutputs,LearningRate,hiddenLayerBias,outputLayerBias,hiddenWeights,outputWeights);
+                sizeofword++;
+                word = realloc(word,sizeofword*sizeof(char));
+                word[sizeofword-1] = letter;
+                l->letter = letter;
+                l->x = c->data->Cx;
+                l->y = c->data->Cy;
+                LetterList[WordCount-1] = realloc(LetterList[WordCount-1],sizeofword*sizeof(Letter*));
+                LetterList[WordCount-1][sizeofword-1] = l;
+
+                id++;
+            }
+            word = realloc(word,(sizeofword+1)*sizeof(char));
+            word[sizeofword] = '\0';
+            WordList[WordCount-1] = word; 
+            WordSize[WordCount-1] = sizeofword;
+
+
+
+        }
+
+    }
+    printf("WordList:\n");
+    for(int i = 0; i<WordCount; i++)
+    {
+        //for(int j = 0; j<WordSize[i]; j++)
+        printf("%s\n",WordList[i]);
+    }
+    printf("\n");
+    
+    writeGrid(Grid,ClusterSize[0],GridSize);
+
+    int* Start;
+    int* End;
+    Start = NULL;
+    End = NULL;
+
+    SDL_Surface* surface = SDL_LoadBMP("output/original.bmp");
+    for(int i = 0; i<WordCount; i++)
+    {
+        int e = solver(WordList[i],&Start,&End);
+        if(e==-1)
+        {
+            free(Start);
+            free(End);
+            continue;
+        }
+        Letter* StartLetter = Grid[Start[1]][Start[0]];
+        Letter* EndLetter = Grid[End[1]][End[0]];
+        int r,g,b;
+        getRandomColor(&r,&g,&b,i,WordCount*2);
+        drawSolution(surface,StartLetter->x,StartLetter->y,EndLetter->x,EndLetter->y,r,g,b);
+        
+        Letter* First = LetterList[i][0];
+        Letter* Last = LetterList[i][WordSize[i]-1];
+        drawSolution(surface,First->x,First->y,Last->x,Last->y,r,g,b);
+        
+        printf("StartLetter: %c\n",StartLetter->letter);
+        printf("EndLetter: %c\n",EndLetter->letter);
+        printf("DrawLine\n");
+        free(Start);
+        free(End);
+        
+    }
+    SDL_SaveBMP(surface,"output/imgFinal.bmp");
+    SDL_FreeSurface(surface);
+
+
+    FreeMatrix(hiddenWeights, nbInputs);
+    FreeMatrix(outputWeights, nbHiddenNodes);
+    free(hiddenLayerBias);
+    free(outputLayerBias);
+
+    for(int i = 0; i<ClusterSize[0];i++)
+    {
+        for(int j = 0; j<GridSize ;j++)
+        {
+            free(Grid[i][j]);
+        }
+        free(Grid[i]);
+    }
+    free(Grid);
+    for(int i = 0; i<WordCount; i++)
+    {
+        for(int j = 0; j<WordSize[i]; j++)
+        {
+            free(LetterList[i][j]);
+        }
+        free(LetterList[i]);
+        free(WordList[i]);
+    }
+    free(LetterList);
+    free(WordSize);
+    free(WordList);
+
+
 }
 
 void ProcessGrid(SDL_Surface *surface) 
@@ -751,7 +907,9 @@ void ProcessGrid(SDL_Surface *surface)
         }
         
     }
-
+    printf("Start ProcessSolver\n");
+    ProcessSolver(&Clusters,&size,ClusterSize,Map);
+    /*
     //init value Neural Network;
     int nbInputs;
 	int nbHiddenNodes;
@@ -805,6 +963,7 @@ void ProcessGrid(SDL_Surface *surface)
     FreeMatrix(outputWeights, nbHiddenNodes);
     free(hiddenLayerBias);
     free(outputLayerBias);
+    */
 
     GFreeMatrix(Map, height);
     //free(ClusterGrid);
