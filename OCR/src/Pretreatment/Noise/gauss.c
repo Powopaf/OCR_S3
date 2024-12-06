@@ -91,8 +91,8 @@ void applyMedianFilter(SDL_Surface *image) {
     const int kernelSize = 3; // 3x3 kernel
     const int halfKernel = kernelSize / 2;
 	SDL_LockSurface(image);
-    for (int y = 1; y < image->h - 1; y++) {
-        for (int x = 1; x < image->w - 1; x++) {
+    for (int x = 1; x < image->h - 1; x++) {
+        for (int y = 1; y < image->w - 1; y++) {
             int values[9]; // For the 3x3 kernel
 
             // Collect pixel values in the kernel
@@ -100,7 +100,8 @@ void applyMedianFilter(SDL_Surface *image) {
             for (int ky = -halfKernel; ky <= halfKernel; ky++) {
                 for (int kx = -halfKernel; kx <= halfKernel; kx++) {
                     Uint8 *p = (Uint8 *)image->pixels + (y + ky) * image->pitch + (x + kx) * image->format->BytesPerPixel;
-                    values[k++] = p[2];
+                    values[k] = p[2];
+					k++;
                 }
             }
 
@@ -116,8 +117,8 @@ void applyMedianFilter(SDL_Surface *image) {
             }
 
             // Set the median value as the new pixel value
-            Uint8 *p = (Uint8 *)image + y * image->pitch + x * image->format->BytesPerPixel;
-            *p = values[4]; // Median of 3x3 is the 5th element
+            Uint8 *p = (Uint8 *)image + x * image->pitch + y * image->format->BytesPerPixel;
+            p[0] = values[4]; // Median of 3x3 is the 5th element
         }
     }
 	for (int i = 0; i < image->h; i++) {
