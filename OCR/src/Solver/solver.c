@@ -11,7 +11,7 @@ int grid_len_y = 10;
 
 // display the grid in the terminal with 
 // the first and last letter of the word in yellow
-int print_grid(int Start[], int End[]) {
+int print_grid(int* Start, int* End) {
 	for (int i = 0; i < grid_len_x; i++) {
 		for (int j = 0; j < grid_len_y; j++) {
 			if ((i == Start[1] && j == Start[0]) || (i == End[1] && j == End[0])) {
@@ -36,7 +36,7 @@ int len(char word[]) {
 }
 // find the rest of the word after finding the first two letters 
 // and the direction of the word
-int find_word(char word[], int End[2], int i, int j, int vx, int vy) {
+int find_word(char word[], int* End, int i, int j, int vx, int vy) {
 	//printf("i,j = %i,%i   vx,vy = %i,%i\n",i,j,vx,vy);
 	i += vx;
 	j += vy;
@@ -55,7 +55,7 @@ int find_word(char word[], int End[2], int i, int j, int vx, int vy) {
 }
 // find the second letter and the direction of the word after 
 // finding the first letter of the word
-int find_second_letter(char word[], int End[2], int x, int y) {
+int find_second_letter(char word[], int* End, int x, int y) {
 	for (int i = x-1; i <= x + 1; i++) {
 		for (int j = y - 1; j <= y + 1; j++) {
 			if (i >= 0 && i < grid_len_x && j >= 0 && j < grid_len_y) {
@@ -78,7 +78,7 @@ int find_second_letter(char word[], int End[2], int x, int y) {
 
 // solve the grid by finding the first letter of the word and 
 // calling the other functions to find the rest of the word
-int solve_grid(char word[], int Start[2],int End[2]) 
+int solve_grid(char word[], int* Start,int* End) 
 {
 	for (size_t x = 0; x < (size_t)grid_len_x; x++) 
     {
@@ -139,29 +139,33 @@ void toUpperCase(char str[])
 }
 
 // main function, read the grid file and resolve the grid with the input word
-int solver(char word[])
+int solver(char word[], int** Start, int** End)
 {
     toUpperCase(word);	
 	read_grid(filename);
 
-	int Start[2] = {};
-	int End[2] = {};
+	*Start = calloc(2,sizeof(int));
+	*End = calloc(2,sizeof(int));
 
-	int e = solve_grid(word,Start,End);
+	int e = solve_grid(word,*Start,*End);
 	if(e==1)
 	{
 		printf("ERROR: le mot n'existe pas\n");
+		return -1;
 	}
 	else
 	{
-		print_grid(Start,End);
+		printf("\nWord: %s\n", word);
+		print_grid(*Start,*End);
 		//printf("Word: %s\n", word);
 		//printf("Start = (%i, %i)\n", Start[0], Start[1]);
 		//printf("End = (%i, %i)\n", End[0], End[1]);
-		printf("(%i, %i)(%i, %i)\n", Start[0], Start[1], End[0], End[1]);
+		printf("(%i, %i)(%i, %i)\n", (*Start)[0], (*Start)[1], (*End)[0], (*End)[1]);
 	}
 	return 0;
 }
+
+/*
 //main function only for debug (remove it!)
 int main(int argc, char *argv[])
 {
@@ -170,3 +174,5 @@ int main(int argc, char *argv[])
 	else
 		return solver(argv[1]);
 }
+
+*/

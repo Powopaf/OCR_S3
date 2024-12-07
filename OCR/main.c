@@ -32,7 +32,7 @@ void Process(char* filename)
     SDL_SaveBMP(surface,"output/imgClusterFilter.bmp");
 
     //final treatment
-    SDL_SaveBMP(surface,"output/imgFinal.bmp");
+    
 
     SDL_FreeSurface(surface);
     sdl_close();

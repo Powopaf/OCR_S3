@@ -3,9 +3,9 @@
 #include <unistd.h>
 
 //comment to run project uncomment to run noise reduction functions
-#include "../Utils/sdl_utils.h"
-#include "../GreyScale/greyscale.h"
-#include "../Contrast/contrast.h"
+//#include "../Utils/sdl_utils.h"
+//#include "../GreyScale/greyscale.h"
+//#include "../Contrast/contrast.h"
 //////////////////////////////////////////////////////////////////////
 
 void applyMedianFilter(SDL_Surface *image) {
@@ -45,7 +45,7 @@ void applyMedianFilter(SDL_Surface *image) {
 
 
 //comment to run project uncomment to run noise reduction function
-void test_noise(int a) {
+/*void test_noise(int a) {
     char filename[2048];
     SDL_Surface* surface = SDL_LoadBMP("i.bmp");
     greyscale(surface);
@@ -80,5 +80,4 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE; 
     }
     return EXIT_SUCCESS;
-}
-
+}*/
