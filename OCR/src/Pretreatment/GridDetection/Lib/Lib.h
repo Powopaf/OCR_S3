@@ -20,7 +20,7 @@ void FindShapePosMatrix(Node* shapeList, int* j, int* i);
 
 void getRandomColor(int* r, int* g, int* b, int id, int nbOfColor);
 void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, int b);
-void Draw(SDL_Surface *surface, Node* s, int r, int g, int b);
+void Draw(SDL_Surface *surface, Node* s, int r, int g, int b, int DrawConnection);
 void DrawList(SDL_Surface* surface, Node** clusterList, int size);
 
 #endif

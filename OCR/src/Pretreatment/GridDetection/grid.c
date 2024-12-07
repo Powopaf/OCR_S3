@@ -413,34 +413,34 @@ Node*** CreateClusters(Node** clusterList, int* size,int** ClusterSize)
     *ClusterSize = malloc(k*sizeof(int));
     for(int id = 0; id<k; id++)
     {
-        printf("ID %i\n",id);
+        //printf("ID %i\n",id);
         res = realloc(res,(id+1)*sizeof(Node**));
         int clusterSize = 0;
         res[id] = LineToCluster(clusterList,visited,Ids[id],&clusterSize,*size);
         (*ClusterSize)[id] = clusterSize;
-        printf("ClusterSize %i\n",clusterSize);
+        //printf("ClusterSize %i\n",clusterSize);
 
     }
     for(int i = 0; i<*size; i++)
     {
         if(!contain(Ids,visited[i],k))
         {
-            printf("Free %i\n",i);
+            //printf("Free %i\n",i);
             FreeNodeList(&clusterList[i],0);
         }
     }
-    printf("visited: ");
+    //printf("visited: ");
     for(int i = 0; i<*size; i++)
     {
-        printf("%i ",visited[i]);
+        //printf("%i ",visited[i]);
     }
-    printf("\n");
-    printf("Ids: ");
+    //printf("\n");
+    //printf("Ids: ");
     for(int i = 0; i<k; i++)
     {
-        printf("%i ",Ids[i]);
+        //printf("%i ",Ids[i]);
     }
-    printf("\n");
+    //printf("\n");
     free(visited);
     free(Ids);
     *size = k;
@@ -496,35 +496,6 @@ void ClusterFilter(Node**** clusterList, int* size,int** ClusterSize)
                 }
                 
             }
-            int s = (*ClusterSize)[i];
-            /*
-            printf("Test Before Reduce Array  %i\n",s);
-            for(int i = 0; i<s; i++)
-            {
-                if((*clusterList)[i]==NULL)
-                {
-                    printf("Cluster %i NULL\n",i);
-                }
-                else
-                {
-                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
-                }
-            }
-            (*clusterList)[i] = ReduceArray((*clusterList)[i],&s,0);
-            printf("Test Reduce Array  %i\n",s);
-            for(int i = 0; i<s; i++)
-            {
-                if((*clusterList)[i]==NULL)
-                {
-                    printf("Cluster %i NULL\n",i);
-                }
-                else
-                {
-                    printf("Cluster %i Size %i\n",i,LenNode(&(*clusterList)[i]));
-                }
-            }
-            (*ClusterSize)[i] = s;
-            */
             
 
         }
@@ -630,7 +601,7 @@ void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
         if(GridN[i]==NULL)
         {
             continue;
-            printf("Grid %i NULL\n",i);
+            printf("Line %i NULL\n",i);
         }
         if(GridSize == 0)
         {
@@ -703,6 +674,7 @@ void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
         }
 
     }
+    printf("\n");
     printf("WordList:\n");
     for(int i = 0; i<WordCount; i++)
     {
@@ -740,7 +712,6 @@ void ProcessSolver(Node**** Clusters, int* size, int* ClusterSize, int** Map)
         
         printf("StartLetter: %c\n",StartLetter->letter);
         printf("EndLetter: %c\n",EndLetter->letter);
-        printf("DrawLine\n");
         free(Start);
         free(End);
         
@@ -830,14 +801,14 @@ void ProcessGrid(SDL_Surface *surface)
     GFreeMatrix(surf, height);
     
     SDL_Surface* temp_surface = DuplicateSurface(surface);
-    Draw(temp_surface, shapeList, 177, 0, 0);
+    Draw(temp_surface, shapeList, 177, 0, 0,0);
     SDL_SaveBMP(temp_surface, "output/imgFindShape.bmp");
     SDL_FreeSurface(temp_surface);
 
     ShapeFilter(&shapeList);
 
     temp_surface = DuplicateSurface(surface);
-    Draw(temp_surface, shapeList, 177, 0, 0);
+    Draw(temp_surface, shapeList, 177, 0, 0,0);
     SDL_SaveBMP(temp_surface, "output/imgShapeFilter.bmp");
     SDL_FreeSurface(temp_surface);
     
@@ -849,7 +820,7 @@ void ProcessGrid(SDL_Surface *surface)
     {
         int r,g,b;
         getRandomColor(&r, &g, &b, i, size);
-        Draw(temp_surface,clusterList[i],r,g,b);
+        Draw(temp_surface,clusterList[i],r,g,b,1);
     }
     SDL_SaveBMP(temp_surface, "output/imgFindCluster.bmp");
     SDL_FreeSurface(temp_surface);
@@ -857,19 +828,7 @@ void ProcessGrid(SDL_Surface *surface)
 
 
 
-   printf("CreateLine\n");
-   for(int i = 0; i<size ; i++)
-   {
-        if(clusterList[i]!=NULL)
-        {
-            printf("Cluster %i ",i);
-            printf("Size %i\n",LenNode(&clusterList[i]));
-        }
-        else
-        {
-            printf("Cluster %i NULL\n",i);
-        }
-   }
+   
 
 
     int* ClusterSize = NULL;
@@ -878,36 +837,36 @@ void ProcessGrid(SDL_Surface *surface)
 
     ClusterFilter(&Clusters, &size, &ClusterSize);
 
-    printf("Size %i\n",size);
+    //printf("Size %i\n",size);
     for(int i = 0; i<size; i++)
     {
         if(Clusters[i]==NULL)
         {
-            printf("Cluster %i NULL\n",i);
+            //printf("Cluster %i NULL\n",i);
             continue;
         }
-        printf("Cluster %i Size %i\n",i,ClusterSize[i]);
+        //printf("Cluster %i Size %i\n",i,ClusterSize[i]);
         int r,g,b;
         getRandomColor(&r, &g, &b, i, size);
         if(Clusters[i][0]==NULL)
         {
-                printf("Cluster %i NULL!!!!!!!!!!!!!!\n",0);
+                //printf("Cluster %i NULL!!!!!!!!!!!!!!\n",0);
                 continue;
         }
-        Draw(surface,Clusters[i][0],r,g,b);
+        Draw(surface,Clusters[i][0],r,g,b,1);
         for(int j = 1; j<ClusterSize[i]; j++)
         {
             if(Clusters[i][j]==NULL || Clusters[i][j-1]==NULL)
             {
-                printf("Cluster %i NULL!!!!!!!!!!!!!!\n",j);
+                //printf("Cluster %i NULL!!!!!!!!!!!!!!\n",j);
                 continue;
             }
-            Draw(surface,Clusters[i][j],r,g,b);
+            Draw(surface,Clusters[i][j],r,g,b,1);
             DrawLine(surface,Clusters[i][j-1]->data,Clusters[i][j]->data,0,0,255);
         }
         
     }
-    printf("Start ProcessSolver\n");
+    //printf("Start ProcessSolver\n");
     ProcessSolver(&Clusters,&size,ClusterSize,Map);
     /*
     //init value Neural Network;

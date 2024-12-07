@@ -24,6 +24,10 @@ void compute(char* InputsLayer, double** outputLayer,int nbInputs,int nbHiddenNo
 	LoadData("data.txt",&hiddenLayerBias, &outputLayerBias, &hiddenWeights, &outputWeights, &nbInputs, &nbHiddenNodes, &nbOutputs, &LearningRate);
     */
 	double hiddenLayer[nbHiddenNodes];
+    if(LearningRate==-42.0)
+    {
+        return;
+    }
 
 	
 	//comute hidden layer activation
