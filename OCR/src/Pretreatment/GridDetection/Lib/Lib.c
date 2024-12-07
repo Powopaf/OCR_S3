@@ -197,7 +197,7 @@ void DrawLine(SDL_Surface *surface, Shape *shape1, Shape *shape2, int r, int g, 
 }
 
 // Function to draw shapes on an SDL_Surface based on a linked list
-void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
+void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b, int DrawConnection)
 {
     SDL_PixelFormat* format = surface->format;
     int p = surface->pitch;
@@ -208,7 +208,7 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
     Node* n = shape_lst;
     while(n != NULL)
     {   
-        if(prev!=NULL)
+        if(prev!=NULL && DrawConnection==1)
         {
              // Draw a line between shapes
              DrawLine(surface, prev->data, n->data, r, g, b);
@@ -247,13 +247,13 @@ void Draw(SDL_Surface *surface, Node* shape_lst, int r, int g, int b)
 // Function to draw a list of clusters on an SDL_Surface with unique colors
 void DrawList(SDL_Surface* surface, Node** clusterList, int size)
 {
-    Draw(surface, clusterList[0], 255, 0, 0); 
+    Draw(surface, clusterList[0], 255, 0, 0,0); 
     printf("size %i\n",size);
     for(int i = 1; i < size; i++)
     {
         int r,g,b;
         getRandomColor(&r, &g, &b, i, size); // Get a random color for each cluster
-        Draw(surface, clusterList[i], r, g, b); // Draw each cluster with its color
+        Draw(surface, clusterList[i], r, g, b,0); // Draw each cluster with its color
     
         /*printf("clusterList[i]         %i\n",clusterList[i]!=NULL);
         printf("clusterList[i-1]       %i\n",clusterList[i]!=NULL);

@@ -155,6 +155,7 @@ int solver(char word[], int** Start, int** End)
 	}
 	else
 	{
+		printf("\nWord: %s\n", word);
 		print_grid(*Start,*End);
 		//printf("Word: %s\n", word);
 		//printf("Start = (%i, %i)\n", Start[0], Start[1]);

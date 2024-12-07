@@ -16,8 +16,6 @@ void drawSolution(SDL_Surface *surface, int x1, int y1, int x2, int y2, int r, i
     float ny = (float)dy / length;
     
     SDL_PixelFormat* format = surface->format;
-    int p = surface->pitch;
-    int bpp = format->BytesPerPixel;
 
     for (float i = 0; i < length; i++)
     {
@@ -39,8 +37,13 @@ void drawSolution(SDL_Surface *surface, int x1, int y1, int x2, int y2, int r, i
                         int bpp = format->BytesPerPixel;
                         Uint8* pixels = (Uint8*)surface->pixels;
                         Uint8* pixel = pixels + px * p + py * bpp;
-                        pixel[0] = r;
-                        pixel[1] = g;
+                        int th = 50;
+                        if(pixel[0]>th && pixel[1]>th && pixel[2]>th)
+                        {
+                            pixel[0] = r;
+                            pixel[1] = g;
+                            pixel[2] = b;
+                        }
                         
                         //
                     }
