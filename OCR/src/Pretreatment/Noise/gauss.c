@@ -88,32 +88,23 @@ void gauss(SDL_Surface* surface, double sig) {
 }
 
 void applyMedianFilter(SDL_Surface *image) {
-    const int kernelSize = 3; // 3x3 kernel
+    const int kernelSize = 3;
     const int halfKernel = kernelSize / 2;
-
-    if (image->format->BytesPerPixel != 3 && image->format->BytesPerPixel != 4) {
-        fprintf(stderr, "Unsupported pixel format\n");
-        return;
-    }
-
+	const int kernelLength = kernelSize * kernelSize;
     SDL_LockSurface(image);
-
     for (int y = halfKernel; y < image->h - halfKernel; y++) {
         for (int x = halfKernel; x < image->w - halfKernel; x++) {
-            int values[9]; // For the 3x3 kernel
+            int values[kernelLength];
             int k = 0;
-
-            // Collect pixel values in the kernel
             for (int ky = -halfKernel; ky <= halfKernel; ky++) {
                 for (int kx = -halfKernel; kx <= halfKernel; kx++) {
                     Uint8* p = (Uint8*)image->pixels + (y + ky) * image->pitch + (x + kx) * image->format->BytesPerPixel;
-                    values[k++] = p[0]; // Assuming grayscale
+                    values[k] = p[0];
+					k++;
                 }
             }
-
-            // Sort values and find the median
-            for (int i = 0; i < 9; i++) {
-                for (int j = i + 1; j < 9; j++) {
+            for (int i = 0; i < kernelLength; i++) {
+                for (int j = i + 1; j < kernelLength; j++) {
                     if (values[j] < values[i]) {
                         int temp = values[i];
                         values[i] = values[j];
@@ -121,11 +112,9 @@ void applyMedianFilter(SDL_Surface *image) {
                     }
                 }
             }
-
-            // Set the median value as the new pixel value
             Uint8* pix = (Uint8*)image->pixels + y * image->pitch + x * image->format->BytesPerPixel;
-            pix[0] = values[4]; // Median
-            pix[1] = values[4]; // For RGB/RGBA
+            pix[0] = values[4];
+            pix[1] = values[4];
             pix[2] = values[4];
         }
     }
@@ -146,6 +135,7 @@ void test_noise(int a) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
         //contrast(s);
+		median(s);
 		applyMedianFilter(s);
         //gauss(s, sig);
 		//median(s);
