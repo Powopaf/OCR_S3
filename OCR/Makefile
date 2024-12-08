@@ -28,7 +28,7 @@ SRC=\
 
 OBJ=$(SRC:.c=.o)
 
-main: $(OBJ)
+all: $(OBJ)
 	$(CC) -o main.out $+ $(LIB) -export-dynamic
 
 %.o: %.c
