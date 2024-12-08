@@ -13,6 +13,8 @@
 #include "../crop/crop.h"
 #include "../Utils/resize.h"
 #include "../../NeuralNetwork/NeuralNetwork.h"
+#include "Placement/placeInGrid.h"
+#include "../../Solver/solver.h"
 
 typedef struct Letter
 {

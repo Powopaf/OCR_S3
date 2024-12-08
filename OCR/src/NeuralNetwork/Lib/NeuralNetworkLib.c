@@ -92,7 +92,74 @@ void FreeMatrix(double **arr, int sizex) {
 }
 
 // Split string by delimiter
-char **Split(char *str, int *size) {
+
+char **Split(char *string, int *size) {
+    const char* delimiter = "|";
+
+    if (!string || !delimiter || !size) {
+        fprintf(stderr, "Invalid arguments to Split.\n");
+        return NULL;
+    }
+
+    // Initialize variables
+    int count = 0;
+    int delimiter_len = strlen(delimiter);
+    const char *start = string;
+    const char *end;
+
+    // Count the number of splits
+    while ((end = strstr(start, delimiter)) != NULL) {
+        count++;
+        start = end + delimiter_len;
+    }
+    count++; // For the last segment after the final delimiter
+
+    // Allocate array for split strings
+    char **result = (char **)malloc(count * sizeof(char *));
+    if (!result) {
+        perror("Failed to allocate memory for Split result");
+        return NULL;
+    }
+
+    // Reset pointers to split the string
+    start = string;
+    int index = 0;
+
+    while ((end = strstr(start, delimiter)) != NULL) {
+        // Calculate length of the substring
+        size_t len = end - start;
+
+        // Allocate memory for the substring and copy it
+        result[index] = (char *)malloc(len + 1);
+        if (!result[index]) {
+            perror("Failed to allocate memory for substring");
+            for (int i = 0; i < index; i++) {
+                free(result[i]);
+            }
+            free(result);
+            return NULL;
+        }
+
+        strncpy(result[index], start, len);
+        result[index][len] = '\0'; // Null-terminate the string
+        index++;
+        start = end + delimiter_len;
+    }
+
+    // Copy the last segment
+    result[index] = strdup(start); // Allocate and copy the final segment
+    if (!result[index]) {
+        perror("Failed to allocate memory for final substring");
+        for (int i = 0; i < index; i++) {
+            free(result[i]);
+        }
+        free(result);
+        return NULL;
+    }
+
+    *size = count; // Set the size output parameter
+    return result;
+    /*
     const char delimiter = '|';
     char *strCopy = strdup(str);
     char *token = strtok(strCopy, &delimiter);
@@ -103,7 +170,7 @@ char **Split(char *str, int *size) {
         token = strtok(NULL, &delimiter);
     }
 
-    char **result = (char **)malloc(count * sizeof(char *));
+    char **result = (char **)calloc(count,sizeof(char *));
     free(strCopy);
     strCopy = strdup(str);
     token = strtok(strCopy, &delimiter);
@@ -115,17 +182,31 @@ char **Split(char *str, int *size) {
     }
 
     *size = count;
-    free(strCopy);
+    //free(strCopy);
 
     return result;
+    */
 }
 
 // Free split array
 void FreeSplitArray(char **arr, int size) {
+    if(arr==NULL)
+    {
+        return;
+    }
     for (int i = 0; i < size; i++) {
-        free(arr[i]);
+        if(arr[i]==NULL)
+        {
+            continue;
+        }
+        else
+        {
+            free(arr[i]);
+            arr[i] = NULL;
+        }
     }
     free(arr);
+    arr = NULL;
 }
 
 // Load data from file

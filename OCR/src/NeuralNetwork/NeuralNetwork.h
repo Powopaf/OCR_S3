@@ -14,7 +14,7 @@ double ReadDouble(char str[]);
 void MallocArray(double **arr, int size);
 void MallocMatrix(double ***arr, int sizex, int sizey);
 void FreeMatrix(double **arr, int sizex);
-char **Split(char *str, int *size);
+char **Split(char *string, int *size);
 void FreeSplitArray(char **arr, int size);
 void LoadData(char filename[], double **hiddenLayerBias, double **outputLayerBias, 
               double ***hiddenWeights, double ***outputWeights, int *nbInputs, 

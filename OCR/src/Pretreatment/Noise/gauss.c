@@ -55,13 +55,11 @@ void test_noise(int a) {
     for (int i = 0; i < a; i++) {
         printf("Sig: %lf | Lap: %d\n", sig, i);
         SDL_Surface* s = SDL_LoadBMP("img0.bmp");
-		//contrast_light(s);
-		//contrast_hard(s);
-		//contrast_light(s);
+
 		applyMedianFilter(s);
 		contrast_light(s);
 		contrast_hard(s);
-		//contrast_hard(s);	
+      
 		sprintf(filename, "img%d.bmp", i + 1);
         SDL_SaveBMP(s, filename);
         SDL_FreeSurface(s);
@@ -81,4 +79,3 @@ int main(int argc, char* argv[]) {
     }
     return EXIT_SUCCESS;
 }
-

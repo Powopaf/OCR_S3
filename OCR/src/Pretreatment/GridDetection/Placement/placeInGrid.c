@@ -15,7 +15,7 @@ void swap(struct Node* p1, struct Node* p2) {
 void sort_cluster(struct Node* lst) {
 	for (struct Node* i = lst; i != NULL; i = i->next) {
 		for (struct Node* j = i->next; j != NULL; j = j->next) {
-			if (j->data->Cx < i->data->Cx) {
+			if (j->data->Cy < i->data->Cy) {
 				swap(j, i);
 			}
 		}
@@ -41,6 +41,9 @@ void find_grid(Node*** list, int size, int* clusters_size) {
 				Node** t = list[0];
 				list[0] = list[i];
 				list[i] = t;
+				int tt = clusters_size[0];
+				clusters_size[0] = clusters_size[i];
+				clusters_size[i] = tt;
 				break;
 			}
 		}

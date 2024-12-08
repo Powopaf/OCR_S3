@@ -4,47 +4,70 @@
 
 // Rotation by rotation matrix (Best result)
 SDL_Surface* rotation3(SDL_Surface *image, double angle) {
+    if (!image) 
+	{
+        fprintf(stderr, "Invalid input image.\n");
+        return NULL;
+    }
+
     SDL_LockSurface(image); // Lock the surface to directly access the pixel data
-    
+
     // Get the image dimensions
-    int width = image->w; // Get the with in pixel
-    int height = image->h; // Get the height in pixel
+    int width = image->w; // Get the width in pixels
+    int height = image->h; // Get the height in pixels
     int bpp = image->format->BytesPerPixel;
     int p = image->pitch;
     Uint8* pixels = (Uint8*)image->pixels; // Pointer to the pixel data
 
-    double angle_radian = angle * M_PI / 180.0; //Convert the angle from degrees to radians
+    double angle_radian = angle * M_PI / 180.0; // Convert the angle from degrees to radians
 
     double cos_angle = cos(angle_radian);
     double sin_angle = sin(angle_radian);
 
-    // Calculate the size of the new image after rotation (diagonal length of the original image)
-    int new_w = sqrt((width*width)+(height*height))+1;
-    int new_h = new_w;
-    
+    // Calculate the size of the new image after rotation
+    int new_w = (int)(fabs(width * cos_angle) + fabs(height * sin_angle));
+    int new_h = (int)(fabs(width * sin_angle) + fabs(height * cos_angle));
+
+    // Check that new dimensions are valid
+    if (new_w <= 0 || new_h <= 0) 
+	{
+        fprintf(stderr, "Invalid dimensions for rotated image: new_w=%d, new_h=%d\n", new_w, new_h);
+        SDL_UnlockSurface(image); // Unlock the surface before returning
+        return NULL;
+    }
+
     // Create a new surface for the rotated image
     SDL_Surface* rotated_image = SDL_CreateRGBSurfaceWithFormat(0, new_w, new_h, 24, image->format->format);
+    if (!rotated_image) 
+	{
+        fprintf(stderr, "SDL_CreateRGBSurfaceWithFormat failed: %s\n", SDL_GetError());
+        SDL_UnlockSurface(image); // Unlock the surface before returning
+        return NULL;
+    }
+
     Uint8* rotated_pixels = (Uint8*)rotated_image->pixels;
-    
+
     // Fill the entire surface with white (RGB: 255, 255, 255)
     SDL_FillRect(rotated_image, NULL, SDL_MapRGB(rotated_image->format, 255, 255, 255));
 
-    int center_x = width / 2;
+    int center_x = width / 2; // Center of the original image
     int center_y = height / 2;
-    int new_center_x = new_w / 2;
+    int new_center_x = new_w / 2; // Center of the rotated image
     int new_center_y = new_h / 2;
 
     // Loop over every pixel of the original image
     for (int y = 0; y < new_h; y++) 
-    {
+	{
         for (int x = 0; x < new_w; x++) 
-        {    // Coordinates of the pixel in the original image after rotation
+		{
+            // Coordinates of the pixel in the original image after rotation
             int old_x = (int)((x - new_center_x) * cos_angle + (y - new_center_y) * sin_angle) + center_x;
             int old_y = (int)(-(x - new_center_x) * sin_angle + (y - new_center_y) * cos_angle) + center_y;
-            
+
             // Make sure the new coordinates are within bounds
-            if (old_x >= 0 && old_x < width && old_y >= 0 && old_y < height)
-            {    // Pointer to the pixel in the original image and in the rotated image
+            if (old_x >= 0 && old_x < width && old_y >= 0 && old_y < height) 
+			{
+                // Pointer to the pixel in the original image and in the rotated image
                 Uint8* original_pixel = pixels + (old_y * p) + (old_x * bpp);
                 Uint8* rotated_pixel = rotated_pixels + (y * rotated_image->pitch) + (x * rotated_image->format->BytesPerPixel);
 
@@ -55,7 +78,8 @@ SDL_Surface* rotation3(SDL_Surface *image, double angle) {
             }
         }
     }
-    SDL_UnlockSurface(image); // Unlock when finish
+
+    SDL_UnlockSurface(image); // Unlock when finished
     SDL_FreeSurface(image);  // Free the original surface if it's no longer needed
 
     return rotated_image;
