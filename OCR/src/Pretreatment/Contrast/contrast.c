@@ -36,7 +36,7 @@ void contrast_light(SDL_Surface* img) {
 
 void contrast_hard(SDL_Surface* img) {
 	const int M = 128;
-	const int k = 3;
+	const int k = 2;
 	for (int i = 0; i < img->h; i++) {
 		for (int j = 0; j < img->w; j++) {
 			Uint8* pix = (Uint8*)img->pixels + i * img->pitch + j * img->format->BytesPerPixel;

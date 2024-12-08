@@ -61,7 +61,7 @@ void test_noise(int a) {
 		applyMedianFilter(s);
 		contrast_light(s);
 		contrast_hard(s);
-		contrast_hard(s);	
+		//contrast_hard(s);	
 		sprintf(filename, "img%d.bmp", i + 1);
         SDL_SaveBMP(s, filename);
         SDL_FreeSurface(s);
