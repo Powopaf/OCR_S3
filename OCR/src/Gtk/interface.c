@@ -186,7 +186,8 @@ void resize(char *input, char *output)
         conv = "convert";
     }
 
-    sprintf(cmd,"%s \"%s\" -resize x%d -sharpen 0x1.0 -quality 100 \"%s\"", conv, input, height, output);
+    sprintf(cmd,"%s \"%s\" -resize x%d -sharpen 0x1.0 -quality 100 \"%s\"",
+    conv, input, height, output);
     system(cmd);
 }
 
