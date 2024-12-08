@@ -10,9 +10,6 @@ SRC=\
 	src/Pretreatment/Utils/resize.c \
 	src/Pretreatment/GreyScale/greyscale.c \
 	src/Pretreatment/Binarisation/binarisation.c \
-	src/Pretreatment/Contrast/contrast.c \
-	src/Pretreatment/Noise/gauss.c \
-	src/Pretreatment/Noise/median.c \
 	src/Pretreatment/GridDetection/grid.c \
 	src/Pretreatment/GridDetection/Lib/Lib.c \
 	src/Pretreatment/GridDetection/Shape/shape.c \
